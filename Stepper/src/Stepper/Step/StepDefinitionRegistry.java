@@ -12,4 +12,8 @@ public enum StepDefinitionRegistry {
     StepDefinitionRegistry(StepDefinitionInterface stepDefinition) {
         this.stepDefinition = stepDefinition;
     }
+
+    public StepDefinitionInterface getStepDefinition() {
+        return stepDefinition;
+    }
 }

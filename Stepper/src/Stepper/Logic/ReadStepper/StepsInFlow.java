@@ -9,7 +9,9 @@ import java.util.stream.Collectors;
 
 public class StepsInFlow {
 
+
     private List<StepInFlow> stepsInFlowList;
+
 
     public StepsInFlow(STStepsInFlow stStepsInFlow){
         stepsInFlowList = stStepsInFlow.getSTStepInFlow().stream()
@@ -23,6 +25,10 @@ public class StepsInFlow {
 
     public void addStep(StepInFlow step){
         stepsInFlowList.add(step);
+    }
+
+    public List<StepInFlow> getStepsInFlowList(){
+        return stepsInFlowList;
     }
 
 }

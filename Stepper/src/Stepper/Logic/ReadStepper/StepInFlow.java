@@ -1,5 +1,8 @@
 package Stepper.Logic.ReadStepper;
 
+import Stepper.Logic.api.NameToStep;
+import Stepper.Logic.impl.NameToStepImpl;
+import Stepper.Step.StepDefinitionRegistry;
 import generated.STStepInFlow;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -11,12 +14,22 @@ public class StepInFlow {
     private String alias;
 
     private Boolean continueIfFailing;
+    private StepDefinitionRegistry stepDefinitionRegistry;
+    private int numOfStep;
 
     StepInFlow(STStepInFlow stStepInFlow){
         this.name = stStepInFlow.getName();
         this.alias = stStepInFlow.getAlias();
         this.continueIfFailing = stStepInFlow.isContinueIfFailing();
+        stepDefinitionRegistry=getStepDefinitionRegistry(name);
+
     }
+
+    private StepDefinitionRegistry getStepDefinitionRegistry(String name){
+        NameToStep nameToStep=new NameToStepImpl();
+        return nameToStep.getDataDefinitionRegistry(name);
+    }
+
     StepInFlow(String name, String alias, Boolean continueIfFailing){
         this.name  = name;
         this.alias = alias;

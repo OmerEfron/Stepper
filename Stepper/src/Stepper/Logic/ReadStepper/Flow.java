@@ -7,6 +7,7 @@ import generated.STStepsInFlow;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.Map;
 
 public class Flow {
     private String flowOutput;
@@ -18,6 +19,7 @@ public class Flow {
     private String flowDescription;
 
     private String name;
+    private Map<String,String> customMapping;
 
     public String getFlowOutput() {
         return flowOutput;

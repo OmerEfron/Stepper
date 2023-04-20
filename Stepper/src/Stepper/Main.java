@@ -3,6 +3,8 @@ package Stepper;
 import Stepper.Logic.ReadStepper.api.Reader.StepperReader;
 import Stepper.Logic.ReadStepper.api.Reader.StepperReaderFromXml;
 import Stepper.Logic.ReadStepper.TheStepper;
+import Stepper.Logic.api.StepperDefinitionLogic;
+import Stepper.Logic.impl.StepperDefinitionLogicImpl;
 
 public class Main {
 
@@ -13,7 +15,9 @@ public class Main {
 //        FlowExecutor test=new FlowExecutor();
 //        test.executeFlow(flowExecution);
         StepperReader stepperReader = new StepperReaderFromXml();
-        TheStepper stStepper = stepperReader.read("C:\\Users\\Gil\\Downloads\\xmltest.xml");
+        TheStepper stStepper = stepperReader.read("C:\\Users\\roni2\\IdeaProjects\\ex1 (2).xml");
+        StepperDefinitionLogic stepperDefinitionLogic=new StepperDefinitionLogicImpl();
+        System.out.println(stepperDefinitionLogic.validateStepper(stStepper));
 
     }
 
