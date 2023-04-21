@@ -3,10 +3,10 @@ package Stepper.DataDefinitions.Mapping;
 import Stepper.DataDefinitions.api.DataDefinitionAbstractClass;
 import javafx.util.Pair;
 
-public class Mapping {
-    Pair<DataDefinitionAbstractClass, DataDefinitionAbstractClass> data;
+public class Mapping<T,K> {
+    Pair<T, K> data;
 
-    public Mapping(DataDefinitionAbstractClass car, DataDefinitionAbstractClass cdr){
+    public Mapping(T car, K cdr){
         data = new Pair<>(car, cdr);
     }
 }

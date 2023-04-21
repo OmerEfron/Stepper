@@ -6,5 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataDefList<T> {
-    private List<T> list = new ArrayList<>();;
+    protected List<T> list = new ArrayList<>();
+
+    public List<T> getList() {
+        return list;
+    }
 }
