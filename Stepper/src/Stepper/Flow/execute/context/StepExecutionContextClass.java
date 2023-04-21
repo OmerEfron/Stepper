@@ -30,6 +30,8 @@ public class StepExecutionContextClass implements StepExecutionContext{
         }
     }
 
+
+
     public void addOutput(String name, Object val){
         outputs.put(name, val);
     }
@@ -45,11 +47,11 @@ public class StepExecutionContextClass implements StepExecutionContext{
         return null;
     }
 
-    @Override
-    public boolean storeValue(String dataName, Object value) {
-        DataDefinitionInterface theExeptedDataType = dataTypes.get(dataName);
 
-        if (theExeptedDataType.getType().isAssignableFrom(value.getClass())) {
+    @Override
+    public boolean storeValue(String dataName, Object value,boolean isOutput) {
+        DataDefinitionInterface theExeptedDataType = dataTypes.get(dataName);
+        if (isOutput || theExeptedDataType.getType().isAssignableFrom(value.getClass())) {
             inputs.put(dataName, value);
             return true;
         }

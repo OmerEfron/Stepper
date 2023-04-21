@@ -1,23 +1,19 @@
 package Stepper.DataDefinitions.Relation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class Relation {
-
-    public Relation(List<String> colNames){
-        this.colNames = colNames;
+public abstract class Relation<T> implements RelationInterface {
+    protected List<String> colNames;
+    protected  List<T> rows = new ArrayList<>();
+    public Relation(){
+        this.colNames=new ArrayList<>();
     }
-    private List<String> colNames;
-    private  List<Row> rows = new ArrayList<>();
 
-    private static class Row{
-        Map<String, String> row = new HashMap();
-        public void addData(String colName, String data){
-            row.put(colName, data);
-        }
+    @Override
+    public Integer numOfRows() {
+        return rows.size();
     }
+
 
 }
