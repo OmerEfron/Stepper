@@ -15,9 +15,9 @@ public class Main {
 //        FlowExecutor test=new FlowExecutor();
 //        test.executeFlow(flowExecution);
         StepperReader stepperReader = new StepperReaderFromXml();
-        TheStepper stStepper = stepperReader.read("C:\\Users\\roni2\\IdeaProjects\\ex1 (2).xml");
-        StepperDefinitionLogic stepperDefinitionLogic=new StepperDefinitionLogicImpl();
-        System.out.println(stepperDefinitionLogic.validateStepper(stStepper));
+        TheStepper stStepper = stepperReader.read("C:\\Users\\Gil\\Desktop\\stepper1\\Stepper\\ex1 (1).xml");
+        Stepper stepper = new Stepper(stStepper);
+        stepper.validFlows();
 
     }
 

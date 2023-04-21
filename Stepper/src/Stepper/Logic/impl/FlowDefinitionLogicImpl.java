@@ -22,6 +22,10 @@ public class FlowDefinitionLogicImpl implements FlowDefinitionLogic {
     @Override
     public List<String> applyCustomMapping() {
 
+
+        // create a map from relates output to input.
+        // check if step is pointing to an earlier step
+        //
         return null;
     }
 }

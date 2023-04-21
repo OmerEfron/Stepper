@@ -11,9 +11,11 @@ public interface FlowDefinitionInterface {
     String getDescription();
     List<StepUsageDeclerationInterface> getSteps();
     void addStep(StepUsageDeclerationInterface stepUsageDeclerationInterface);
-    List<String> outputStrings();
-    boolean isFlowValid();
+    String outputStrings();
+    List<String> isFlowValid();
 
-    Set<DataDefinitionsDeclaration> getFreeInputs();
+
+    void customMapping();
+    void autoMapping();
 
 }

@@ -12,4 +12,6 @@ public interface DataDefinitionsDeclaration {
 
     DataDefinitionInterface dataDefinition();
 
+    boolean equals(Object obj);
+
 }

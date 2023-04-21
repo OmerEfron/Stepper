@@ -14,6 +14,7 @@ public class StepsInFlow {
 
 
     public StepsInFlow(STStepsInFlow stStepsInFlow){
+
         stepsInFlowList = stStepsInFlow.getSTStepInFlow().stream()
                 .map(element -> new StepInFlow(element))
                 .collect(Collectors.toList());

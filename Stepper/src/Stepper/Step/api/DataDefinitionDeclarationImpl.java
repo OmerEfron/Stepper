@@ -35,4 +35,15 @@ public class DataDefinitionDeclarationImpl implements DataDefinitionsDeclaration
     public DataDefinitionInterface dataDefinition() {
         return dataDefinition;
     }
+
+    @Override
+    public boolean equals(Object obj){
+        if(obj == this)
+            return true;
+        if(obj == null || obj.getClass() != this.getClass())
+            return false;
+
+        DataDefinitionsDeclaration other = (DataDefinitionsDeclaration) obj;
+        return this.dataDefinition.getName().equals(other.dataDefinition().getName()) && this.name.equals(other.getName());
+    }
 }
