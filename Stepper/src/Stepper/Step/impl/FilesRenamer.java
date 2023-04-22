@@ -12,6 +12,7 @@ import Stepper.Step.api.StepStatus;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class FilesRenamer extends StepDefinitionAbstractClass {
     public FilesRenamer() {
@@ -27,27 +28,24 @@ public class FilesRenamer extends StepDefinitionAbstractClass {
         FilesListDataDef filesListDataDef = context.getDataValue("FILES_TO_RENAME", FilesListDataDef.class);
         List<File> filesToRename = filesListDataDef.getFilesList();
         List<String> filesFailed=new ArrayList<>();
-        String prefix = context.getDataValue("PREFIX", String.class);
-        String suffix = context.getDataValue("SUFFIX", String.class);
-        RelationOfStringRows result = new RelationOfStringRows();
+        Optional<String> prefix=Optional.ofNullable(context.getDataValue("PREFIX", String.class));
+        Optional<String> suffix=Optional.ofNullable(context.getDataValue("SUFFIX", String.class));
+        RelationOfStringRows result = createRelationOfStringRows();
         Integer num=0;
 
         System.out.println("About to start rename" + filesToRename.size() + " files. Adding prefix: " + prefix + " adding suffix: " + suffix);
-        if(filesToRename.size()==0){
-            System.out.println("There are no files no rename");
-            return StepStatus.SUCCESS;
-        }
-        // Add the prefix and postfix to each file name
+        StepStatus success = checkIfTheFolderEmpty(context, filesToRename, result);
+        if (success != null) return success;
+
         for (File file : filesToRename) {
             List<String> row=new ArrayList<>();
-            num++;
-            row.add(num.toString());
+            row.add((++num).toString());
             String originalFileName = file.getName();
             row.add(originalFileName);
             int lastDotIndex = originalFileName.lastIndexOf('.');
             String nameWithoutExtension = lastDotIndex != -1 ? originalFileName.substring(0, lastDotIndex) : originalFileName;
             String extension = lastDotIndex != -1 ? originalFileName.substring(lastDotIndex) : "";
-            String newFileName = prefix + nameWithoutExtension + suffix + extension;
+            String newFileName = prefix.orElse("") + nameWithoutExtension + suffix.orElse("") + extension;
             try {
             File newFile = new File(file.getParentFile(), newFileName);
             row.add(newFileName);
@@ -62,12 +60,33 @@ public class FilesRenamer extends StepDefinitionAbstractClass {
 
         }
     }
+        context.storeValue("RENAME_RESULT",result);
+        context.addOutput("RENAME_RESULT",result);
         if(filesFailed.size()!=0){
             System.out.println("The files that failed to rename:");
             filesFailed.forEach(System.out::println);
             return StepStatus.WARNING;
         }
         return StepStatus.SUCCESS;
+    }
+
+    private static StepStatus checkIfTheFolderEmpty(StepExecutionContext context, List<File> filesToRename, RelationOfStringRows result) {
+        if(filesToRename.size()==0){
+            context.storeValue("RENAME_RESULT", result);
+            context.addOutput("RENAME_RESULT", result);
+            System.out.println("There are no files no rename");
+            return StepStatus.SUCCESS;
+        }
+        return null;
+    }
+
+    private static RelationOfStringRows createRelationOfStringRows() {
+        List<String> colNames=new ArrayList<>();
+        colNames.add("Serial Number");
+        colNames.add("Original File Name");
+        colNames.add("File Name After The Change");
+        RelationOfStringRows result = new RelationOfStringRows(colNames);
+        return result;
     }
 
 }

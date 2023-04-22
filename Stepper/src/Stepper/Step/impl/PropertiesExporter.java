@@ -25,7 +25,7 @@ public class PropertiesExporter extends StepDefinitionAbstractClass {
 
         System.out.println("Extracted total of "+totalProperties);
 
-        context.storeValue("RESULT2",result,true);
+        context.addOutput("RESULT",result);
         if(relation.isEmpty()){
             System.out.println("There are no rows in the relation");
             return StepStatus.WARNING;

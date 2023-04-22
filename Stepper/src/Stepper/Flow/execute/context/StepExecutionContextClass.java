@@ -27,13 +27,26 @@ public class StepExecutionContextClass implements StepExecutionContext{
             for(DataDefinitionsDeclaration dd: curr.getStepDefinition().getInputs()){
                 dataTypes.put(dd.getName(), dd.dataDefinition());
             }
+            for(DataDefinitionsDeclaration dd: curr.getStepDefinition().getOutputs()){
+                dataTypes.put(dd.getName(), dd.dataDefinition());
+            }
         }
     }
 
-
-
     public void addOutput(String name, Object val){
         outputs.put(name, val);
+    }
+
+    @Override
+    public <T> T getOutput(String dataName, Class<T> exceptedDataType) {
+        DataDefinitionInterface theExeptedDataType = dataTypes.get(dataName);
+
+        if(exceptedDataType.isAssignableFrom(theExeptedDataType.getType())){
+            Object aValue = outputs.get(dataName);
+            return exceptedDataType.cast(aValue);
+        }
+        return null;
+
     }
 
     @Override
@@ -49,9 +62,9 @@ public class StepExecutionContextClass implements StepExecutionContext{
 
 
     @Override
-    public boolean storeValue(String dataName, Object value,boolean isOutput) {
+    public boolean storeValue(String dataName, Object value) {
         DataDefinitionInterface theExeptedDataType = dataTypes.get(dataName);
-        if (isOutput || theExeptedDataType.getType().isAssignableFrom(value.getClass())) {
+        if (theExeptedDataType.getType().isAssignableFrom(value.getClass())) {
             inputs.put(dataName, value);
             return true;
         }

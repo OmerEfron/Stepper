@@ -27,14 +27,14 @@ public class FileDumper extends StepDefinitionAbstractClass {
             FileWriter writer = new FileWriter(fileName);
             writer.write(content);
             writer.close();
-            context.storeValue("RESULT","SUCCESS",true);
+            context.addOutput("RESULT","SUCCESS");
             if(content.length()==0) {
                 return StepStatus.WARNING;
             }
             return StepStatus.SUCCESS;
         } catch (IOException e) {
             e.printStackTrace();
-            context.storeValue("RESULT","FAIL,"+e.toString(),true);
+            context.addOutput("RESULT","FAIL,"+e.toString());
             return StepStatus.FAIL;
         }
     }

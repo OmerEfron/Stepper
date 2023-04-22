@@ -28,7 +28,7 @@ public class FilesContentExtractor extends StepDefinitionAbstractClass {
         Integer lineNumber=context.getDataValue("LINE", Integer.class);
         String line;
         Integer rowNumber=0;
-        RelationOfStringRows result=new RelationOfStringRows();
+        RelationOfStringRows result = createRelationOfStringRows();
 
         for (File file : files) {
             List<String> row =new ArrayList<>();
@@ -55,9 +55,19 @@ public class FilesContentExtractor extends StepDefinitionAbstractClass {
             }
             result.addRow(row);
         }
-        context.storeValue("DATA",result,true);
-        context.storeValue("SOURCE",result,true);
+        context.storeValue("DATA",result);
+        context.addOutput("DATA",result);
+        //context.storeValue("SOURCE",result);
         if(result.isEmpty()){return  StepStatus.WARNING;}
         return StepStatus.SUCCESS;
+    }
+
+    private static RelationOfStringRows createRelationOfStringRows() {
+        List<String> colNames=new ArrayList<>();
+        colNames.add("Serial Number");
+        colNames.add("Original File Name");
+        colNames.add("The textual information retrieved from the file");
+        RelationOfStringRows result=new RelationOfStringRows(colNames);
+        return result;
     }
 }

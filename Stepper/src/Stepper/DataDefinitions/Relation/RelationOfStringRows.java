@@ -4,10 +4,8 @@ import java.util.List;
 
 public class RelationOfStringRows extends Relation<List<String>> {
 
-    public RelationOfStringRows(){
-        colNames.add("Serial Number");
-        colNames.add("Original File Name");
-        colNames.add("File Name After The Change");
+    public RelationOfStringRows(List<String> colNames){
+        this.colNames=colNames;
     }
     public void addRow(List<String> rowToAdd){
         rows.add(rowToAdd);
@@ -31,10 +29,10 @@ public class RelationOfStringRows extends Relation<List<String>> {
         totalProperties=0;
         for(List<String> row:rows){
             num++;
-            propertiesExporter.concat( "row-"+num.toString()+".");
+            propertiesExporter+= "row-"+num.toString()+".";
             for(int currIndexRow=0,currIndexCol=0;currIndexRow<colNames.size();currIndexRow++,currIndexCol++){
                 totalProperties++;
-                propertiesExporter.concat( colNames.get(currIndexCol)+"="+row.get(currIndexRow));
+                propertiesExporter+= colNames.get(currIndexCol)+"="+row.get(currIndexRow);
             }
             propertiesExporter+="\n";
         }

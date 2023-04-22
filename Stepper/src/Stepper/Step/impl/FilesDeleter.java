@@ -38,8 +38,9 @@ public class FilesDeleter extends StepDefinitionAbstractClass {
             }
         }
         NumberMapping stats=new NumberMapping(filesToDelete.size(),countHowMuchNotDeleted);
-        context.storeValue("DELETION_STATS",stats,true);
-        context.storeValue("DELETED_LIST",new StringListDataDef(failToDelete),true);
+        context.addOutput("DELETION_STATS",stats);
+        context.storeValue("DELETED_LIST",new StringListDataDef(failToDelete));
+        context.addOutput("DELETED_LIST",new StringListDataDef(failToDelete));
         if(countHowMuchNotDeleted==numOfFiles){
             System.out.println("No fail was Deleted");
             return StepStatus.FAIL;
