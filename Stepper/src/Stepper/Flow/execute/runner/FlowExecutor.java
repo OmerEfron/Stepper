@@ -16,26 +16,25 @@ public class FlowExecutor {
     public void executeFlow(FlowExecution currFlow){
         StepExecutionContext stepExecutionContext=new StepExecutionContextClass(currFlow.getFlowDefinition());
         Integer val=4;
-        stepExecutionContext.storeValue("TIME_TO_SPEND",val,false);
-        stepExecutionContext.storeValue("FOLDER_NAME","C:\\Users\\roni2\\IdeaProjects\\test",false);
+        stepExecutionContext.storeValue("TIME_TO_SPEND",val);
+        stepExecutionContext.storeValue("FOLDER_NAME","C:\\Users\\roni2\\IdeaProjects\\test");
         //stepExecutionContext.storeValue("FILTER",".txt",false);
-        stepExecutionContext.storeValue("CONTENT","lalsalcsl",false);
-        stepExecutionContext.storeValue("FILE_NAME","C:\\Users\\roni2\\IdeaProjects\\test\\newTes.txt",false);
+        stepExecutionContext.storeValue("CONTENT","lalsalcsl");
+        stepExecutionContext.storeValue("FILE_NAME","C:\\Users\\roni2\\IdeaProjects\\test\\newTes.txt");
         List<File> checkFilesRenamer=testFilesRenamer("C:\\Users\\roni2\\IdeaProjects\\test1");
         FilesListDataDef filesListDataDef=new FilesListDataDef(checkFilesRenamer);
-        stepExecutionContext.storeValue("FILES_TO_RENAME",filesListDataDef,false);
-        stepExecutionContext.storeValue("PREFIX","Bibi",false);
-        stepExecutionContext.storeValue("SUFFIX","Israel",false);
-        stepExecutionContext.storeValue("FILES_LIST",filesListDataDef,false);
-        stepExecutionContext.storeValue("LINE",1,false);
+        stepExecutionContext.storeValue("FILES_TO_RENAME",filesListDataDef);
+        stepExecutionContext.storeValue("SUFFIX","Israel");
+        stepExecutionContext.storeValue("FILES_LIST",filesListDataDef);
+        stepExecutionContext.storeValue("LINE",1);
 
 
         for (StepUsageDeclerationInterface step:currFlow.getFlowDefinition().getSteps()) {
             step.getStepDefinition().invoke(stepExecutionContext);
         }
 
-        System.out.println(stepExecutionContext.getDataValue("RESULT",String.class));
-        System.out.println(stepExecutionContext.getDataValue("RESULT2",String.class));
+        System.out.println(stepExecutionContext.getOutput("RESULT",String.class));
+        System.out.println(stepExecutionContext.getOutput("RESULT2",String.class));
     }
 
     private static List<File> testFilesRenamer(String directoryPath) {

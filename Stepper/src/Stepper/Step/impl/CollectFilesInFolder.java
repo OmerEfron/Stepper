@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public class CollectFilesInFolder extends StepDefinitionAbstractClass {
@@ -33,22 +34,11 @@ public class CollectFilesInFolder extends StepDefinitionAbstractClass {
     @Override
     public StepStatus invoke(StepExecutionContext context) {
         String folderPath = context.getDataValue("FOLDER_NAME", String.class);
-        String filterStr = context.getDataValue("FILTER", String.class);
+        Optional<String> filterStr = Optional.ofNullable(context.getDataValue("FILTER", String.class));
         System.out.println("Reading folder " + folderPath + "content with filter " + filterStr);
         File folder = new File(folderPath);
-        File[] files ;
-        if (filterStr != null){
-            FilenameFilter filter = new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.endsWith(filterStr);
-                }
-            };
-            files = folder.listFiles(filter); // get all files in the folder that match the filter
-        }else {
-            files = folder.listFiles();
-        }
-
+        File[] files = filterStr.map(filter -> folder.listFiles((dir, name) -> name.endsWith(filter)))
+                .orElse(folder.listFiles());
         List<File> fileList = new ArrayList<>(); // create an empty list to store the files
 
         for (File file : files) {
@@ -57,8 +47,10 @@ public class CollectFilesInFolder extends StepDefinitionAbstractClass {
             }
         }
         Integer size=fileList.size();
-        context.storeValue("FILES_LIST",new FilesListDataDef(fileList),true);
-        context.storeValue("TOTAL_FOUND",size,true);
+        context.storeValue("FILES_LIST",new FilesListDataDef(fileList));
+        context.addOutput("FILES_LIST",new FilesListDataDef(fileList));
+        context.addOutput("TOTAL_FOUND",size);
+
         if (fileList.size() == 0) {
             System.out.println("The folder is empty");
             return StepStatus.WARNING;

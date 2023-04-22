@@ -21,7 +21,7 @@ public class CSVExporter extends StepDefinitionAbstractClass {
         String result=relation.relationToCSV();
         System.out.println("About to process "+relation.numOfRows().toString()+" lines of data");
 
-        context.storeValue("RESULT",result,true);
+        context.addOutput("RESULT",result);
         if(relation.numOfRows()==0){
             System.out.println("There are no rows in the relation");
             return StepStatus.WARNING;
