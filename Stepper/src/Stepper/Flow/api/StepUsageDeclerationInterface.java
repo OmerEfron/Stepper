@@ -9,6 +9,7 @@ public interface StepUsageDeclerationInterface {
 
     StepDefinitionInterface getStepDefinition();
     String getStepFinalName();
+    void setAliasName(String alias);
     boolean skipIfFail();
 
     Integer getIndex();

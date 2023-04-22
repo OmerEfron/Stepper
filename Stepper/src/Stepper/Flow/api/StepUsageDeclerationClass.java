@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class StepUsageDeclerationClass implements StepUsageDeclerationInterface{
 
-    private final String name;
+    private String name;
     private final boolean skipIfFail;
 
     private final StepDefinitionInterface stepDefinition;
@@ -56,6 +56,11 @@ public class StepUsageDeclerationClass implements StepUsageDeclerationInterface{
     @Override
     public String getStepFinalName() {
         return name;
+    }
+
+    @Override
+    public void setAliasName(String alias) {
+        this.name = alias;
     }
 
     @Override

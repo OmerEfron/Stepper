@@ -14,8 +14,9 @@ public interface FlowDefinitionInterface {
     String outputStrings();
     List<String> isFlowValid();
 
-
     void customMapping();
     void autoMapping();
+
+
 
 }

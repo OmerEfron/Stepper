@@ -28,6 +28,10 @@ public class StepInFlow {
 
     }
 
+    public static void resetIndexing(){
+        count = 0;
+    }
+
     public int getNumOfStep() {
         return numOfStep;
     }

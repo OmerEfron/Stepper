@@ -14,4 +14,5 @@ public interface DataDefinitionsDeclaration {
 
     boolean equals(Object obj);
 
+    void setAliasName(String alias);
 }
