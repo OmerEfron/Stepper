@@ -12,6 +12,7 @@ import Stepper.Step.api.StepStatus;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class FilesContentExtractor extends StepDefinitionAbstractClass {
     public FilesContentExtractor() {
@@ -22,10 +23,10 @@ public class FilesContentExtractor extends StepDefinitionAbstractClass {
     }
 
     @Override
-    public StepStatus invoke(StepExecutionContext context) {
-        FilesListDataDef filesListDataDef=context.getDataValue("FILES_LIST",FilesListDataDef.class);
+    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias) {
+        FilesListDataDef filesListDataDef=context.getDataValue(nameToAlias.get("FILES_LIST"),FilesListDataDef.class);
         List<File> files=filesListDataDef.getFilesList();
-        Integer lineNumber=context.getDataValue("LINE", Integer.class);
+        Integer lineNumber=context.getDataValue(nameToAlias.get("LINE"), Integer.class);
         String line;
         Integer rowNumber=0;
         RelationOfStringRows result = createRelationOfStringRows();
@@ -55,9 +56,8 @@ public class FilesContentExtractor extends StepDefinitionAbstractClass {
             }
             result.addRow(row);
         }
-        context.storeValue("DATA",result);
-        context.addOutput("DATA",result);
-        //context.storeValue("SOURCE",result);
+        context.storeValue(nameToAlias.get("DATA"),result);
+
         if(result.isEmpty()){return  StepStatus.WARNING;}
         return StepStatus.SUCCESS;
     }

@@ -9,6 +9,7 @@ import Stepper.Step.api.StepStatus;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
 
 public class FileDumper extends StepDefinitionAbstractClass {
     public FileDumper() {
@@ -19,22 +20,22 @@ public class FileDumper extends StepDefinitionAbstractClass {
     }
 
     @Override
-    public StepStatus invoke(StepExecutionContext context)  {
-        String content = context.getDataValue("CONTENT", String.class);
-        String fileName = context.getDataValue("FILE_NAME", String.class);
+    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias)  {
+        String content = context.getDataValue(nameToAlias.get("CONTENT"), String.class);
+        String fileName = context.getDataValue(nameToAlias.get("FILE_NAME"), String.class);
         System.out.println("About to create file named " + fileName);
         try {
             FileWriter writer = new FileWriter(fileName);
             writer.write(content);
             writer.close();
-            context.addOutput("RESULT","SUCCESS");
+            context.storeValue(nameToAlias.get("RESULT"),"SUCCESS");
             if(content.length()==0) {
                 return StepStatus.WARNING;
             }
             return StepStatus.SUCCESS;
         } catch (IOException e) {
             e.printStackTrace();
-            context.addOutput("RESULT","FAIL,"+e.toString());
+            context.storeValue(nameToAlias.get("RESULT"),"FAIL,"+e.toString());
             return StepStatus.FAIL;
         }
     }

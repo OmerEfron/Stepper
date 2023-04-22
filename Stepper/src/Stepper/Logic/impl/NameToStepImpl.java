@@ -45,17 +45,17 @@ public class NameToStepImpl implements NameToStep {
             case CollectFilesInFolder:
                 return StepDefinitionRegistry.FILES_COLLECTOR;
             case filesDeleter:
-                return StepDefinitionRegistry.FILES_COLLECTOR;
+                return StepDefinitionRegistry.FILES_DELETER;
             case filesRenamer:
-                return StepDefinitionRegistry.FILES_COLLECTOR;
+                return StepDefinitionRegistry.FILES_RENAMER;
             case filesContentExtractor:
-                return StepDefinitionRegistry.FILES_COLLECTOR;
+                return StepDefinitionRegistry.FILES_CONTENT_EXTRACTOR;
             case CSVExporter:
-                return StepDefinitionRegistry.FILES_COLLECTOR;
+                return StepDefinitionRegistry.CSV_EXPORTER;
             case propertiesExporter:
-                return StepDefinitionRegistry.FILES_COLLECTOR;
+                return StepDefinitionRegistry.PROPERTIES_EXPORTER;
             case fileDumper:
-                return StepDefinitionRegistry.FILES_COLLECTOR;
+                return StepDefinitionRegistry.FILE_DUMPER;
             default:
                 return null;
         }

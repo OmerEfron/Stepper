@@ -5,6 +5,8 @@ import Stepper.Logic.ReadStepper.CustomMapping;
 import Stepper.Logic.ReadStepper.Flow;
 import Stepper.Logic.ReadStepper.FlowLevelAlias;
 import Stepper.Logic.ReadStepper.StepInFlow;
+import Stepper.Logic.api.NameToStep;
+import Stepper.Logic.impl.NameToStepImpl;
 import Stepper.Step.StepBuilder;
 import Stepper.Step.StepDefinitionRegistry;
 import Stepper.Step.api.DataDefinitionsDeclaration;
@@ -129,9 +131,10 @@ public class FlowDefinition implements FlowDefinitionInterface {
     private Set<DataDefinitionsDeclaration> getFreeInputs() {
         return steps.stream()
                 .flatMap(step -> getStepFreeInputs(step).stream())
-                .filter(data -> data.necessity() == DataNecessity.MANDATORY)
+                .filter(data -> data.necessity() == DataNecessity.MANDATORY && data.dataDefinition().isUserFriendly())
                 .collect(Collectors.toSet());
     }
+    public Set<DataDefinitionsDeclaration> getFreeInputsFromUser(){return freeInputs;}
 
     /**
      * applying step aliasing for each step, if needed.
@@ -165,7 +168,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
      * @param fla - Flow Level Alias that repesents which data should get the alias name.
      */
     private void alias(FlowLevelAlias fla) {
-        StepUsageDeclerationInterface step = createNewStepUsage(fla.getStep());
+        StepUsageDeclerationInterface step = findStepUsageByName(fla.getStep());
         if (step == null) {
             problems.add("Trying to alias step " + fla.getStep() + ", step not found");
             return;
@@ -200,20 +203,6 @@ public class FlowDefinition implements FlowDefinitionInterface {
                 })
                 .orElse(false);
     }
-
-    /**
-     * get a stepUsage by his name.
-     * @param name - a step name
-     * @return the step usage from the steps list of the flow, null if not found.
-     */
-    private StepUsageDeclerationInterface createNewStepUsage(String name){
-        return steps.stream()
-                .filter(step -> step.getStepFinalName().equals(name))
-                .findFirst()
-                .orElse(null);
-    }
-
-
 
 
     /**
@@ -273,7 +262,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
      */
     private static boolean isDataPartOfStepOutPuts(CustomMapping customMapping, StepUsageDeclerationInterface source) {
         return source.getStepDefinition().getOutputs().stream()
-                .anyMatch(dd -> dd.getName().equals(customMapping.getSourceData()));
+                .anyMatch(dd -> dd.getAliasName().equals(customMapping.getSourceData()));
     }
 
 
@@ -296,7 +285,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
      */
     private static Set<DataDefinitionsDeclaration> getStepFreeInputs(StepUsageDeclerationInterface step) {
         return step.getStepDefinition().getInputs().stream()
-                .filter(input -> step.getInputRef(input.getName()) == null)
+                .filter(input -> step.getInputRef(input.getAliasName()) == null)
                 .collect(Collectors.toSet());
     }
 
@@ -364,6 +353,8 @@ public class FlowDefinition implements FlowDefinitionInterface {
      * @return StepDefinition registry that matches to name.
      */
     private StepDefinitionRegistry getStepDefinitionByName(String stepName){
+//        NameToStep nameToStep=new NameToStepImpl();
+//        return nameToStep.getDataDefinitionRegistry(stepName);
         for(StepDefinitionRegistry stepDefinition: StepDefinitionRegistry.values()){
             if (stepDefinition.getStepDefinition().getName().equals(stepName)){
                 return stepDefinition;

@@ -1,5 +1,6 @@
 package Stepper.Flow.api;
 
+import Stepper.Step.api.DataDefinitionsDeclaration;
 import Stepper.Step.api.StepDefinitionInterface;
 import javafx.util.Pair;
 
@@ -12,6 +13,7 @@ public class StepUsageDeclerationClass implements StepUsageDeclerationInterface{
     private final boolean skipIfFail;
 
     private final StepDefinitionInterface stepDefinition;
+    private final Map<String,String> nameToAlias=new HashMap<>();
 
     private final Integer index;
 
@@ -32,6 +34,15 @@ public class StepUsageDeclerationClass implements StepUsageDeclerationInterface{
         this.index = index;
     }
 
+    public Map<String, String> getNameToAlias() {
+        createNameToAliasMap();
+        return nameToAlias;
+    }
+
+    public void createNameToAliasMap(){
+        stepDefinition.getOutputs().forEach(dataDefinitionsDeclaration -> nameToAlias.put(dataDefinitionsDeclaration.getName(),dataDefinitionsDeclaration.getAliasName()));
+        stepDefinition.getInputs().forEach(dataDefinitionsDeclaration -> nameToAlias.put(dataDefinitionsDeclaration.getName(),dataDefinitionsDeclaration.getAliasName()));
+    }
 
 
     StepUsageDeclerationClass(String name, StepDefinitionInterface stepDefinition, boolean skipIfFail, Integer index){

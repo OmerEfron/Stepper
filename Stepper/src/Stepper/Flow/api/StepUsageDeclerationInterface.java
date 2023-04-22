@@ -19,5 +19,6 @@ public interface StepUsageDeclerationInterface {
     Map<String, Pair<String, String>> getDataMap();
 
     Pair<String, String> getInputRef(String input);
+    public Map<String, String> getNameToAlias();
 
 }

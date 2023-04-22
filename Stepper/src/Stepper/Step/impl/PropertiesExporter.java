@@ -9,6 +9,8 @@ import Stepper.Step.api.DataNecessity;
 import Stepper.Step.api.StepDefinitionAbstractClass;
 import Stepper.Step.api.StepStatus;
 
+import java.util.Map;
+
 public class PropertiesExporter extends StepDefinitionAbstractClass {
     public PropertiesExporter(){
         super("Properties Exporter",true);
@@ -17,15 +19,15 @@ public class PropertiesExporter extends StepDefinitionAbstractClass {
     }
 
     @Override
-    public StepStatus invoke(StepExecutionContext context) {
-        RelationInterface relation=context.getDataValue("SOURCE", Relation.class);
+    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias) {
+        RelationInterface relation=context.getDataValue(nameToAlias.get("SOURCE"), Relation.class);
         Integer totalProperties=0;
         String result=relation.createPropertiesExporter(totalProperties);
         System.out.println("About to process "+relation.numOfRows()+" lines of data");
 
         System.out.println("Extracted total of "+totalProperties);
 
-        context.addOutput("RESULT",result);
+        context.storeValue(nameToAlias.get("RESULT"),result);
         if(relation.isEmpty()){
             System.out.println("There are no rows in the relation");
             return StepStatus.WARNING;

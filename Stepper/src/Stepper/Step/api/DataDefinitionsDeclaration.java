@@ -5,6 +5,7 @@ import Stepper.DataDefinitions.api.DataDefinitionInterface;
 
 public interface DataDefinitionsDeclaration {
     String getName();
+    String getAliasName();
 
     String userString();
 

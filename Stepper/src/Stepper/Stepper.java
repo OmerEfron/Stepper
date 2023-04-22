@@ -15,7 +15,7 @@ public class Stepper {
     List<String> problems;
     List<FlowDefinitionInterface> flows;
 
-    public Stepper(TheStepper stepper) {
+    public Stepper(TheStepper stepper) throws FlowBuildException,RuntimeException{
         flows = stepper.getFlows().getFlows().stream()
                 .map(element-> {
                     try {

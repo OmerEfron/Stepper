@@ -16,6 +16,7 @@ public interface FlowDefinitionInterface {
 
     void customMapping();
     void autoMapping();
+   Set<DataDefinitionsDeclaration> getFreeInputsFromUser();
 
 
 

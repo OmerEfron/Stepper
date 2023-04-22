@@ -13,6 +13,7 @@ import Stepper.Step.api.StepStatus;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class FilesDeleter extends StepDefinitionAbstractClass {
     public FilesDeleter() {
@@ -23,8 +24,8 @@ public class FilesDeleter extends StepDefinitionAbstractClass {
     }
 
     @Override
-    public StepStatus invoke(StepExecutionContext context) {
-        FilesListDataDef filesListDataDef = context.getDataValue("FILES_LIST", FilesListDataDef.class);
+    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias) {
+        FilesListDataDef filesListDataDef = context.getDataValue(nameToAlias.get("FILES_LIST"), FilesListDataDef.class);
         List<File> filesToDelete = filesListDataDef.getFilesList();
         List<String> failToDelete=new ArrayList<>();
         int numOfFiles=filesToDelete.size();
@@ -38,9 +39,9 @@ public class FilesDeleter extends StepDefinitionAbstractClass {
             }
         }
         NumberMapping stats=new NumberMapping(filesToDelete.size(),countHowMuchNotDeleted);
-        context.addOutput("DELETION_STATS",stats);
-        context.storeValue("DELETED_LIST",new StringListDataDef(failToDelete));
-        context.addOutput("DELETED_LIST",new StringListDataDef(failToDelete));
+        context.storeValue(nameToAlias.get("DELETION_STATS"),stats);
+        context.storeValue(nameToAlias.get("DELETED_LIST"),new StringListDataDef(failToDelete));
+
         if(countHowMuchNotDeleted==numOfFiles){
             System.out.println("No fail was Deleted");
             return StepStatus.FAIL;

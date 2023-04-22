@@ -1,12 +1,12 @@
 package Stepper.Step.api;
 
-import Stepper.DataDefinitions.api.DataDefinitionAbstractClass;
 import Stepper.Flow.execute.context.StepExecutionContext;
 
 import java.util.List;
+import java.util.Map;
 
 public interface StepDefinitionInterface {
-    StepStatus invoke(StepExecutionContext context);
+    StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias);
     String getName();
     Boolean isReadOnly();
     void addInput(DataDefinitionsDeclaration newInput);

@@ -2,23 +2,17 @@ package Stepper.Step.impl;
 
 import Stepper.DataDefinitions.List.FilesListDataDef;
 import Stepper.DataDefinitions.impl.DataDefinitionRegistry;
-import Stepper.DataDefinitions.impl.StepperNumber;
 import Stepper.Flow.execute.context.StepExecutionContext;
-import Stepper.Flow.execute.context.StepExecutionContextClass;
 import Stepper.Step.api.DataDefinitionDeclarationImpl;
 import Stepper.Step.api.DataNecessity;
 import Stepper.Step.api.StepDefinitionAbstractClass;
 import Stepper.Step.api.StepStatus;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 public class CollectFilesInFolder extends StepDefinitionAbstractClass {
 
@@ -32,9 +26,9 @@ public class CollectFilesInFolder extends StepDefinitionAbstractClass {
     }
 
     @Override
-    public StepStatus invoke(StepExecutionContext context) {
-        String folderPath = context.getDataValue("FOLDER_NAME", String.class);
-        Optional<String> filterStr = Optional.ofNullable(context.getDataValue("FILTER", String.class));
+    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias) {
+        String folderPath = context.getDataValue(nameToAlias.get("FOLDER_NAME"), String.class);
+        Optional<String> filterStr = Optional.ofNullable(context.getDataValue(nameToAlias.get("FILTER"), String.class));
         System.out.println("Reading folder " + folderPath + "content with filter " + filterStr);
         File folder = new File(folderPath);
         File[] files = filterStr.map(filter -> folder.listFiles((dir, name) -> name.endsWith(filter)))
@@ -47,9 +41,9 @@ public class CollectFilesInFolder extends StepDefinitionAbstractClass {
             }
         }
         Integer size=fileList.size();
-        context.storeValue("FILES_LIST",new FilesListDataDef(fileList));
-        context.addOutput("FILES_LIST",new FilesListDataDef(fileList));
-        context.addOutput("TOTAL_FOUND",size);
+
+        context.storeValue(nameToAlias.get("FILES_LIST"),new FilesListDataDef(fileList));
+        context.storeValue(nameToAlias.get("TOTAL_FOUND"),size);
 
         if (fileList.size() == 0) {
             System.out.println("The folder is empty");

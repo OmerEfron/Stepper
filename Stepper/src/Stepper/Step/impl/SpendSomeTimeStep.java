@@ -7,6 +7,8 @@ import Stepper.Step.api.DataNecessity;
 import Stepper.Step.api.StepDefinitionAbstractClass;
 import Stepper.Step.api.StepStatus;
 
+import java.util.Map;
+
 public class SpendSomeTimeStep extends StepDefinitionAbstractClass {
     public SpendSomeTimeStep(){
         super("Spend Some Time", true);
@@ -14,8 +16,8 @@ public class SpendSomeTimeStep extends StepDefinitionAbstractClass {
     }
 
     @Override
-    public StepStatus invoke(StepExecutionContext context)  {
-        Integer timeToSleep= context.getDataValue("TIME_TO_SPEND", Integer.class);
+    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias)  {
+        Integer timeToSleep= context.getDataValue(nameToAlias.get("TIME_TO_SPEND"), Integer.class);
         if(timeToSleep == null || timeToSleep <= 0){
             System.out.println("Cannot sleep if the time is less then 1 !!!");
             return StepStatus.FAIL;

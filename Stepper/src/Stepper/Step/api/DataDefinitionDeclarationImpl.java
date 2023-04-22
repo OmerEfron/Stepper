@@ -9,18 +9,24 @@ public class DataDefinitionDeclarationImpl implements DataDefinitionsDeclaration
     String name;
     String userString;
     DataNecessity dataNecessity;
-
+    String alias;
     DataDefinitionInterface dataDefinition;
     public DataDefinitionDeclarationImpl(String name, String userString,DataNecessity dataNecessity,DataDefinitionInterface dataDefinition){
         this.name=name;
         this.userString=userString;
         this.dataNecessity=dataNecessity;
         this.dataDefinition=dataDefinition;
+        this.alias=name;
     }
 
     @Override
     public void setAliasName(String name) {
-        this.name = name;
+        this.alias = name;
+    }
+
+    @Override
+    public String getAliasName() {
+        return alias;
     }
 
     @Override
@@ -51,7 +57,7 @@ public class DataDefinitionDeclarationImpl implements DataDefinitionsDeclaration
             return false;
 
         DataDefinitionsDeclaration other = (DataDefinitionsDeclaration) obj;
-        return this.dataDefinition.getName().equals(other.dataDefinition().getName()) && this.name.equals(other.getName());
+        return this.dataDefinition.getName().equals(other.dataDefinition().getName()) && this.alias.equals(other.getAliasName());
     }
 
     @Override
