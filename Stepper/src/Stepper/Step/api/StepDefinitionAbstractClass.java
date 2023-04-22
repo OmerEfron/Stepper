@@ -35,9 +35,6 @@ public abstract class StepDefinitionAbstractClass implements StepDefinitionInter
         return outputs;
     }
 
-    protected void getInput(DataDefinitionsDeclaration dataDefDec){
-        inputs.add(dataDefDec);
-    }
     @Override
     public void addInput(DataDefinitionsDeclaration newInput){
         inputs.add(newInput);

@@ -28,6 +28,9 @@ public class StepperDefinitionLogicImpl implements StepperDefinitionLogic {
             return problems;
         }
 
+        //TODO: validate flow's outputs.
+        //      validate flow
+
 
         return problems;
     }

@@ -17,12 +17,23 @@ public class StepInFlow {
     private StepDefinitionRegistry stepDefinitionRegistry;
     private int numOfStep;
 
+    private static Integer count = 0;
+
     StepInFlow(STStepInFlow stStepInFlow){
         this.name = stStepInFlow.getName();
         this.alias = stStepInFlow.getAlias();
         this.continueIfFailing = stStepInFlow.isContinueIfFailing();
+        numOfStep = count++;
         stepDefinitionRegistry=getStepDefinitionRegistry(name);
 
+    }
+
+    public static void resetIndexing(){
+        count = 0;
+    }
+
+    public int getNumOfStep() {
+        return numOfStep;
     }
 
     private StepDefinitionRegistry getStepDefinitionRegistry(String name){

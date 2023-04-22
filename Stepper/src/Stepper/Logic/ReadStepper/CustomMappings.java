@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class CustomMappings {
 
     private List<CustomMapping> customMappings;
-    public List<CustomMapping> getStCustomMapping() {
+    public List<CustomMapping> getCustomMappings() {
         return customMappings;
     }
 
