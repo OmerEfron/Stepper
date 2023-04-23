@@ -21,7 +21,7 @@ public interface FlowDefinitionInterface {
 
    boolean isReadOnlyFlow();
     Map<DataDefinitionsDeclaration, List<String>> getFreeInputsWithOptional();
-    public Map<DataDefinitionsDeclaration, String> getAllOutputs();
+    //Map<DataDefinitionsDeclaration, String> getAllOutputs();
 
 
 

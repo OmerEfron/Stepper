@@ -6,8 +6,11 @@ import Stepper.Flow.api.FlowDefinitionInterface;
 import Stepper.Flow.execute.FlowExecution;
 import Stepper.Flow.execute.runner.FlowExecutor;
 import Stepper.ReadStepper.XMLReadClasses.TheStepper;
+import StepperConsole.Flow.ShowFlow;
+import StepperConsole.Flow.ShowFlowImpl;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Stepper {
@@ -33,6 +36,13 @@ public class Stepper {
 
             flowExecutor.executeFlow(flowExecution);
         }
+    }
+
+    public ShowFlow showFlowByName(String flowName){
+        Optional<FlowDefinitionInterface> flowByName = flows.stream()
+                .filter(flow->flow.getName().equals(flowName))
+                .findFirst();
+        return flowByName.map(ShowFlowImpl::new).orElse(null);
     }
 
 }

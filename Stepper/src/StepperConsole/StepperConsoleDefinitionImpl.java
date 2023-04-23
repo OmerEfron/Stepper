@@ -6,6 +6,7 @@ import Stepper.ReadStepper.Exception.ReadException;
 import Stepper.ReadStepper.api.StepperReader;
 import Stepper.ReadStepper.impl.StepperReaderFromXml;
 import Stepper.Stepper;
+import StepperConsole.Flow.ShowFlow;
 
 import java.util.Scanner;
 
@@ -54,7 +55,8 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
 
     @Override
     public void showFlowDetails() {
-
+        ShowFlow showFlow = stepper.showFlowByName("Rename Files");
+        showFlow.showFlowDetails();
     }
 
     @Override

@@ -7,10 +7,10 @@ import Stepper.Step.api.DataDefinitionsDeclaration;
 import java.util.List;
 import java.util.Map;
 
-public class showFlowImpl implements ShowFlow{
+public class ShowFlowImpl implements ShowFlow{
     private FlowDefinitionInterface flow;
 
-    public showFlowImpl (FlowDefinitionInterface flow){
+    public ShowFlowImpl(FlowDefinitionInterface flow){
         this.flow=flow;
     }
 
@@ -22,7 +22,7 @@ public class showFlowImpl implements ShowFlow{
         this.showIsReadOnlyFlow();
         this.showSteps();
         this.showFreeInputs();
-        this.showAllOutputs();
+        //this.showAllOutputs();
     }
 
 
@@ -74,13 +74,13 @@ public class showFlowImpl implements ShowFlow{
         }
     }
 
-    private void showAllOutputs() {
-        System.out.println("\nThe output's are:");
-        Map<DataDefinitionsDeclaration, String> outputs=flow.getAllOutputs();
-        for(DataDefinitionsDeclaration dataDefinitionsDeclaration: outputs.keySet()){
-            System.out.println("The output is:\n"+ dataDefinitionsDeclaration.getAliasName()+", is type "
-                    +dataDefinitionsDeclaration.dataDefinition().getType().getSimpleName()+
-                    ", the steps that related to him: "+outputs.get(dataDefinitionsDeclaration));
-        }
-    }
+//    private void showAllOutputs() {
+//        System.out.println("\nThe output's are:");
+//        Map<DataDefinitionsDeclaration, String> outputs=flow.getAllOutputs();
+//        for(DataDefinitionsDeclaration dataDefinitionsDeclaration: outputs.keySet()){
+//            System.out.println("The output is:\n"+ dataDefinitionsDeclaration.getAliasName()+", is type "
+//                    +dataDefinitionsDeclaration.dataDefinition().getType().getSimpleName()+
+//                    ", the steps that related to him: "+outputs.get(dataDefinitionsDeclaration));
+//        }
+//    }
 }

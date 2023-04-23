@@ -41,15 +41,19 @@ public class FlowDefinition implements FlowDefinitionInterface {
             throw new FlowBuildException(problems.get(0), flow.getName());
         }
         valid = true;
-        isFlowIsReadOnly();
+        determinateIfFlowIsReadOnly();
 
         freeInputs = getFreeInputs();
 
     }
 
-    private void isFlowIsReadOnly() {
+    private void determinateIfFlowIsReadOnly() {
         isReadOnly = steps.stream()
                 .anyMatch(step->step.getStepDefinition().isReadOnly());
+    }
+
+    public boolean isReadOnlyFlow(){
+        return isReadOnly;
     }
 
 
@@ -379,4 +383,12 @@ public class FlowDefinition implements FlowDefinitionInterface {
         }
         return null;
     }
+
+    public Map<DataDefinitionsDeclaration, List<String>> getFreeInputsWithOptional() {
+        return steps.stream()
+                .flatMap(step -> getStepFreeInputs(step).stream().map(dd -> new AbstractMap.SimpleEntry<>(dd, step.getStepFinalName())))
+                .filter(entry -> entry.getKey().dataDefinition().isUserFriendly())
+                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+    }
+
 }
