@@ -5,8 +5,6 @@ import Stepper.Logic.ReadStepper.CustomMapping;
 import Stepper.Logic.ReadStepper.Flow;
 import Stepper.Logic.ReadStepper.FlowLevelAlias;
 import Stepper.Logic.ReadStepper.StepInFlow;
-import Stepper.Logic.api.NameToStep;
-import Stepper.Logic.impl.NameToStepImpl;
 import Stepper.Step.StepBuilder;
 import Stepper.Step.StepDefinitionRegistry;
 import Stepper.Step.api.DataDefinitionsDeclaration;
@@ -30,6 +28,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
     private List<StepUsageDeclerationInterface> steps = new ArrayList<>();
 
     private final List<String> problems = new ArrayList<>();
+    boolean isReadOnly;
 
 
     public FlowDefinition(Flow flow) throws FlowBuildException {
@@ -43,7 +42,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
         valid = true;
 
         freeInputs = getFreeInputs();
-
+        checkIfIsReadOnlyFlow();
     }
 
 
@@ -134,6 +133,8 @@ public class FlowDefinition implements FlowDefinitionInterface {
                 .filter(data -> data.necessity() == DataNecessity.MANDATORY && data.dataDefinition().isUserFriendly())
                 .collect(Collectors.toSet());
     }
+
+
     public Set<DataDefinitionsDeclaration> getFreeInputsFromUser(){return freeInputs;}
 
     /**
@@ -227,6 +228,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
         }
         else{
             target.addInputToMap(customMapping.getTargetData(), customMapping.getSourceStep(), customMapping.getSourceData());
+            source.removeFreeOutput(customMapping.getSourceData());
         }
     }
 
@@ -273,7 +275,9 @@ public class FlowDefinition implements FlowDefinitionInterface {
         for(int i=0;i<step.getIndex();i++){
             StepUsageDeclerationInterface currStep = steps.get(i);
             stepFreeInputs.stream().filter(input-> currStep.getStepDefinition().getOutputs().contains(input))
-                    .forEach((input) -> step.addInputToMap(input.getName(), currStep.getStepFinalName(), input.getName()));
+                    .forEach((input) -> {
+                        step.addInputToMap(input.getName(), currStep.getStepFinalName(), input.getName());
+                        currStep.removeFreeOutput(input.getName());});
         }
     }
 
@@ -353,8 +357,6 @@ public class FlowDefinition implements FlowDefinitionInterface {
      * @return StepDefinition registry that matches to name.
      */
     private StepDefinitionRegistry getStepDefinitionByName(String stepName){
-//        NameToStep nameToStep=new NameToStepImpl();
-//        return nameToStep.getDataDefinitionRegistry(stepName);
         for(StepDefinitionRegistry stepDefinition: StepDefinitionRegistry.values()){
             if (stepDefinition.getStepDefinition().getName().equals(stepName)){
                 return stepDefinition;
@@ -362,4 +364,34 @@ public class FlowDefinition implements FlowDefinitionInterface {
         }
         return null;
     }
+    /**
+     * run on all the steps and check's if one of the is not read only .
+     * if one of the is not read only so all the flow isn't read only
+     */
+    private void checkIfIsReadOnlyFlow(){
+        isReadOnly = steps.stream()
+                .noneMatch(StepUsageDeclerationInterface::isReadOnlyStep);
+    }
+    @Override
+    public boolean isReadOnlyFlow() {
+        return isReadOnly;
+    }
+
+    /**
+     * returns all free inputs by key the input and value list of names that related to this input
+     */
+    public Map<DataDefinitionsDeclaration, List<String>> getFreeInputsWithOptional() {
+        return steps.stream()
+                .flatMap(step -> getStepFreeInputs(step).stream().map(dd -> new AbstractMap.SimpleEntry<>(dd, step.getStepFinalName())))
+                .filter(entry -> entry.getKey().dataDefinition().isUserFriendly())
+                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+    }
+
+    public Map<DataDefinitionsDeclaration, String> getAllOutputs(){
+        return steps.stream()
+            .filter(step -> step.getFreeOutputs()!=null)
+            .flatMap(step -> step.getFreeOutputs().stream().map(dd -> new AbstractMap.SimpleEntry<>(dd, step.getStepFinalName())))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
 }

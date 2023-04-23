@@ -3,6 +3,7 @@ package Stepper.Flow.api;
 import Stepper.Step.api.DataDefinitionsDeclaration;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface FlowDefinitionInterface {
@@ -17,6 +18,10 @@ public interface FlowDefinitionInterface {
     void customMapping();
     void autoMapping();
    Set<DataDefinitionsDeclaration> getFreeInputsFromUser();
+
+   boolean isReadOnlyFlow();
+    Map<DataDefinitionsDeclaration, List<String>> getFreeInputsWithOptional();
+    public Map<DataDefinitionsDeclaration, String> getAllOutputs();
 
 
 

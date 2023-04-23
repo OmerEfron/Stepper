@@ -11,7 +11,13 @@ import Stepper.Logic.ReadStepper.api.Reader.StepperReaderFromXml;
 import Stepper.Logic.ReadStepper.TheStepper;
 import Stepper.Logic.api.StepperDefinitionLogic;
 import Stepper.Logic.impl.StepperDefinitionLogicImpl;
+import Stepper.Step.api.DataDefinitionsDeclaration;
 import Stepper.Step.impl.*;
+import StepperConsole.Flow.ShowFlow;
+import StepperConsole.Flow.showFlowImpl;
+
+import java.util.List;
+import java.util.Map;
 
 public class Main {
 
@@ -26,6 +32,8 @@ public class Main {
         }
         FlowExecutor flowExecutor=new FlowExecutor();
         for(FlowDefinitionInterface flow:stepper.flows){
+            ShowFlow showFlow=new showFlowImpl(flow);
+            showFlow.showFlowDetails();
             FlowExecution flowExecution=new FlowExecution(flow,"1");
             flowExecutor.executeFlow(flowExecution);
         }

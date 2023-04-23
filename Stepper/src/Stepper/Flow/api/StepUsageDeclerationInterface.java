@@ -1,11 +1,15 @@
 package Stepper.Flow.api;
 
+import Stepper.Step.api.DataDefinitionsDeclaration;
 import Stepper.Step.api.StepDefinitionInterface;
 import javafx.util.Pair;
 
+import java.util.List;
 import java.util.Map;
 
 public interface StepUsageDeclerationInterface {
+
+
 
     StepDefinitionInterface getStepDefinition();
     String getStepFinalName();
@@ -20,5 +24,8 @@ public interface StepUsageDeclerationInterface {
 
     Pair<String, String> getInputRef(String input);
     public Map<String, String> getNameToAlias();
+    boolean isReadOnlyStep();
 
+    List<DataDefinitionsDeclaration> getFreeOutputs();
+    void removeFreeOutput(String dataDefName);
 }
