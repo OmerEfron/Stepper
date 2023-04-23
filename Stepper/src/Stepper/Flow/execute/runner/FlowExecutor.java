@@ -28,7 +28,7 @@ public class FlowExecutor {
     public void getFreeInputs(FlowDefinitionInterface flow,StepExecutionContext stepExecutionContext){
         System.out.println("Before execute flow please enter the free inputs :");
         for(DataDefinitionsDeclaration dataDefinitionsDeclaration:flow.getFreeInputsFromUser()) {
-            System.out.println("Enter value for : "+dataDefinitionsDeclaration.getAliasName());
+            System.out.println("Enter value for : "+dataDefinitionsDeclaration.userString());
             Scanner scanner = new Scanner(System.in);
             String input=scanner.nextLine();
             Object value;

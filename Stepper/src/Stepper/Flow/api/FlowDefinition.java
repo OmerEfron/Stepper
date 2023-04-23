@@ -1,12 +1,10 @@
 package Stepper.Flow.api;
 
 import Stepper.Flow.FlowBuildExceptions.FlowBuildException;
-import Stepper.Logic.ReadStepper.CustomMapping;
-import Stepper.Logic.ReadStepper.Flow;
-import Stepper.Logic.ReadStepper.FlowLevelAlias;
-import Stepper.Logic.ReadStepper.StepInFlow;
-import Stepper.Logic.api.NameToStep;
-import Stepper.Logic.impl.NameToStepImpl;
+import Stepper.ReadStepper.XMLReadClasses.CustomMapping;
+import Stepper.ReadStepper.XMLReadClasses.Flow;
+import Stepper.ReadStepper.XMLReadClasses.FlowLevelAlias;
+import Stepper.ReadStepper.XMLReadClasses.StepInFlow;
 import Stepper.Step.StepBuilder;
 import Stepper.Step.StepDefinitionRegistry;
 import Stepper.Step.api.DataDefinitionsDeclaration;
@@ -19,7 +17,9 @@ public class FlowDefinition implements FlowDefinitionInterface {
 
     private final Flow flow;
 
-    Boolean valid = null;
+    private Boolean valid;
+
+    private Boolean isReadOnly = false;
 
     private Set<String> outputs;
 
@@ -27,7 +27,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
 
     private Map<String,String> freeInputsFromUser;
 
-    private List<StepUsageDeclerationInterface> steps = new ArrayList<>();
+    private final List<StepUsageDeclerationInterface> steps = new ArrayList<>();
 
     private final List<String> problems = new ArrayList<>();
 
@@ -38,12 +38,18 @@ public class FlowDefinition implements FlowDefinitionInterface {
         isFlowValid();
         if(problems.size() > 0){
             valid = false;
-            throw new FlowBuildException(problems.get(0));
+            throw new FlowBuildException(problems.get(0), flow.getName());
         }
         valid = true;
+        isFlowIsReadOnly();
 
         freeInputs = getFreeInputs();
 
+    }
+
+    private void isFlowIsReadOnly() {
+        isReadOnly = steps.stream()
+                .anyMatch(step->step.getStepDefinition().isReadOnly());
     }
 
 
@@ -210,7 +216,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
      * adds the to the matching target step's map of inputs, the source step's name and the data as it calls in the
      * source.
      * if source or target not found,
-     * @param customMapping
+     * @param customMapping a structure for source/target data and step
      */
     private void customMap(CustomMapping customMapping){
         StepUsageDeclerationInterface source = findStepUsageByName(customMapping.getSourceStep());
@@ -231,18 +237,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
     }
 
 
-    /**
-     *
-     * @param name - a name of a step in the flow
-     * @return the step usage of it
-     */
-    private StepUsageDeclerationInterface findStepUsageByName(String name) {
-        StepUsageDeclerationInterface stepUsage = steps.stream()
-                .filter(step -> step.getStepFinalName().equals(name))
-                .findFirst()
-                .orElse(null);
-        return stepUsage;
-    }
+
 
     /**
      * checks if source step is before target step
@@ -265,6 +260,29 @@ public class FlowDefinition implements FlowDefinitionInterface {
                 .anyMatch(dd -> dd.getAliasName().equals(customMapping.getSourceData()));
     }
 
+    /**
+     * get a stepUsage by his name.
+     * @param name - a step name
+     * @return the step usage from the steps list of the flow, null if not found.
+     */
+    private StepUsageDeclerationInterface createNewStepUsage(String name){
+        return steps.stream()
+                .filter(step -> step.getStepFinalName().equals(name))
+                .findFirst()
+                .orElse(null);
+    }
+    /**
+     *
+     * @param name - a name of a step in the flow
+     * @return the step usage of it
+     */
+    private StepUsageDeclerationInterface findStepUsageByName(String name) {
+        return steps.stream()
+                .filter(step -> step.getStepFinalName().equals(name))
+                .findFirst()
+                .orElse(null);
+    }
+
 
 
 
@@ -280,7 +298,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
 
     /**
      * create a set of a step freeInputs as defined.
-     * @param step
+     * @param step the step to get from it the free inputs
      * @return a set of DataDefinitionDeclarations.
      */
     private static Set<DataDefinitionsDeclaration> getStepFreeInputs(StepUsageDeclerationInterface step) {
@@ -293,7 +311,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
     /**
      * creates a new stepUsage in the system, using the stepInFlow instance
      * if there is invalid data in the stepInFlow, adds the problem to problems and returns null.
-     * @param stepInFlow
+     * @param stepInFlow a step that has been read by the flowReader to a StepInFlow instance.
      * @return a new instance of StepUsage if stepInFlow valid, else false.
      */
 
@@ -334,7 +352,6 @@ public class FlowDefinition implements FlowDefinitionInterface {
         for (StepInFlow stepInFlow : flow.getStepsInFlow().getStepsInFlowList()) {
             StepUsageDeclerationInterface stepUsage = createNewStepUsage(stepInFlow);
             if (stepUsage == null) {
-                problems.add("Step not found: "+ stepInFlow.getName());
                 flag = false;
                 break; // stop iteration if a step is not found
             }

@@ -1,12 +1,7 @@
-package Stepper.Logic.ReadStepper;
+package Stepper.ReadStepper.XMLReadClasses;
 
-import generated.STCustomMappings;
 import generated.STFlow;
-import generated.STFlowLevelAliasing;
-import generated.STStepsInFlow;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import java.util.Map;
 
 public class Flow {

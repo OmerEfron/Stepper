@@ -35,6 +35,7 @@ public class CollectFilesInFolder extends StepDefinitionAbstractClass {
                 .orElse(folder.listFiles());
         List<File> fileList = new ArrayList<>(); // create an empty list to store the files
 
+        //TODO: handle if files is null 
         for (File file : files) {
             if (file.isFile()) {
                 fileList.add(file); // add the file to the list if it is a file

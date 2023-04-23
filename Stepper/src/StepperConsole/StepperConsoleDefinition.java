@@ -1,7 +1,7 @@
 package StepperConsole;
 
 public interface StepperConsoleDefinition {
-    void load();
+    void load() ;
 
     void run ();
     void showFlowDetails();

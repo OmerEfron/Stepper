@@ -1,4 +1,4 @@
-package Stepper.Logic.ReadStepper;
+package Stepper.ReadStepper.XMLReadClasses;
 
 import generated.STCustomMapping;
 

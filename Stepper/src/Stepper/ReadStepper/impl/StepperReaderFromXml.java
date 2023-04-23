@@ -1,6 +1,8 @@
-package Stepper.Logic.ReadStepper.api.Reader;
+package Stepper.ReadStepper.impl;
 
-import Stepper.Logic.ReadStepper.TheStepper;
+import Stepper.ReadStepper.XMLReadClasses.TheStepper;
+import Stepper.ReadStepper.Exception.ReadException;
+import Stepper.ReadStepper.api.StepperReader;
 import generated.STStepper;
 
 import javax.xml.bind.JAXBContext;
@@ -15,17 +17,15 @@ public class StepperReaderFromXml implements StepperReader {
 
     TheStepper theStepper;
     @Override
-    public TheStepper read(String filePath) {
+    public TheStepper read(String filePath) throws ReadException {
         try {
             InputStream inputStream =  new FileInputStream(new File(filePath));
             JAXBContext jaxbContext = JAXBContext.newInstance("generated");
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             STStepper stStepper = (STStepper) unmarshaller.unmarshal(inputStream);
             return new TheStepper(stStepper);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (JAXBException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | JAXBException e) {
+            throw new ReadException("cannot read file", filePath);
         }
     }
 }

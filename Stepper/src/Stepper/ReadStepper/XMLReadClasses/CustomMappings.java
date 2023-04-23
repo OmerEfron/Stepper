@@ -1,9 +1,7 @@
-package Stepper.Logic.ReadStepper;
+package Stepper.ReadStepper.XMLReadClasses;
 
-import generated.STCustomMapping;
 import generated.STCustomMappings;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;

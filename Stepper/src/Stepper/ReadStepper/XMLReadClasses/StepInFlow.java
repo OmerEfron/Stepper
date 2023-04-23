@@ -1,7 +1,6 @@
-package Stepper.Logic.ReadStepper;
+package Stepper.ReadStepper.XMLReadClasses;
 
-import Stepper.Logic.api.NameToStep;
-import Stepper.Logic.impl.NameToStepImpl;
+
 import Stepper.Step.StepDefinitionRegistry;
 import generated.STStepInFlow;
 
@@ -24,8 +23,6 @@ public class StepInFlow {
         this.alias = stStepInFlow.getAlias();
         this.continueIfFailing = stStepInFlow.isContinueIfFailing();
         numOfStep = count++;
-        stepDefinitionRegistry=getStepDefinitionRegistry(name);
-
     }
 
     public static void resetIndexing(){
@@ -36,10 +33,6 @@ public class StepInFlow {
         return numOfStep;
     }
 
-    private StepDefinitionRegistry getStepDefinitionRegistry(String name){
-        NameToStep nameToStep=new NameToStepImpl();
-        return nameToStep.getDataDefinitionRegistry(name);
-    }
 
     StepInFlow(String name, String alias, Boolean continueIfFailing){
         this.name  = name;

@@ -1,15 +1,16 @@
 package StepperConsole;
 
 import Stepper.Flow.FlowBuildExceptions.FlowBuildException;
-import Stepper.Logic.ReadStepper.TheStepper;
-import Stepper.Logic.ReadStepper.api.Reader.StepperReader;
-import Stepper.Logic.ReadStepper.api.Reader.StepperReaderFromXml;
+import Stepper.ReadStepper.XMLReadClasses.TheStepper;
+import Stepper.ReadStepper.Exception.ReadException;
+import Stepper.ReadStepper.api.StepperReader;
+import Stepper.ReadStepper.impl.StepperReaderFromXml;
 import Stepper.Stepper;
 
 import java.util.Scanner;
 
 public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
-    private Stepper theStepper;
+    private Stepper stepper;
 
 
     public static void main(String[] args){
@@ -18,21 +19,32 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     }
     @Override
     public void load() {
-        System.out.println("Welcome to Stepper console !!!");
-        System.out.println("Please enter file path :");
-        Scanner scanner = new Scanner(System.in);
-        String filePath=scanner.nextLine();
-        StepperReader stepperReader=new StepperReaderFromXml();
-        TheStepper stStepper = stepperReader.read(filePath);
+        System.out.println("Please enter file path to load an xml application-wise file.\n" +
+                "Make sure it's a valid .xml file!");
+        String filePath = getFilePath();
         try {
-            theStepper = new Stepper(stStepper);
+            stepper = getStepper(new StepperReaderFromXml(), filePath);
         }catch (RuntimeException e) {
-            System.out.println("The problems in the stepper are :");
             System.out.println(e.getMessage());
-        } catch (FlowBuildException e) {
+            return;
+        }
+        System.out.println("Stepper has been loaded successfully!");
+    }
+
+    private static Stepper getStepper(StepperReader reader, String filePath){
+        TheStepper stStepper = null;
+        try {
+            stStepper = reader.read(filePath);
+            return new Stepper(stStepper);
+        } catch (ReadException | FlowBuildException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    private static String getFilePath() {
+        Scanner scanner = new Scanner(System.in);
+        String filePath=scanner.nextLine();
+        return filePath;
     }
 
     @Override
