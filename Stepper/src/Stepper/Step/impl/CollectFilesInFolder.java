@@ -26,20 +26,25 @@ public class CollectFilesInFolder extends StepDefinitionAbstractClass {
     }
 
     @Override
-    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias) {
+    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName) {
         String folderPath = context.getDataValue(nameToAlias.get("FOLDER_NAME"), String.class);
         Optional<String> filterStr = Optional.ofNullable(context.getDataValue(nameToAlias.get("FILTER"), String.class));
-        System.out.println("Reading folder " + folderPath + "content with filter " + filterStr);
+        context.setInvokeSummery(stepName,"Reading folder " + folderPath + "content with filter " + filterStr);
         File folder = new File(folderPath);
         File[] files = filterStr.map(filter -> folder.listFiles((dir, name) -> name.endsWith(filter)))
                 .orElse(folder.listFiles());
         List<File> fileList = new ArrayList<>(); // create an empty list to store the files
 
-        //TODO: handle if files is null 
-        for (File file : files) {
-            if (file.isFile()) {
-                fileList.add(file); // add the file to the list if it is a file
+        if(files != null) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    fileList.add(file); // add the file to the list if it is a file
+                }
             }
+        }else{
+            context.addLog(stepName,"There are no folder in path "+folderPath);
+            context.setInvokeSummery(stepName,"There are no folder in path "+folderPath);
+            context.setStepStatus(stepName,StepStatus.FAIL);
         }
         Integer size=fileList.size();
 
@@ -47,9 +52,12 @@ public class CollectFilesInFolder extends StepDefinitionAbstractClass {
         context.storeValue(nameToAlias.get("TOTAL_FOUND"),size);
 
         if (fileList.size() == 0) {
-            System.out.println("The folder is empty");
+            context.setInvokeSummery(stepName,"The folder is empty.");
+            context.setStepStatus(stepName,StepStatus.WARNING);
             return StepStatus.WARNING;
         }
+        context.setInvokeSummery(stepName,"The files in "+folderPath+" collected successfully");
+        context.setStepStatus(stepName,StepStatus.SUCCESS);
         return StepStatus.SUCCESS;
     }
 }

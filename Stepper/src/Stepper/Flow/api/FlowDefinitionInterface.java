@@ -1,6 +1,7 @@
 package Stepper.Flow.api;
 
 import Stepper.Step.api.DataDefinitionsDeclaration;
+import javafx.util.Pair;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,8 @@ public interface FlowDefinitionInterface {
 
    boolean isReadOnlyFlow();
     Map<DataDefinitionsDeclaration, List<String>> getFreeInputsWithOptional();
-    //Map<DataDefinitionsDeclaration, String> getAllOutputs();
+    Map<String , Pair<DataDefinitionsDeclaration,String>> getAllOutputs();
+    public Map<String, Pair<DataDefinitionsDeclaration, String>> getFormalOuputs();
 
 
 

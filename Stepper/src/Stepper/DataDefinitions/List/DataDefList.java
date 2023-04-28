@@ -11,4 +11,11 @@ public class DataDefList<T> {
     public List<T> getList() {
         return list;
     }
+
+    @Override
+    public String toString() {
+        return "DataDefList{" +
+                "list=" + list +
+                '}';
+    }
 }

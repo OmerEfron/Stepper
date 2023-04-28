@@ -18,16 +18,21 @@ public class CSVExporter extends StepDefinitionAbstractClass {
         addOutput(new DataDefinitionDeclarationImpl("RESULT", "CSV export result", DataNecessity.NA, DataDefinitionRegistry.STRING));
     }
     @Override
-    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias) {
+    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName) {
         RelationInterface relation=context.getDataValue(nameToAlias.get("SOURCE"),Relation.class);
         String result=relation.relationToCSV();
-        System.out.println("About to process "+relation.numOfRows().toString()+" lines of data");
+        context.addLog(stepName,"About to process "+relation.numOfRows().toString()+" lines of data");
 
         context.storeValue(nameToAlias.get("RESULT"),result);
         if(relation.numOfRows()==0){
-            System.out.println("There are no rows in the relation");
-            return StepStatus.WARNING;
+            context.addLog(stepName,"There are no rows in the relation.");
+            context.setStepStatus(stepName,StepStatus.WARNING);
+            context.setInvokeSummery(stepName,"There are no rows in the relation.");
         }
-        return StepStatus.SUCCESS;
+        else {
+            context.setInvokeSummery(stepName, "We created the CSV successfully.");
+            context.setStepStatus(stepName, StepStatus.SUCCESS);
+        }
+        return context.getStepStatus(stepName);
     }
 }

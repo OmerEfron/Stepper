@@ -1,81 +1,56 @@
 package Stepper.Flow.execute.runner;
 
-import Stepper.DataDefinitions.List.FilesListDataDef;
-import Stepper.Flow.api.FlowDefinitionInterface;
 import Stepper.Flow.api.StepUsageDeclerationInterface;
 import Stepper.Flow.execute.FlowExecution;
+import Stepper.Flow.execute.FlowStatus;
+import Stepper.Flow.execute.StepData.StepExecuteData;
 import Stepper.Flow.execute.context.StepExecutionContext;
 import Stepper.Flow.execute.context.StepExecutionContextClass;
-import Stepper.Step.api.DataDefinitionsDeclaration;
+import Stepper.Step.api.StepStatus;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class FlowExecutor {
 
     public void executeFlow(FlowExecution currFlow) {
-        StepExecutionContext stepExecutionContext = new StepExecutionContextClass(currFlow.getFlowDefinition());
-        getFreeInputs(currFlow.getFlowDefinition(),stepExecutionContext);
+        StepExecutionContext stepExecutionContext = new StepExecutionContextClass(currFlow);
+        FlowStatus flowStatus = FlowStatus.SUCCESS;
+        Instant start = updateTime(currFlow);
 
         for (StepUsageDeclerationInterface step : currFlow.getFlowDefinition().getSteps()) {
             stepExecutionContext.updateCustomMap(step);
-            step.getStepDefinition().invoke(stepExecutionContext, step.getNameToAlias());
+            stepExecutionContext.addStepData(step);
+            Instant stepStart= Instant.now();
+            StepStatus stepStatus = step.getStepDefinition().invoke(stepExecutionContext, step.getNameToAlias(),step.getStepFinalName());
+            Instant stepEnd=Instant.now();
+            if (stepStatus == StepStatus.FAIL && !step.skipIfFail()) {
+                currFlow.setFlowStatus(FlowStatus.FAIL);
+                break;
+            } else if (stepStatus == StepStatus.WARNING) {
+                flowStatus = FlowStatus.WARNING;
+            }
+            stepExecutionContext.setTotalTime(step.getStepFinalName(),Duration.between(stepStart,stepEnd));
         }
+
+        //todo:update flow data
+        currFlow.setTotalTime(Duration.between(start, Instant.now()));
+        currFlow.createUUID();
+        currFlow.setFlowStatus(flowStatus);
+        stepExecutionContext.addFormalOutput(currFlow);
+        currFlow.setStepsData(stepExecutionContext.getStepsData());
 
     }
-    public void getFreeInputs(FlowDefinitionInterface flow,StepExecutionContext stepExecutionContext){
-        System.out.println("Before execute flow please enter the free inputs :");
-        for(DataDefinitionsDeclaration dataDefinitionsDeclaration:flow.getFreeInputsFromUser()) {
-            System.out.println("Enter value for : "+dataDefinitionsDeclaration.userString());
-            Scanner scanner = new Scanner(System.in);
-            String input=scanner.nextLine();
-            Object value;
-            if(dataDefinitionsDeclaration.dataDefinition().getType().isInstance(Integer.class)){
-                value=Integer.parseInt(input);
-            } else if (dataDefinitionsDeclaration.dataDefinition().getType().isInstance(Integer.class)) {
-                value=Double.parseDouble(input);
-            }else{
-                value=input;
-            }
-            if (!stepExecutionContext.storeValue(dataDefinitionsDeclaration.getAliasName(),value)){
-                System.out.println("the value is not the type");
-            }
 
-        }
+
+
+    private static Instant updateTime(FlowExecution currFlow) {
+        Instant start = Instant.now();
+        LocalTime currentTime = LocalTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        currFlow.setFormattedStartTime(currentTime.format(formatter));
+        return start;
     }
 }
-
-//    Integer val=4;
-////        stepExecutionContext.storeValue("TIME_TO_SPEND",val);
-////        stepExecutionContext.storeValue("FOLDER_NAME","C:\\Users\\roni2\\IdeaProjects\\test");
-////        //stepExecutionContext.storeValue("FILTER",".txt",false);
-////        stepExecutionContext.storeValue("CONTENT","lalsalcsl");
-////        stepExecutionContext.storeValue("FILE_NAME","C:\\Users\\roni2\\IdeaProjects\\test\\newTes.txt");
-////        List<File> checkFilesRenamer=testFilesRenamer("C:\\Users\\roni2\\IdeaProjects\\test1");
-////        FilesListDataDef filesListDataDef=new FilesListDataDef(checkFilesRenamer);
-////        stepExecutionContext.storeValue("FILES_TO_RENAME",filesListDataDef);
-////        stepExecutionContext.storeValue("SUFFIX","Israel");
-////        stepExecutionContext.storeValue("FILES_LIST",filesListDataDef);
-////        stepExecutionContext.storeValue("LINE",1);
-//
-//    private static List<File> testFilesRenamer(String directoryPath) {
-//        // Create a File object for the directory
-//        File directory = new File(directoryPath);
-//
-//        // Get a list of all the files in the directory
-//        File[] files = directory.listFiles();
-//
-//        // Create a list to hold the file names
-//        List<File> fileNames = new ArrayList<>();
-//
-//        // Iterate over the files and add their names to the list
-//        for (File file : files) {
-//            if (file.isFile()) {
-//                fileNames.add(file);
-//            }
-//        }
-//        return fileNames;
-//    }
-//}

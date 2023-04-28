@@ -23,7 +23,7 @@ public class FilesContentExtractor extends StepDefinitionAbstractClass {
     }
 
     @Override
-    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias) {
+    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName) {
         FilesListDataDef filesListDataDef=context.getDataValue(nameToAlias.get("FILES_LIST"),FilesListDataDef.class);
         List<File> files=filesListDataDef.getFilesList();
         Integer lineNumber=context.getDataValue(nameToAlias.get("LINE"), Integer.class);
@@ -32,6 +32,7 @@ public class FilesContentExtractor extends StepDefinitionAbstractClass {
         RelationOfStringRows result = createRelationOfStringRows();
 
         for (File file : files) {
+            context.addLog(stepName,"About to start work on file "+file.getName());
             List<String> row =new ArrayList<>();
             rowNumber++;
             boolean isRowFound = false;
@@ -49,17 +50,22 @@ public class FilesContentExtractor extends StepDefinitionAbstractClass {
                 }
                 if (!isRowFound){row.add("Not such line");}
             } catch (FileNotFoundException e) {
-                    row.add("File not found");
-                    row.add("File not found");
+                row.add("File not found");
+                context.addLog(stepName,"Problem extracting line number "+lineNumber.toString()+" from file "+file.getName());
             } catch (IOException e) {
-                System.out.println(e.toString());
+                context.addLog(stepName,"Problem extracting line number "+lineNumber.toString()+" from file "+file.getName());
             }
             result.addRow(row);
         }
         context.storeValue(nameToAlias.get("DATA"),result);
-
-        if(result.isEmpty()){return  StepStatus.WARNING;}
-        return StepStatus.SUCCESS;
+        if(files.isEmpty()){context.setInvokeSummery(stepName,"There are no files to extract");}
+        if(result.isEmpty()){
+            context.setStepStatus(stepName,StepStatus.WARNING);
+        }else {
+            context.setInvokeSummery(stepName, "The row extracted from each file successfully");
+            context.setStepStatus(stepName,StepStatus.SUCCESS);
+        }
+        return context.getStepStatus(stepName);
     }
 
     private static RelationOfStringRows createRelationOfStringRows() {

@@ -3,6 +3,7 @@ package StepperConsole.Flow;
 import Stepper.Flow.api.FlowDefinitionInterface;
 import Stepper.Flow.api.StepUsageDeclerationInterface;
 import Stepper.Step.api.DataDefinitionsDeclaration;
+import javafx.util.Pair;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class ShowFlowImpl implements ShowFlow{
         this.showIsReadOnlyFlow();
         this.showSteps();
         this.showFreeInputs();
-        //this.showAllOutputs();
+        this.showAllOutputs();
     }
 
 
@@ -74,13 +75,14 @@ public class ShowFlowImpl implements ShowFlow{
         }
     }
 
-//    private void showAllOutputs() {
-//        System.out.println("\nThe output's are:");
-//        Map<DataDefinitionsDeclaration, String> outputs=flow.getAllOutputs();
-//        for(DataDefinitionsDeclaration dataDefinitionsDeclaration: outputs.keySet()){
-//            System.out.println("The output is:\n"+ dataDefinitionsDeclaration.getAliasName()+", is type "
-//                    +dataDefinitionsDeclaration.dataDefinition().getType().getSimpleName()+
-//                    ", the steps that related to him: "+outputs.get(dataDefinitionsDeclaration));
-//        }
-//    }
+    private void showAllOutputs() {
+        System.out.println("\nThe output's are:");
+        int i=1;
+        Map<String , Pair<DataDefinitionsDeclaration,String>> outputs=flow.getAllOutputs();
+        for(String outputName:outputs.keySet()){
+            System.out.println(i+"."+outputName+
+                    ", his type is "+outputs.get(outputName).getKey().dataDefinition().getType().getSimpleName()
+                    +", the step that related to him: "+outputs.get(outputName).getValue()+ ".");
+        }
+    }
 }

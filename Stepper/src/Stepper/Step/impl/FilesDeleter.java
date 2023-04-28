@@ -24,33 +24,36 @@ public class FilesDeleter extends StepDefinitionAbstractClass {
     }
 
     @Override
-    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias) {
+    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName) {
         FilesListDataDef filesListDataDef = context.getDataValue(nameToAlias.get("FILES_LIST"), FilesListDataDef.class);
         List<File> filesToDelete = filesListDataDef.getFilesList();
         List<String> failToDelete=new ArrayList<>();
         int numOfFiles=filesToDelete.size();
         int countHowMuchNotDeleted=0;
 
-        System.out.println("About to start delete "+numOfFiles+" files");
+        context.addLog(stepName,"About to start delete "+numOfFiles+" files");
         for (File file : filesToDelete) {
             if (!file.delete()) {
                 countHowMuchNotDeleted++;
                 failToDelete.add(file.getName());
             }
         }
-        NumberMapping stats=new NumberMapping(filesToDelete.size(),countHowMuchNotDeleted);
+        NumberMapping stats=new NumberMapping(filesToDelete.size()-countHowMuchNotDeleted,countHowMuchNotDeleted);
         context.storeValue(nameToAlias.get("DELETION_STATS"),stats);
         context.storeValue(nameToAlias.get("DELETED_LIST"),new StringListDataDef(failToDelete));
 
         if(countHowMuchNotDeleted==numOfFiles){
-            System.out.println("No fail was Deleted");
-            return StepStatus.FAIL;
+            context.setInvokeSummery(stepName,"No file was Deleted.");
+            context.setStepStatus(stepName,StepStatus.FAIL);
         }
         else if(countHowMuchNotDeleted>0 ){
-            System.out.println("Failed to delete file ");
-            failToDelete.stream().forEach(System.out::println);
-            return StepStatus.WARNING;
+            failToDelete.stream().forEach(s -> context.addLog(stepName,"Failed to delete file "+s));
+            context.setInvokeSummery(stepName,"There are "+countHowMuchNotDeleted+" files that didn't deleted");
+            context.setStepStatus(stepName,StepStatus.WARNING);
+        }else {
+            context.setInvokeSummery(stepName,"All files deleted successfully.");
+            context.setStepStatus(stepName, StepStatus.SUCCESS);
         }
-        return StepStatus.SUCCESS;
+        return context.getStepStatus(stepName);
     }
 }

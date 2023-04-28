@@ -20,7 +20,7 @@ public class StepUsageDeclerationClass implements StepUsageDeclerationInterface{
     private final Integer index;
 
 
-    private List<DataDefinitionsDeclaration> freeOutputs;
+
     // Map from name of data in step to the step that the data is in it with the name of the data in that step.
     private final Map<String, Pair<String, String>> dataMap = new HashMap<>();
 
@@ -29,7 +29,6 @@ public class StepUsageDeclerationClass implements StepUsageDeclerationInterface{
         name = stepDefinition.getName();
         this.stepDefinition = stepDefinition;
         this.index = index;
-        freeOutputs=stepDefinition.getOutputs();
     }
 
     public StepUsageDeclerationClass(StepDefinitionInterface stepDefinition, boolean skipIfFail, Integer index){
@@ -49,12 +48,6 @@ public class StepUsageDeclerationClass implements StepUsageDeclerationInterface{
         stepDefinition.getInputs().forEach(dataDefinitionsDeclaration -> nameToAlias.put(dataDefinitionsDeclaration.getName(),dataDefinitionsDeclaration.getAliasName()));
     }
 
-    @Override
-    public void removeFreeOutput(String dataDefName) {
-        freeOutputs.removeIf(output -> output.getAliasName().equals(dataDefName));
-        if (freeOutputs.isEmpty()) {freeOutputs=null;
-        }
-    }
 
     StepUsageDeclerationClass(String name, StepDefinitionInterface stepDefinition, boolean skipIfFail, Integer index){
         this.name = name;
@@ -118,8 +111,5 @@ public class StepUsageDeclerationClass implements StepUsageDeclerationInterface{
         return stepDefinition.isReadOnly();
     }
 
-    @Override
-    public List<DataDefinitionsDeclaration> getFreeOutputs() {
-        return freeOutputs;
-    }
+
 }

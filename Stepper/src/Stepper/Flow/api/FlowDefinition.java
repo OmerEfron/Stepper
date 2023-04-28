@@ -9,6 +9,7 @@ import Stepper.Step.StepBuilder;
 import Stepper.Step.StepDefinitionRegistry;
 import Stepper.Step.api.DataDefinitionsDeclaration;
 import Stepper.Step.api.DataNecessity;
+import javafx.util.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,7 +22,9 @@ public class FlowDefinition implements FlowDefinitionInterface {
 
     private Boolean isReadOnly = false;
 
-    private Set<String> outputs;
+    //   <output name, <data definition, the step that related to him>
+    Map<String , Pair<DataDefinitionsDeclaration,String>> allOuputs=new HashMap<>();
+    Map<String , Pair<DataDefinitionsDeclaration,String>> formalOuputs =new HashMap<>();
 
     private Set<DataDefinitionsDeclaration> freeInputs;
 
@@ -44,6 +47,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
         determinateIfFlowIsReadOnly();
 
         freeInputs = getFreeInputs();
+        updateAlloutputs();
 
     }
 
@@ -374,8 +378,6 @@ public class FlowDefinition implements FlowDefinitionInterface {
      * @return StepDefinition registry that matches to name.
      */
     private StepDefinitionRegistry getStepDefinitionByName(String stepName){
-//        NameToStep nameToStep=new NameToStepImpl();
-//        return nameToStep.getDataDefinitionRegistry(stepName);
         for(StepDefinitionRegistry stepDefinition: StepDefinitionRegistry.values()){
             if (stepDefinition.getStepDefinition().getName().equals(stepName)){
                 return stepDefinition;
@@ -384,6 +386,9 @@ public class FlowDefinition implements FlowDefinitionInterface {
         return null;
     }
 
+    /**
+     * @return all free inputs fo th flow
+     */
     public Map<DataDefinitionsDeclaration, List<String>> getFreeInputsWithOptional() {
         return steps.stream()
                 .flatMap(step -> getStepFreeInputs(step).stream().map(dd -> new AbstractMap.SimpleEntry<>(dd, step.getStepFinalName())))
@@ -391,4 +396,36 @@ public class FlowDefinition implements FlowDefinitionInterface {
                 .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
     }
 
+    /**
+     * update's all outputs of the system
+     */
+    private void updateAlloutputs(){
+        allOuputs = steps.stream()
+                .flatMap(step -> step.getStepDefinition().getOutputs().stream()
+                        .map(dd -> new AbstractMap.SimpleEntry<>(dd.getAliasName(), new Pair<>(dd, step.getStepFinalName()))))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v1, HashMap::new));
+        steps.forEach(step -> step.getDataMap()
+                .forEach((k, v) -> allOuputs.remove(v.getValue())));
+        steps.stream()
+                .flatMap(step -> step.getStepDefinition().getInputs().stream()
+                        .filter(dd -> !flow.getFlowOutput().contains(dd.getAliasName()))
+                        .map(DataDefinitionsDeclaration::getAliasName))
+                .forEach(allOuputs::remove);
+        this.updateFormalOutputs();
+    }
+    @Override
+    public Map<String , Pair<DataDefinitionsDeclaration,String>> getAllOutputs() {
+        return allOuputs;
+    }
+
+    private void updateFormalOutputs(){
+        formalOuputs =Arrays.stream(flow.getFlowOutput().split(","))
+                .filter(allOuputs::containsKey)
+                .collect(Collectors.toMap(name -> name, allOuputs::get));
+    }
+
+    @Override
+    public Map<String, Pair<DataDefinitionsDeclaration, String>> getFormalOuputs() {
+        return formalOuputs;
+    }
 }

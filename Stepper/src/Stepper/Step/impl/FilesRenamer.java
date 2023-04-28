@@ -3,6 +3,7 @@ package Stepper.Step.impl;
 import Stepper.DataDefinitions.List.FilesListDataDef;
 import Stepper.DataDefinitions.Relation.RelationOfStringRows;
 import Stepper.DataDefinitions.impl.DataDefinitionRegistry;
+import Stepper.Flow.execute.StepData.StepExecuteData;
 import Stepper.Flow.execute.context.StepExecutionContext;
 import Stepper.Step.api.DataDefinitionDeclarationImpl;
 import Stepper.Step.api.DataNecessity;
@@ -10,6 +11,8 @@ import Stepper.Step.api.StepDefinitionAbstractClass;
 import Stepper.Step.api.StepStatus;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +28,9 @@ public class FilesRenamer extends StepDefinitionAbstractClass {
     }
 
     @Override
-    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias) {
+    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName) {
         FilesListDataDef filesListDataDef = context.getDataValue(nameToAlias.get("FILES_TO_RENAME"), FilesListDataDef.class);
+        Instant start = Instant.now();
         List<File> filesToRename = filesListDataDef.getFilesList();
         List<String> filesFailed=new ArrayList<>();
         Optional<String> prefix=Optional.ofNullable(context.getDataValue("PREFIX", String.class));
@@ -34,9 +38,11 @@ public class FilesRenamer extends StepDefinitionAbstractClass {
         RelationOfStringRows result = createRelationOfStringRows();
         Integer num=0;
 
-        System.out.println("About to start rename" + filesToRename.size() + " files. Adding prefix: " + prefix + " adding suffix: " + suffix);
-        StepStatus success = checkIfTheFolderEmpty(context, filesToRename, result,nameToAlias.get("RENAME_RESULT"));
-        if (success != null) return success;
+        context.addLog(stepName,"About to start rename" + filesToRename.size() + " files. Adding prefix: " + prefix + " adding suffix: " + suffix);
+        StepStatus success = checkIfTheFolderEmpty(context, filesToRename, result,nameToAlias.get("RENAME_RESULT"),stepName);
+        if (success != null) {
+            context.setTotalTime(stepName,Duration.between(start, Instant.now()));
+            return success;}
 
         for (File file : filesToRename) {
             List<String> row=new ArrayList<>();
@@ -52,29 +58,33 @@ public class FilesRenamer extends StepDefinitionAbstractClass {
             row.add(newFileName);
             file.renameTo(newFile);
             result.addRow(row);
-            System.out.println("Prefix and postfix added to file names successfully.");
+            context.addLog(stepName,"Prefix and postfix added to file names successfully.");
         } catch(Exception e){
                 row.add(originalFileName);
-                System.err.println("Problem renaming file " + originalFileName);
+                context.addLog(stepName,"Problem renaming file " + originalFileName);
                 result.addRow(row);
                 filesFailed.add(originalFileName);
-
         }
     }
         context.storeValue(nameToAlias.get("RENAME_RESULT"),result);
 
         if(filesFailed.size()!=0){
-            System.out.println("The files that failed to rename:");
-            filesFailed.forEach(System.out::println);
-            return StepStatus.WARNING;
+            context.setInvokeSummery( stepName,"Step ended with warning because some files failed to rename\n" +
+                    "The files that failed to rename are :" + String.join(", ", filesFailed) + ".");
+            context.setStepStatus(stepName,StepStatus.WARNING);
+        }else{
+            context.setInvokeSummery(stepName,"All files renamed successfully");
+            context.setStepStatus(stepName,StepStatus.SUCCESS);
         }
-        return StepStatus.SUCCESS;
+        context.setTotalTime(stepName,Duration.between(start, Instant.now()));
+        return context.getStepStatus(stepName);
     }
 
-    private static StepStatus checkIfTheFolderEmpty(StepExecutionContext context, List<File> filesToRename, RelationOfStringRows result,String name) {
+    private static StepStatus checkIfTheFolderEmpty(StepExecutionContext context, List<File> filesToRename, RelationOfStringRows result,String name,String stepName) {
         if(filesToRename.size()==0){
             context.storeValue(name, result);
-            System.out.println("There are no files no rename");
+            context.setInvokeSummery(stepName,"There are no files no rename");
+            context.setStepStatus(stepName,StepStatus.SUCCESS);
             return StepStatus.SUCCESS;
         }
         return null;

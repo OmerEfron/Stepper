@@ -6,17 +6,25 @@ import Stepper.ReadStepper.Exception.ReadException;
 import Stepper.ReadStepper.api.StepperReader;
 import Stepper.ReadStepper.impl.StepperReaderFromXml;
 import Stepper.Stepper;
+import StepperConsole.Execute.Executor;
+import StepperConsole.Execute.ExecutorImpl;
 import StepperConsole.Flow.ShowFlow;
+import StepperConsole.Scanner.InputFromUser;
+import StepperConsole.Scanner.InputFromUserImpl;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     private Stepper stepper;
+    private InputFromUser inputFromUser=new InputFromUserImpl();
 
 
     public static void main(String[] args){
         StepperConsoleDefinition stepperConsoleDefinition=new StepperConsoleDefinitionImpl();
         stepperConsoleDefinition.load();
+        stepperConsoleDefinition.executeFlow();
+
     }
     @Override
     public void load() {
@@ -30,6 +38,8 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
             return;
         }
         System.out.println("Stepper has been loaded successfully!");
+        //showFlowDetails();
+        executeFlow();
     }
 
     private static Stepper getStepper(StepperReader reader, String filePath){
@@ -53,6 +63,7 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
 
     }
 
+
     @Override
     public void showFlowDetails() {
         ShowFlow showFlow = stepper.showFlowByName("Rename Files");
@@ -61,7 +72,8 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
 
     @Override
     public void executeFlow() {
-
+        Executor executor=new ExecutorImpl(stepper);
+        executor.executeFlow(inputFromUser);
     }
 
     @Override

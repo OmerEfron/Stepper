@@ -1,6 +1,7 @@
 package Stepper.DataDefinitions.Relation;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RelationOfStringRows extends Relation<List<String>> {
 
@@ -39,13 +40,11 @@ public class RelationOfStringRows extends Relation<List<String>> {
         return propertiesExporter;
     }
 
-
-
-//    private static class Row{
-//        Map<String, String> row = new HashMap();
-//        public void addData(String colName, String data){
-//            row.put(colName, data);
-//        }
-//    }
-
+    @Override
+    public String toString() {
+        return String.join("|", colNames)+"\n"+
+                rows.stream()
+                        .map(row -> String.join("|", row))
+                        .collect(Collectors.joining("\n"));
+    }
 }

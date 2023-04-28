@@ -9,6 +9,8 @@ import Stepper.Step.api.DataNecessity;
 import Stepper.Step.api.StepDefinitionAbstractClass;
 import Stepper.Step.api.StepStatus;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 
 public class PropertiesExporter extends StepDefinitionAbstractClass {
@@ -19,19 +21,23 @@ public class PropertiesExporter extends StepDefinitionAbstractClass {
     }
 
     @Override
-    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias) {
+    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName) {
+        Instant start = Instant.now();
         RelationInterface relation=context.getDataValue(nameToAlias.get("SOURCE"), Relation.class);
         Integer totalProperties=0;
         String result=relation.createPropertiesExporter(totalProperties);
-        System.out.println("About to process "+relation.numOfRows()+" lines of data");
+        context.addLog(stepName,"About to process "+relation.numOfRows()+" lines of data");
 
-        System.out.println("Extracted total of "+totalProperties);
+        context.addLog(stepName,"Extracted total of "+totalProperties);
 
         context.storeValue(nameToAlias.get("RESULT"),result);
         if(relation.isEmpty()){
-            System.out.println("There are no rows in the relation");
-            return StepStatus.WARNING;
+            context.setInvokeSummery(stepName,"There are no rows in the relation");
+            context.setStepStatus(stepName,StepStatus.WARNING);
+        }else {
+            context.setStepStatus(stepName,StepStatus.SUCCESS);
         }
-        return StepStatus.SUCCESS;
+        context.setTotalTime(stepName,Duration.between(start, Instant.now()));
+        return context.getStepStatus(stepName);
     }
 }

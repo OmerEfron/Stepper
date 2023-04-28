@@ -12,6 +12,7 @@ import StepperConsole.Flow.ShowFlowImpl;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Stepper {
     private List<FlowDefinitionInterface> flows;
@@ -29,13 +30,13 @@ public class Stepper {
     }
 
 
-    public void executeFlows(){
+    public FlowExecution getFlowExecution(int flowNumber){
+        FlowExecution flowExecution=new FlowExecution(flows.get(flowNumber-1) );
+        return flowExecution;
+    }
+    public void ExecuteFlow(FlowExecution flowExecution){
         FlowExecutor flowExecutor=new FlowExecutor();
-        for(FlowDefinitionInterface flow:flows){
-            FlowExecution flowExecution=new FlowExecution(flow,"1");
-
-            flowExecutor.executeFlow(flowExecution);
-        }
+        flowExecutor.executeFlow(flowExecution);
     }
 
     public ShowFlow showFlowByName(String flowName){
@@ -44,5 +45,14 @@ public class Stepper {
                 .findFirst();
         return flowByName.map(ShowFlowImpl::new).orElse(null);
     }
+    public String getNamesOfFlowsToPrint(){
+        return IntStream.range(0, flows.size())
+                .mapToObj(i -> (i + 1) + "." + flows.get(i).getName() + (i == flows.size() - 1 ? "" : "\n"))
+                .collect(Collectors.joining());
+    }
 
+
+    public boolean isFlowExsitByNumber(int flowNumber) {
+        return flows.size() > flowNumber-1 && flowNumber >0;
+    }
 }

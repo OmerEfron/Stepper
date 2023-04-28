@@ -7,4 +7,6 @@ public class StepperRelationString extends DataDefinitionAbstractClass {
     public StepperRelationString(){
         super("RelationOfStringRows", false, RelationOfStringRows.class);
     }
+
+
 }
