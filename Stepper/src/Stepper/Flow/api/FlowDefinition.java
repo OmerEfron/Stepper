@@ -46,7 +46,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
         valid = true;
         determinateIfFlowIsReadOnly();
 
-        freeInputs = getFreeInputs();
+
         updateAlloutputs();
 
     }
@@ -116,6 +116,11 @@ public class FlowDefinition implements FlowDefinitionInterface {
 
         autoMapping();
 
+        getFreeInputs();
+        if(!problems.isEmpty()){
+            return problems;
+        }
+
         valid = true;
         return problems;
     }
@@ -140,13 +145,18 @@ public class FlowDefinition implements FlowDefinitionInterface {
 
     /**
      * finds all free inputs of the flow
-     * @return Set of free inputs
+     * if a mandatory input that is not a user-friendly one is found, adds it to the problems list.
      */
-    private Set<DataDefinitionsDeclaration> getFreeInputs() {
-        return steps.stream()
+    private void getFreeInputs() {
+        freeInputs = steps.stream()
                 .flatMap(step -> getStepFreeInputs(step).stream())
-                .filter(data -> data.necessity() == DataNecessity.MANDATORY && data.dataDefinition().isUserFriendly())
                 .collect(Collectors.toSet());
+        for(DataDefinitionsDeclaration dd: freeInputs){
+            if(!dd.dataDefinition().isUserFriendly() && dd.necessity() == DataNecessity.MANDATORY){
+                problems.add("Mandatory input "+ dd.userString() + " is not accessible");
+            }
+        }
+
     }
     public Set<DataDefinitionsDeclaration> getFreeInputsFromUser(){return freeInputs;}
 
@@ -177,9 +187,9 @@ public class FlowDefinition implements FlowDefinitionInterface {
 
 
     /**
-     * taking a FlowLevelAlias intstance and updates the source data with his new name.
+     * taking a FlowLevelAlias instance and updates the source data with his new name.
      * if the source or the step not found, adds to the problems list with the details.
-     * @param fla - Flow Level Alias that repesents which data should get the alias name.
+     * @param fla - Flow Level Alias that represents which data should get the alias name.
      */
     private void alias(FlowLevelAlias fla) {
         StepUsageDeclerationInterface step = findStepUsageByName(fla.getStep());
@@ -203,7 +213,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
     /**
      *
      * @param dataDefs - a list of data definition declarations
-     * @param sourceDataName - the soucre data name
+     * @param sourceDataName - the source data name
      * @param alias - the name we want to give to source data name
      * @return - true if the aliasing succeed, else false.
      */
@@ -221,7 +231,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
 
     /**
      * takes the custom mapping instance, and applying on flow.
-     * adds the to the matching target step's map of inputs, the source step's name and the data as it calls in the
+     * adds to the matching target step's map of inputs, the source step's name and the data as it calls in the
      * source.
      * if source or target not found,
      * @param customMapping a structure for source/target data and step
@@ -237,7 +247,10 @@ public class FlowDefinition implements FlowDefinitionInterface {
             problems.add("source step " + customMapping.getSourceStep() + "is after target step " + customMapping.getTargetStep());
         }
         else if(!isDataPartOfStepOutPuts(customMapping, source)){
-            problems.add("cant find data in step");
+            problems.add("cant find data in source step " + source.getStepFinalName() + ", data name " + customMapping.getSourceData());
+        }
+        else if(!isDataPartOfStepInPuts(customMapping, target)){
+            problems.add("cant find data in target step " + target.getStepFinalName() + ", data name " + customMapping.getTargetData());
         }
         else{
             target.addInputToMap(customMapping.getTargetData(), customMapping.getSourceStep(), customMapping.getSourceData());
@@ -258,7 +271,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
     }
 
     /**
-     * checks if source step contains any data with the name specified at the custom mapping instance.
+     * checks if source step outputs contains any data with the name specified at the custom mapping instance.
      * @param customMapping - a CustomMapping instance.
      * @param source - a stepUsage
      * @return true if customMapping.sourceData is a data in source.
@@ -269,15 +282,14 @@ public class FlowDefinition implements FlowDefinitionInterface {
     }
 
     /**
-     * get a stepUsage by his name.
-     * @param name - a step name
-     * @return the step usage from the steps list of the flow, null if not found.
+     * checks if target step inputs contains any data with the name specified at the custom mapping instance.
+     * @param customMapping - a CustomMapping instance.
+     * @param target - a stepUsage
+     * @return true if customMapping.targetData is a data in target.
      */
-    private StepUsageDeclerationInterface createNewStepUsage(String name){
-        return steps.stream()
-                .filter(step -> step.getStepFinalName().equals(name))
-                .findFirst()
-                .orElse(null);
+    private static boolean isDataPartOfStepInPuts(CustomMapping customMapping, StepUsageDeclerationInterface target) {
+        return target.getStepDefinition().getInputs().stream()
+                .anyMatch(dd -> dd.getAliasName().equals(customMapping.getTargetData()));
     }
     /**
      *
@@ -378,6 +390,8 @@ public class FlowDefinition implements FlowDefinitionInterface {
      * @return StepDefinition registry that matches to name.
      */
     private StepDefinitionRegistry getStepDefinitionByName(String stepName){
+//        NameToStep nameToStep=new NameToStepImpl();
+//        return nameToStep.getDataDefinitionRegistry(stepName);
         for(StepDefinitionRegistry stepDefinition: StepDefinitionRegistry.values()){
             if (stepDefinition.getStepDefinition().getName().equals(stepName)){
                 return stepDefinition;

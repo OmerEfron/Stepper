@@ -56,8 +56,9 @@ public class DataDefinitionDeclarationImpl implements DataDefinitionsDeclaration
         if(obj == null || obj.getClass() != this.getClass())
             return false;
 
-        DataDefinitionsDeclaration other = (DataDefinitionsDeclaration) obj;
-        return this.dataDefinition.getName().equals(other.dataDefinition().getName()) && this.alias.equals(other.getAliasName());
+        DataDefinitionDeclarationImpl other = (DataDefinitionDeclarationImpl) obj;
+        return (this.dataDefinition.getType().isAssignableFrom(other.dataDefinition.getType())
+                || other.dataDefinition.getType().isAssignableFrom(this.dataDefinition.getType())) && this.alias.equals(other.getAliasName());
     }
 
     @Override
