@@ -68,4 +68,14 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     public void showExecuteHistory() {
 
     }
+
+    @Override
+    public void showStats() {
+
+    }
+
+    @Override
+    public void exit() {
+
+    }
 }

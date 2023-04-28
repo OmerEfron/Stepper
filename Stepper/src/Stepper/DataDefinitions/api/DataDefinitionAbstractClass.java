@@ -31,9 +31,9 @@ public abstract class DataDefinitionAbstractClass implements DataDefinitionInter
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DataDefinitionAbstractClass that = (DataDefinitionAbstractClass) o;
-        return Objects.equals(name, that.name);
+        if (o == null || !DataDefinitionAbstractClass.class.isAssignableFrom(o.getClass())) return false;
+        DataDefinitionAbstractClass other = (DataDefinitionAbstractClass)o;
+        return this.type.isAssignableFrom(other.type) || other.type.isAssignableFrom(this.type);
     }
 
     @Override

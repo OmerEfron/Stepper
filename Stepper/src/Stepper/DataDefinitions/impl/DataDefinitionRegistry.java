@@ -14,7 +14,7 @@ public enum DataDefinitionRegistry implements DataDefinitionInterface {
     DOUBLE(new StepperDouble()),
     FILE(new StepperFile()),
     LIST(new StepperList()),
-    FIELS_LIST(new StepperFilesList()),
+    FILES_LIST(new StepperFilesList()),
     STRINGS_LIST(new StepperStringsList()),
     NUMBER(new StepperNumber()),
     MAPPING(new StepperMapping()),

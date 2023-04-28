@@ -18,7 +18,7 @@ import java.util.Optional;
 public class FilesRenamer extends StepDefinitionAbstractClass {
     public FilesRenamer() {
         super("Files Renamer", false);
-        this.addInput(new DataDefinitionDeclarationImpl("FILES_TO_RENAME","Files to rename", DataNecessity.MANDATORY, DataDefinitionRegistry.FIELS_LIST));
+        this.addInput(new DataDefinitionDeclarationImpl("FILES_TO_RENAME","Files to rename", DataNecessity.MANDATORY, DataDefinitionRegistry.FILES_LIST));
         this.addInput(new DataDefinitionDeclarationImpl("PREFIX","Add this prefix", DataNecessity.OPTIONAL, DataDefinitionRegistry.STRING));
         this.addInput(new DataDefinitionDeclarationImpl("SUFFIX","Append this suffix", DataNecessity.OPTIONAL, DataDefinitionRegistry.STRING));
         this.addOutput(new DataDefinitionDeclarationImpl("RENAME_RESULT","Rename operation summary",DataNecessity.NA,DataDefinitionRegistry.RELATION_STRING));

@@ -22,4 +22,5 @@ public enum StepDefinitionRegistry {
     public StepDefinitionInterface getStepDefinition() {
         return stepDefinition;
     }
+
 }
