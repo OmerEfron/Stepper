@@ -6,6 +6,6 @@ public interface DataDefinitionInterface {
     String getName();
 
     Class<?> getType();
-
+    boolean equals(Object o);
 
 }
