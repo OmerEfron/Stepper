@@ -88,6 +88,10 @@ public class Stepper {
                 .findFirst();
         return flowByName.map(ShowFlowImpl::new).orElse(null);
     }
+    public ShowFlow showFlowByNumber(int flowNumber){
+
+        return new ShowFlowImpl(flows.get(flowNumber-1));
+    }
     public String getNamesOfFlowsToPrint(){
         return IntStream.range(0, flows.size())
                 .mapToObj(i -> (i + 1) + "." + flows.get(i).getName() + (i == flows.size() - 1 ? "" : "\n"))

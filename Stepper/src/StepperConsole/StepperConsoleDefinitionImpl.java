@@ -8,12 +8,12 @@ import Stepper.ReadStepper.impl.StepperReaderFromXml;
 import Stepper.Stepper;
 import StepperConsole.Execute.Executor;
 import StepperConsole.Execute.ExecutorImpl;
-import StepperConsole.Execute.Flow.FlowExecutionData;
 import StepperConsole.Flow.ShowFlow;
 import StepperConsole.Scanner.InputFromUser;
 import StepperConsole.Scanner.InputFromUserImpl;
 
-import java.util.*;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     private Stepper stepper;
@@ -24,7 +24,15 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
 
     public static void main(String[] args){
         StepperConsoleDefinition stepperConsoleDefinition=new StepperConsoleDefinitionImpl();
-        stepperConsoleDefinition.run();
+        if(!stepperConsoleDefinition.load()){
+            return;
+        }
+        int choose;
+        do {
+            choose=stepperConsoleDefinition.chooseMenu();
+            stepperConsoleDefinition.doCommand(choose);
+        }while (choose != 0);
+        stepperConsoleDefinition.executeFlow();
 
     }
     @Override
@@ -39,6 +47,8 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
             return;
         }
         System.out.println("Stepper has been loaded successfully!");
+        //showFlowDetails();
+        executeFlow();
     }
 
     private static Stepper getStepper(StepperReader reader, String filePath){
@@ -53,7 +63,8 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
 
     private static String getFilePath() {
         Scanner scanner = new Scanner(System.in);
-        return scanner.nextLine();
+        String filePath=scanner.nextLine();
+        return filePath;
     }
 
     @Override
@@ -79,15 +90,28 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
 
     @Override
     public void showFlowDetails() {
-        System.out.println("Please choose the name of the Flow to show:\n");
-        stepper.getNamesOfFlowsToPrint();
+        ShowFlow showFlow = stepper.showFlowByNumber(getFlowNumber());
+        showFlow.showFlowDetails();
+    }
+    private int getFlowNumber() {
+        System.out.println("The Flow's that in the system :");
+        System.out.println(stepper.getNamesOfFlowsToPrint());
+        System.out.println("Please choose the number of the flow");
+        int choose =inputFromUser.getInt();
+        while(!stepper.isFlowExsitByNumber(choose)){
+            System.out.println("The flow number doesn't exsit");
+            System.out.println("The Flow's that in the system :");
+            System.out.println(stepper.getNamesOfFlowsToPrint());
+            System.out.println("Please choose the number of the flow");
+            choose =inputFromUser.getInt();
+        }
+        return choose;
     }
 
     @Override
     public void executeFlow() {
         Executor executor=new ExecutorImpl(stepper);
-        Optional<FlowExecutionData> optionalFlowExecutionData = executor.executeFlow(inputFromUser);
-        optionalFlowExecutionData.ifPresent(flowExecutions::add);
+        executor.executeFlow(inputFromUser);
     }
 
     @Override
@@ -103,5 +127,44 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     @Override
     public void exit() {
 
+    }
+
+    @Override
+    public int chooseMenu() {
+        int choose;
+        do {
+            System.out.println("\nPlease choose which action you would like to perform");
+            System.out.println("1.Introducing the Flow definition.\n" +
+                    "2.Flow activation (Execution).\n" +
+                    "3.Displaying full details of past flow execution.\n" +
+                    "4.Statistics on the flow execution's that have happened in the system until now.\n" +
+                    "5.exit.");
+            choose = inputFromUser.getInt();
+            if(choose<1 || choose>5)
+                System.out.println(choose+" is not in range.\nchoose number between 1 to 5.");
+        }while (choose<1 || choose>5);
+
+        return choose;
+    }
+
+    @Override
+    public void doCommand(int choose) {
+        switch (choose){
+            case (1):
+                this.showFlowDetails();
+                break;
+            case(2):
+                this.executeFlow();
+                break;
+            case (3):
+                this.showExecuteHistory();
+                break;
+            case (4):
+                this.showStats();
+                break;
+            case(5):
+                this.exit();
+                break;
+        }
     }
 }

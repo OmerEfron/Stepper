@@ -24,7 +24,6 @@ public class ExecutorImpl implements Executor {
         if(flowExecutor.stratExcuteFlow()== FlowExecutionStatus.START) {
             stepper.ExecuteFlow(flowExecution);
             printFlowExecutionData(flowExecution);
-
         }
         return FlowExecutionDataImpl.newInstance(flowExecution);
     }
