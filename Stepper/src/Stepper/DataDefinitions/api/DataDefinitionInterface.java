@@ -8,6 +8,5 @@ public interface DataDefinitionInterface {
     Class<?> getType();
     boolean equals(Object o);
 
-    boolean equals(Object o);
 
 }

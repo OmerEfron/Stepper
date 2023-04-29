@@ -66,10 +66,12 @@ public class ConsoleFlowExecutorImpl implements ConsoleFlowExecutor{
         System.out.println("\nThe free input's are:");
         int i = 1;
         for (DataDefinitionsDeclaration dataDefinitionsDeclaration : freeInputs) {
-            System.out.println(i +"."+ dataDefinitionsDeclaration.userString() +"("+dataDefinitionsDeclaration.getAliasName()+")"+
-                    ", is necessity " + dataDefinitionsDeclaration.necessity().toString());
+            System.out.println(i + "." + dataDefinitionsDeclaration.userString() + "(" + dataDefinitionsDeclaration.getAliasName() + ")"
+                    + ", is necessity " + dataDefinitionsDeclaration.necessity().toString()
+                    + (mandatoryInputs.contains(dataDefinitionsDeclaration) ? " (need to update before execute)." : "."));
             i++;
         }
+
         updateFreeInputs(freeInputs,mandatoryInputs);
     }
 
@@ -96,6 +98,10 @@ public class ConsoleFlowExecutorImpl implements ConsoleFlowExecutor{
         System.out.println("Please choose (by number) the input that you want to update :");
 
         int choose = inputFromUser.getInt();
+        if(choose>freeInputs.size() || choose<1){
+            System.out.println("There are no input in "+choose+".\nplease try again.");
+            showFreeInputs(freeInputs,mandatoryInputs);
+        }
 
         DataDefinitionsDeclaration dataDefinitionsDeclaration = freeInputs.get(choose - 1);
         System.out.println("Enter value for : " + dataDefinitionsDeclaration.userString());

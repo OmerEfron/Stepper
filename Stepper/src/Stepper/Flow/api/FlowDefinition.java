@@ -20,7 +20,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
 
     private Boolean valid;
 
-    private Boolean isReadOnly = false;
+    private Boolean isReadOnly = true;
 
     //   <output name, <data definition, the step that related to him>
     Map<String , Pair<DataDefinitionsDeclaration,String>> allOuputs=new HashMap<>();
@@ -46,14 +46,16 @@ public class FlowDefinition implements FlowDefinitionInterface {
         valid = true;
         determinateIfFlowIsReadOnly();
 
-
-        updateAlloutputs();
-
-    }
+   }
 
     private void determinateIfFlowIsReadOnly() {
-        isReadOnly = steps.stream()
-                .anyMatch(step->step.getStepDefinition().isReadOnly());
+        for(StepUsageDeclerationInterface step:steps){
+            if(!step.isReadOnlyStep()) {
+                isReadOnly = false;
+                break;
+            }
+        }
+        //isReadOnly = steps.stream().anyMatch(step->step.getStepDefinition().isReadOnly());
     }
 
     public boolean isReadOnlyFlow(){
@@ -121,6 +123,10 @@ public class FlowDefinition implements FlowDefinitionInterface {
             return problems;
         }
 
+        updateAlloutputs();
+        if(!problems.isEmpty()){
+            return problems;
+        }
         valid = true;
         return problems;
     }
@@ -418,13 +424,13 @@ public class FlowDefinition implements FlowDefinitionInterface {
                 .flatMap(step -> step.getStepDefinition().getOutputs().stream()
                         .map(dd -> new AbstractMap.SimpleEntry<>(dd.getAliasName(), new Pair<>(dd, step.getStepFinalName()))))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v1, HashMap::new));
-        steps.forEach(step -> step.getDataMap()
-                .forEach((k, v) -> allOuputs.remove(v.getValue())));
-        steps.stream()
-                .flatMap(step -> step.getStepDefinition().getInputs().stream()
-                        .filter(dd -> !flow.getFlowOutput().contains(dd.getAliasName()))
-                        .map(DataDefinitionsDeclaration::getAliasName))
-                .forEach(allOuputs::remove);
+//        steps.forEach(step -> step.getDataMap()
+//                .forEach((k, v) -> allOuputs.remove(v.getValue())));
+//        steps.stream()
+//                .flatMap(step -> step.getStepDefinition().getInputs().stream()
+//                        .filter(dd -> !flow.getFlowOutput().contains(dd.getAliasName()))
+//                        .map(DataDefinitionsDeclaration::getAliasName))
+//                .forEach(allOuputs::remove);
         this.updateFormalOutputs();
     }
     @Override
@@ -436,6 +442,15 @@ public class FlowDefinition implements FlowDefinitionInterface {
         formalOuputs =Arrays.stream(flow.getFlowOutput().split(","))
                 .filter(allOuputs::containsKey)
                 .collect(Collectors.toMap(name -> name, allOuputs::get));
+
+        if((Arrays.stream(flow.getFlowOutput().split(","))).collect(Collectors.toList()).size()!=formalOuputs.size())
+        {
+            for(String outputName:Arrays.stream(flow.getFlowOutput().split(",")).collect(Collectors.toList()))
+            {
+                if(!formalOuputs.containsKey(outputName))
+                    problems.add("The output: "+outputName+" dosent exists in the flow.");
+            }
+        }
     }
 
     @Override

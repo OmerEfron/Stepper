@@ -1,7 +1,7 @@
 package StepperConsole;
 
 public interface StepperConsoleDefinition {
-    void load() ;
+    boolean load() ;
 
     void run ();
     void showFlowDetails();
@@ -12,4 +12,7 @@ public interface StepperConsoleDefinition {
 
     void exit();
 
+    int chooseMenu();
+
+    void doCommand(int choose);
 }

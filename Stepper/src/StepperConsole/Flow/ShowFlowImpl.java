@@ -28,61 +28,63 @@ public class ShowFlowImpl implements ShowFlow{
 
 
     private void showFlowName() {
-        System.out.println("The Flow name is: " + flow.getName());
+        System.out.println("\n-The Flow name is: " + flow.getName());
     }
 
     private void showFlowDescription() {
-        System.out.println(flow.getName() + " description is: "+ flow.getDescription());
+        System.out.println("-"+flow.getName() + " description is: "+ flow.getDescription());
     }
 
 
    private void showFormalOutputs() {
-        System.out.println("\nThe formal flow's output's are:");
+        System.out.println("-The formal flow's output's are:");
         System.out.println(flow.outputStrings());
     }
 
 
     private void showIsReadOnlyFlow() {
-        System.out.println("\nThe Flow " + flow.getName() + (flow.isReadOnlyFlow() ? " is read only" : " is not read only"));
+        System.out.println("-The Flow " + flow.getName() + (flow.isReadOnlyFlow() ? " is read only" : " is not read only"));
     }
 
 
     private void showSteps() {
         int i=1;
-        System.out.println("\nThe steps in the flow "+flow.getName()+ " are:");
+        System.out.println("-The steps in the flow "+flow.getName()+ " are:");
         for (StepUsageDeclerationInterface step: flow.getSteps()){
             System.out.println(i+"."+ (step.getStepDefinition().getName().equals(step.getStepFinalName())
                     ? step.getStepDefinition().getName()
-                    : "Original step name: "+step.getStepDefinition().getName()+", is alias name: "+step.getStepFinalName()));
-            System.out.println("The step is "+ (step.isReadOnlyStep() ? "read only" : "not read only"));
+                    : "Original step name: "+step.getStepDefinition().getName()+", is alias name: "+step.getStepFinalName())+
+                    ", the step is "+ (step.isReadOnlyStep() ? "read only" : "not read only"));
             i++;
         }
 
     }
 
     private void showFreeInputs() {
-        System.out.println("\nThe free input's are:");
+        System.out.println("-The free input's are:");
+        int i=1;
         Map<DataDefinitionsDeclaration, List<String>> freeInputs=flow.getFreeInputsWithOptional();
         for(DataDefinitionsDeclaration dataDefinitionsDeclaration: freeInputs.keySet()){
-            System.out.println("The input is:\n"+ dataDefinitionsDeclaration.getAliasName()+", is type "
+            System.out.println(i+".The input is: "+ dataDefinitionsDeclaration.getAliasName()+", is type "
                     +dataDefinitionsDeclaration.dataDefinition().getType().getSimpleName()+
                     ", is necessity "+dataDefinitionsDeclaration.necessity().toString()+
                     ", the steps that related to him :");
             for(String stepName:freeInputs.get(dataDefinitionsDeclaration)){
                 System.out.println(stepName);
-
             }
+            i++;
         }
     }
 
     private void showAllOutputs() {
-        System.out.println("\nThe output's are:");
+        System.out.println("-The output's are:");
         int i=1;
         Map<String , Pair<DataDefinitionsDeclaration,String>> outputs=flow.getAllOutputs();
         for(String outputName:outputs.keySet()){
             System.out.println(i+"."+outputName+
                     ", his type is "+outputs.get(outputName).getKey().dataDefinition().getType().getSimpleName()
                     +", the step that related to him: "+outputs.get(outputName).getValue()+ ".");
+            i++;
         }
     }
 }
