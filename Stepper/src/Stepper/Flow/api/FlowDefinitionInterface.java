@@ -12,19 +12,17 @@ public interface FlowDefinitionInterface {
     String getName();
     String getDescription();
     List<StepUsageDeclerationInterface> getSteps();
-    void addStep(StepUsageDeclerationInterface stepUsageDeclerationInterface);
     String outputStrings();
     List<String> isFlowValid();
 
     void customMapping();
     void autoMapping();
-   Set<DataDefinitionsDeclaration> getFreeInputsFromUser();
 
    boolean isReadOnlyFlow();
     Map<DataDefinitionsDeclaration, List<String>> getFreeInputsWithOptional();
     Map<String , Pair<DataDefinitionsDeclaration,String>> getAllOutputs();
     public Map<String, Pair<DataDefinitionsDeclaration, String>> getFormalOuputs();
 
-
+    public Set<DataDefinitionsDeclaration> getFreeInputs();
 
 }

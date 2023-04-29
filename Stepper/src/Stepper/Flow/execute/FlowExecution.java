@@ -1,11 +1,14 @@
 package Stepper.Flow.execute;
 
-import Stepper.DataDefinitions.api.DataDefinitionInterface;
 import Stepper.Flow.api.FlowDefinitionInterface;
 import Stepper.Flow.execute.StepData.StepExecuteData;
+import Stepper.Flow.execute.StepData.StepIOData;
+import Stepper.Flow.execute.context.StepExecutionContext;
+import Stepper.Step.api.DataDefinitionsDeclaration;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FlowExecution {
 
@@ -15,15 +18,24 @@ public class FlowExecution {
     private Duration totalTime;
     private FlowStatus flowStatus;
     private String formattedStartTime;
+
+    private boolean hasExecuted = false;
     private Map<String, Object> freeInputsValue = new HashMap<>();
     private String uuidAsString;
     private Map<String, Object> formalOutputs = new HashMap<>();
     private List<StepExecuteData> stepsData = new ArrayList<>();
 
+    private Set<DataDefinitionsDeclaration> freeInputs;
+    private Set<DataDefinitionsDeclaration> outputs;
+
     public FlowExecution(FlowDefinitionInterface flowDefinition) {
         this.flowDefinition = flowDefinition;
         this.id = idCounter.toString();
         idCounter++;
+        freeInputs = flowDefinition.getFreeInputs();
+        outputs = flowDefinition.getAllOutputs().values().stream()
+                .map(pair->pair.getKey())
+                .collect(Collectors.toSet());
     }
 
     public void setStepsData(List<StepExecuteData> stepsData) {
@@ -59,12 +71,18 @@ public class FlowExecution {
         return flowStatus;
     }
 
+
     public void setFlowStatus(FlowStatus flowStatus) {
         this.flowStatus = flowStatus;
     }
 
     public void setTotalTime(Duration totalTime) {
         this.totalTime = totalTime;
+        this.hasExecuted = true;
+    }
+
+    public boolean hasExecuted() {
+        return hasExecuted;
     }
 
     public String getTotalTimeInFormat() {
@@ -92,12 +110,24 @@ public class FlowExecution {
         formalOutputs.put(dataName, value);
     }
 
-    public Map<String, Object> getOutput() {
-        return formalOutputs;
+    public Set<DataDefinitionsDeclaration> getOutputs() {
+        return outputs;
     }
 
 
     public <T> T getOneOutput(String dataName, Class<T> exceptedDataType) {
         return formalOutputs.containsKey(dataName) ? exceptedDataType.cast(formalOutputs.get(dataName)) : null;
+    }
+
+    public List<StepExecuteData> getStepsData() {
+        return stepsData;
+    }
+
+    public Set<DataDefinitionsDeclaration> getFreeInputs() {
+        return freeInputs;
+    }
+
+    public Map<String, Object> getFormalOutputs() {
+        return formalOutputs;
     }
 }

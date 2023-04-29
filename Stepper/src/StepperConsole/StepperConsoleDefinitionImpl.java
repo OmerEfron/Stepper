@@ -8,22 +8,23 @@ import Stepper.ReadStepper.impl.StepperReaderFromXml;
 import Stepper.Stepper;
 import StepperConsole.Execute.Executor;
 import StepperConsole.Execute.ExecutorImpl;
+import StepperConsole.Execute.Flow.FlowExecutionData;
 import StepperConsole.Flow.ShowFlow;
 import StepperConsole.Scanner.InputFromUser;
 import StepperConsole.Scanner.InputFromUserImpl;
 
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.util.*;
 
 public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     private Stepper stepper;
-    private InputFromUser inputFromUser=new InputFromUserImpl();
+    private final InputFromUser inputFromUser=new InputFromUserImpl();
+
+    private final List<FlowExecutionData> flowExecutions = new ArrayList<>();
 
 
     public static void main(String[] args){
         StepperConsoleDefinition stepperConsoleDefinition=new StepperConsoleDefinitionImpl();
-        stepperConsoleDefinition.load();
-        stepperConsoleDefinition.executeFlow();
+        stepperConsoleDefinition.run();
 
     }
     @Override
@@ -38,8 +39,6 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
             return;
         }
         System.out.println("Stepper has been loaded successfully!");
-        //showFlowDetails();
-        executeFlow();
     }
 
     private static Stepper getStepper(StepperReader reader, String filePath){
@@ -54,26 +53,41 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
 
     private static String getFilePath() {
         Scanner scanner = new Scanner(System.in);
-        String filePath=scanner.nextLine();
-        return filePath;
+        return scanner.nextLine();
     }
 
     @Override
     public void run() {
+        ConsoleStatus consoleStatus = ConsoleStatus.RUN;
+        while(consoleStatus == ConsoleStatus.RUN){
+            System.out.println("Welcome to Stepper. A place that all of your steps connects in a glorious way to one" +
+                    "marvelous flow.\nPlease choose what you would like to do:\n1. Load file\n2. Show flow details\n" +
+                    "3.Execute flow\n4.Watch flow execution history\n5. Watch stats about flow executions.\n6. Exit");
+            Integer choice = inputFromUser.getInt();
+            switch (choice) {
+                case 1:load(); break;
+                case 2:showFlowDetails(); break;
+                case 3:executeFlow();break;
+                case 4:showExecuteHistory();break;
+                case 5:showStats();break;
+                default: consoleStatus = ConsoleStatus.EXIT;break;
+            }
+        }
 
     }
 
 
     @Override
     public void showFlowDetails() {
-        ShowFlow showFlow = stepper.showFlowByName("Rename Files");
-        showFlow.showFlowDetails();
+        System.out.println("Please choose the name of the Flow to show:\n");
+        stepper.getNamesOfFlowsToPrint();
     }
 
     @Override
     public void executeFlow() {
         Executor executor=new ExecutorImpl(stepper);
-        executor.executeFlow(inputFromUser);
+        Optional<FlowExecutionData> optionalFlowExecutionData = executor.executeFlow(inputFromUser);
+        optionalFlowExecutionData.ifPresent(flowExecutions::add);
     }
 
     @Override
