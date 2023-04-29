@@ -15,25 +15,47 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Stepper {
-    private List<FlowDefinitionInterface> flows;
+    private List<FlowDefinitionInterface> flows = new ArrayList<>();
 
-    private Map<String, FlowDefinitionInterface> flowsMap;
+    private Map<String, FlowDefinitionInterface> flowsMap = new HashMap<>();
 
-    public Stepper(TheStepper stepper) throws FlowBuildException{
+    public Stepper(){
+//        checkForDuplicateNames(stepper);
+//        checkForDuplicateOutputs(stepper);
+//
+//        flows = stepper.getFlows().getFlows().stream()
+//                .map(element-> {
+//                    try {
+//                        return new FlowDefinition(element);
+//                    } catch (RuntimeException | FlowBuildException e) {
+//                        throw new RuntimeException("Error while building stepper: " + e.toString());
+//                    }
+//                })
+//                .collect(Collectors.toList());
+//
+//        flowsMap = flows.stream().collect(Collectors.toMap(FlowDefinitionInterface::getName, flow -> flow));
+    }
+
+    public void newFlows(TheStepper stepper) throws FlowBuildException {
+        List<FlowDefinitionInterface> newFlows = new ArrayList<>();
+        Map<String, FlowDefinitionInterface> newFlowsMap = new HashMap<>();
         checkForDuplicateNames(stepper);
         checkForDuplicateOutputs(stepper);
-
-        flows = stepper.getFlows().getFlows().stream()
-                .map(element-> {
+        stepper.getFlows().getFlows().stream()
+                .forEach(flow -> {
                     try {
-                        return new FlowDefinition(element);
-                    } catch (RuntimeException | FlowBuildException e) {
-                        throw new RuntimeException("Error while building stepper: " + e.toString());
+                        newFlows.add(new FlowDefinition(flow));
+                    } catch (FlowBuildException e) {
+                        throw new RuntimeException(e);
                     }
-                })
-                .collect(Collectors.toList());
+                });
+        flows.forEach(flow-> newFlowsMap.put(flow.getName(), flow));
+        flows = newFlows;
+        flowsMap = newFlowsMap;
+    }
 
-        flowsMap = flows.stream().collect(Collectors.toMap(FlowDefinitionInterface::getName, flow -> flow));
+    public String flowNameByNumber(Integer i){
+        return flows.get(i - 1).getName();
     }
 
     private void checkForDuplicateOutputs(TheStepper stepper) throws FlowBuildException {
