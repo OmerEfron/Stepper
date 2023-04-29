@@ -41,7 +41,6 @@ public class FlowExecutor {
         currFlow.setFlowStatus(flowStatus);
         stepExecutionContext.addFormalOutput(currFlow);
         currFlow.setStepsData(stepExecutionContext.getStepsData());
-
     }
 
 

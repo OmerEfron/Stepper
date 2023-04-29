@@ -22,12 +22,10 @@ public class Main {
         StepperReader stepperReader = new StepperReaderFromXml();
         TheStepper stStepper = stepperReader.read("C:\\Users\\Gil\\Desktop\\stepper1\\Stepper\\ex1 (2).xml");
         Stepper stepper = null;
-        try {
-            stepper = new Stepper(stStepper);
-           // stepper.executeFlows();
-        } catch (FlowBuildException e) {
-            throw new RuntimeException(e);
-        }
+
+        stepper = new Stepper();
+        // stepper.executeFlows();
+
 //        DataDefinitionsDeclaration x = new DataDefinitionDeclarationImpl("Source", "bla bka", DataNecessity.MANDATORY, DataDefinitionRegistry.RELATION_STRING);
 //        DataDefinitionsDeclaration y = new DataDefinitionDeclarationImpl("Source", "bla bka", DataNecessity.MANDATORY, DataDefinitionRegistry.RELATION);
 //        System.out.println(x.equals(y));

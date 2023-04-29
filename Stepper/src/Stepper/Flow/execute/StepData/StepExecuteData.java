@@ -1,6 +1,8 @@
 package Stepper.Flow.execute.StepData;
 
 import Stepper.Flow.api.StepUsageDeclerationInterface;
+import Stepper.Flow.execute.context.StepExecutionContext;
+import Stepper.Step.api.DataDefinitionsDeclaration;
 import Stepper.Step.api.StepStatus;
 import javafx.util.Pair;
 
@@ -18,6 +20,9 @@ public class StepExecuteData{
     private String invokeSummery;
     private StepStatus stepStatus;
     private List<Pair<String, String>> logs=new ArrayList<>();
+
+
+
 
     public StepExecuteData(StepUsageDeclerationInterface step) {
         this.step=step;
@@ -69,4 +74,7 @@ public class StepExecuteData{
         String formattedTime = currentTime.format(formatter);
         this.logs.add(new Pair<>(log,formattedTime));
     }
+
+
+
 }

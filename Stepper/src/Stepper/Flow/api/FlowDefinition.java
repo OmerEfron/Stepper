@@ -28,8 +28,6 @@ public class FlowDefinition implements FlowDefinitionInterface {
 
     private Set<DataDefinitionsDeclaration> freeInputs;
 
-    private Map<String,String> freeInputsFromUser;
-
     private final List<StepUsageDeclerationInterface> steps = new ArrayList<>();
 
     private final List<String> problems = new ArrayList<>();
@@ -79,11 +77,6 @@ public class FlowDefinition implements FlowDefinitionInterface {
         return steps;
     }
 
-    // might be unnecessary.
-    @Override
-    public void addStep(StepUsageDeclerationInterface stepUsageDeclerationInterface) {
-        steps.add(stepUsageDeclerationInterface);
-    }
 
     @Override
     public String outputStrings() {
@@ -118,7 +111,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
 
         autoMapping();
 
-        getFreeInputs();
+        setFreeInputs();
         if(!problems.isEmpty()){
             return problems;
         }
@@ -153,7 +146,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
      * finds all free inputs of the flow
      * if a mandatory input that is not a user-friendly one is found, adds it to the problems list.
      */
-    private void getFreeInputs() {
+    private void setFreeInputs() {
         freeInputs = steps.stream()
                 .flatMap(step -> getStepFreeInputs(step).stream())
                 .collect(Collectors.toSet());
@@ -456,5 +449,10 @@ public class FlowDefinition implements FlowDefinitionInterface {
     @Override
     public Map<String, Pair<DataDefinitionsDeclaration, String>> getFormalOuputs() {
         return formalOuputs;
+    }
+
+    @Override
+    public Set<DataDefinitionsDeclaration> getFreeInputs() {
+        return freeInputs;
     }
 }

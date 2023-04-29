@@ -3,29 +3,27 @@ package StepperConsole;
 import Stepper.Flow.FlowBuildExceptions.FlowBuildException;
 import Stepper.ReadStepper.XMLReadClasses.TheStepper;
 import Stepper.ReadStepper.Exception.ReadException;
-import Stepper.ReadStepper.api.StepperReader;
 import Stepper.ReadStepper.impl.StepperReaderFromXml;
 import Stepper.Stepper;
 import StepperConsole.Execute.Executor;
 import StepperConsole.Execute.ExecutorImpl;
+import StepperConsole.Execute.Flow.FlowExecutionData;
+import StepperConsole.Execute.Flow.FlowExecutionDataImpl;
 import StepperConsole.Flow.ShowFlow;
-import StepperConsole.Flow.ShowFlowImpl;
 import StepperConsole.Scanner.InputFromUser;
 import StepperConsole.Scanner.InputFromUserImpl;
 
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.util.*;
 
 public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
-    private Stepper stepper;
-    private InputFromUser inputFromUser=new InputFromUserImpl();
+    private final Stepper stepper = new Stepper();
+    private final InputFromUser inputFromUser=new InputFromUserImpl();
+
+    private final Map<String,List<FlowExecutionData>> flowExecutions = new HashMap<>();
 
 
     public static void main(String[] args){
         StepperConsoleDefinition stepperConsoleDefinition=new StepperConsoleDefinitionImpl();
-        if(!stepperConsoleDefinition.load()){
-            return;
-        }
         int choose;
         do {
             choose=stepperConsoleDefinition.chooseMenu();
@@ -36,28 +34,23 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     }
     @Override
     public boolean load() {
-        System.out.println("Hello to stepper!!\nPlease enter file path to load an xml application-wise file.\n" +
+        System.out.println("Please enter file path to load an xml application-wise file.\n" +
                 "Make sure it's a valid .xml file!");
         String filePath = getFilePath();
+        TheStepper stStepper = null;
+
         try {
-            stepper = getStepper(new StepperReaderFromXml(), filePath);
-        }catch (RuntimeException e) {
+            stStepper = new StepperReaderFromXml().read(filePath);
+            stepper.newFlows(stStepper);
+        } catch (ReadException | FlowBuildException e ) {
             System.out.println(e.getMessage());
             return false;
         }
+
         System.out.println("Stepper has been loaded successfully!");
         return true;
     }
 
-    private static Stepper getStepper(StepperReader reader, String filePath){
-        TheStepper stStepper = null;
-        try {
-            stStepper = reader.read(filePath);
-            return new Stepper(stStepper);
-        } catch (ReadException | FlowBuildException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private static String getFilePath() {
         Scanner scanner = new Scanner(System.in);
@@ -67,6 +60,21 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
 
     @Override
     public void run() {
+        ConsoleStatus consoleStatus = ConsoleStatus.RUN;
+        while(consoleStatus == ConsoleStatus.RUN){
+            System.out.println("Welcome to Stepper. A place that all of your steps connects in a glorious way to one" +
+                    "marvelous flow.\nPlease choose what you would like to do:\n1. Load file\n2. Show flow details\n" +
+                    "3.Execute flow\n4.Watch flow execution history\n5. Watch stats about flow executions.\n6. Exit");
+            Integer choice = inputFromUser.getInt();
+            switch (choice) {
+                case 1:load(); break;
+                case 2:showFlowDetails(); break;
+                case 3:executeFlow();break;
+                case 4:showExecuteHistory();break;
+                case 5:showStats();break;
+                default: consoleStatus = ConsoleStatus.EXIT;break;
+            }
+        }
 
     }
 
@@ -93,14 +101,42 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
 
     @Override
     public void executeFlow() {
-        Executor executor=new ExecutorImpl(stepper);
-        executor.executeFlow(inputFromUser);
+        Executor executor = new ExecutorImpl(stepper);
+        executor.executeFlow(inputFromUser).ifPresent(flowExecutionData ->
+                flowExecutions.computeIfAbsent(flowExecutionData.getFlowName(), k -> new ArrayList<>())
+                        .add(flowExecutionData)
+        );
     }
 
     @Override
     public void showExecuteHistory() {
+        System.out.println("Please choose which flow you want to see an execution of it:\n");
+        Integer choice = getFlowNumber();
+        String flowName = stepper.flowNameByNumber(choice);
+        List<FlowExecutionData> flowExecutionDataList = flowExecutions.get(flowName);
+
+        for(FlowExecutionData flowExecutionData:flowExecutionDataList){
+            showAFlowExecutionHistory(flowExecutionData);
+            System.out.println("---------------------------------");
+        }
 
     }
+
+    private static void showAFlowExecutionHistory(FlowExecutionData flowExecutionData) {
+        System.out.println("UUID: "+ flowExecutionData.getUniqueExecutionId());
+        System.out.println("Name: " + flowExecutionData.getFlowName());
+        System.out.println("execution final result: "+ flowExecutionData.getFlowExecutionFinalResult());
+        System.out.println("Duration (in milis): "+ flowExecutionData.getFlowExecutionDuration());
+        flowExecutionData.getFreeInputs()
+                .forEach(data -> {
+                        System.out.println(data.getName());
+                        System.out.println(data.getContent());
+                        System.out.println(data.getType());
+                        System.out.println(data.getNecessity());
+                }
+                );
+    }
+
 
     @Override
     public void showStats() {
@@ -117,15 +153,15 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         int choose;
         do {
             System.out.println("\nPlease choose which action you would like to perform");
-            System.out.println("1.Introducing the Flow definition.\n" +
-                    "2.Flow activation (Execution).\n" +
-                    "3.Displaying full details of past flow execution.\n" +
-                    "4.Statistics on the flow execution's that have happened in the system until now.\n" +
-                    "5.exit.");
+            System.out.println("1. Load new file to the system\n2.Introducing the Flow definition.\n" +
+                    "3.Flow activation (Execution).\n" +
+                    "4.Displaying full details of past flow execution.\n" +
+                    "5.Statistics on the flow execution's that have happened in the system until now.\n" +
+                    "6.exit.");
             choose = inputFromUser.getInt();
-            if(choose<1 || choose>5)
-                System.out.println(choose+" is not in range.\nchoose number between 1 to 5.");
-        }while (choose<1 || choose>5);
+            if(choose<1 || choose>6)
+                System.out.println(choose+" is not in range.\nchoose number between 1 to 6.");
+        }while (choose<1 || choose>6);
 
         return choose;
     }
@@ -134,18 +170,21 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     public void doCommand(int choose) {
         switch (choose){
             case (1):
+                this.load();
+                break;
+            case (2):
                 this.showFlowDetails();
                 break;
-            case(2):
+            case(3):
                 this.executeFlow();
                 break;
-            case (3):
+            case (4):
                 this.showExecuteHistory();
                 break;
-            case (4):
+            case (5):
                 this.showStats();
                 break;
-            case(5):
+            case(6):
                 this.exit();
                 break;
         }

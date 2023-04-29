@@ -3,13 +3,12 @@ package StepperConsole.Execute;
 import Stepper.Flow.execute.FlowExecution;
 import Stepper.Step.api.DataDefinitionsDeclaration;
 import Stepper.Stepper;
-import StepperConsole.Execute.Flow.ConsoleFlowExecutor;
-import StepperConsole.Execute.Flow.ConsoleFlowExecutorImpl;
-import StepperConsole.Execute.Flow.FlowExecutionStatus;
+import StepperConsole.Execute.Flow.*;
 import StepperConsole.Scanner.InputFromUser;
 import javafx.util.Pair;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class ExecutorImpl implements Executor {
     private Stepper stepper;
@@ -19,14 +18,14 @@ public class ExecutorImpl implements Executor {
     }
 
     @Override
-    public void executeFlow(InputFromUser inputFromUser) {
+    public Optional<FlowExecutionData> executeFlow(InputFromUser inputFromUser) {
         FlowExecution flowExecution=stepper.getFlowExecution(getFlowNumber(inputFromUser));
         ConsoleFlowExecutor flowExecutor=new ConsoleFlowExecutorImpl(flowExecution, inputFromUser);
         if(flowExecutor.stratExcuteFlow()== FlowExecutionStatus.START) {
             stepper.ExecuteFlow(flowExecution);
             printFlowExecutionData(flowExecution);
         }
-
+        return FlowExecutionDataImpl.newInstance(flowExecution);
     }
 
     private int getFlowNumber(InputFromUser inputFromUser) {
