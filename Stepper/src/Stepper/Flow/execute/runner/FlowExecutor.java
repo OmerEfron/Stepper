@@ -27,7 +27,7 @@ public class FlowExecutor {
             StepStatus stepStatus = step.getStepDefinition().invoke(stepExecutionContext, step.getNameToAlias(),step.getStepFinalName());
             Instant stepEnd=Instant.now();
             if (stepStatus == StepStatus.FAIL && !step.skipIfFail()) {
-                currFlow.setFlowStatus(FlowStatus.FAIL);
+                flowStatus=FlowStatus.FAIL;
                 break;
             } else if (stepStatus == StepStatus.WARNING) {
                 flowStatus = FlowStatus.WARNING;

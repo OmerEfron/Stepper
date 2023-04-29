@@ -9,6 +9,9 @@ import Stepper.Step.api.StepDefinitionAbstractClass;
 import Stepper.Step.api.StepStatus;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +33,14 @@ public class CollectFilesInFolder extends StepDefinitionAbstractClass {
         String folderPath = context.getDataValue(nameToAlias.get("FOLDER_NAME"), String.class);
         Optional<String> filterStr = Optional.ofNullable(context.getDataValue(nameToAlias.get("FILTER"), String.class));
         context.setInvokeSummery(stepName,"Reading folder " + folderPath + "content with filter " + filterStr);
-        File folder = new File(folderPath);
+        Path path = Paths.get(folderPath);
+        if(!Files.isDirectory(path)){
+            context.addLog(stepName,"There are no folder in path "+folderPath);
+            context.setInvokeSummery(stepName,"There are no folder in path "+folderPath);
+            context.setStepStatus(stepName,StepStatus.FAIL);
+            return StepStatus.FAIL;
+        }
+        File folder = path.toFile();
         File[] files = filterStr.map(filter -> folder.listFiles((dir, name) -> name.endsWith(filter)))
                 .orElse(folder.listFiles());
         List<File> fileList = new ArrayList<>(); // create an empty list to store the files
@@ -41,11 +51,12 @@ public class CollectFilesInFolder extends StepDefinitionAbstractClass {
                     fileList.add(file); // add the file to the list if it is a file
                 }
             }
-        }else{
-            context.addLog(stepName,"There are no folder in path "+folderPath);
-            context.setInvokeSummery(stepName,"There are no folder in path "+folderPath);
-            context.setStepStatus(stepName,StepStatus.FAIL);
         }
+//        }else{
+//            context.addLog(stepName,"There are no folder in path "+folderPath);
+//            context.setInvokeSummery(stepName,"There are no folder in path "+folderPath);
+//            context.setStepStatus(stepName,StepStatus.FAIL);
+//        }
         Integer size=fileList.size();
 
         context.storeValue(nameToAlias.get("FILES_LIST"),new FilesListDataDef(fileList));
