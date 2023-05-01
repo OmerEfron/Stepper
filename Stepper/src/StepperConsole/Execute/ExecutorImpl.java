@@ -32,13 +32,13 @@ public class ExecutorImpl implements Executor {
         System.out.println("The Flow's that in the system :");
         System.out.println(stepper.getNamesOfFlowsToPrint());
         System.out.println("Please choose the number of the flow that you want do execute");
-        int choose =inputFromUser.getInt();
+        int choose =inputFromUser.getIntByRange(stepper.getNumOfFlows());
         while(!stepper.isFlowExsitByNumber(choose)){
             System.out.println("\nThe flow number doesn't exsit");
             System.out.println("The Flow's that in the system :");
             System.out.println(stepper.getNamesOfFlowsToPrint());
             System.out.println("Please choose the number of the flow that you want do execute");
-            choose =inputFromUser.getInt();
+            choose =inputFromUser.getIntByRange(stepper.getNumOfFlows());
         }
         return choose;
     }

@@ -81,10 +81,10 @@ public class ConsoleFlowExecutorImpl implements ConsoleFlowExecutor{
                 +"3.Execute "+flowExecution.getFlowDefinition().getName();
         System.out.println(menu);
         Scanner scanner = new Scanner(System.in);
-        int input=inputFromUser.getInt();
+        int input=inputFromUser.getIntByRange(3);
         while (input<1 || input>3 ){
             System.out.println("The number is not between 1 to 3 \nplease try again\n"+menu);
-            input=inputFromUser.getInt();
+            input=inputFromUser.getIntByRange(3);
         }
         return input;
     }

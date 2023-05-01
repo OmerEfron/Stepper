@@ -17,7 +17,11 @@ import java.util.stream.IntStream;
 public class Stepper {
     private List<FlowDefinitionInterface> flows = new ArrayList<>();
 
+    private List<String> flowNames = new ArrayList<>();
+
     private Map<String, FlowDefinitionInterface> flowsMap = new HashMap<>();
+
+    private Map<Integer, String> flowsByNumber = new LinkedHashMap<>();
 
     public Stepper(){
 //        checkForDuplicateNames(stepper);
@@ -52,6 +56,25 @@ public class Stepper {
         flows.forEach(flow-> newFlowsMap.put(flow.getName(), flow));
         flows = newFlows;
         flowsMap = newFlowsMap;
+        flowsByNumber  = IntStream.range(0, flows.size())
+                .boxed()
+                .collect(Collectors.toMap(i -> i + 1, i -> flows.get(i).getName()));
+        flowNames = flows.stream()
+                .map(FlowDefinitionInterface::getName)
+                .collect(Collectors.toList());
+
+    }
+
+    public List<String> getFlowNames() {
+        return flowNames;
+    }
+
+    public Integer getNumOfFlows(){
+        return flows.size();
+    }
+
+    public Map<Integer, String> getFlowsByNumber() {
+        return flowsByNumber;
     }
 
     public String flowNameByNumber(Integer i){
@@ -113,6 +136,10 @@ public class Stepper {
     public ShowFlow showFlowByNumber(int flowNumber){
 
         return new ShowFlowImpl(flows.get(flowNumber-1));
+    }
+
+    public ShowFlow buildShowFlow(String flowName){
+        return new ShowFlowImpl(flowsMap.get(flowName));
     }
     public String getNamesOfFlowsToPrint(){
         return IntStream.range(0, flows.size())
