@@ -1,66 +1,68 @@
 package StepperConsole;
 
-import Stepper.Flow.FlowBuildExceptions.FlowBuildException;
-import Stepper.ReadStepper.XMLReadClasses.TheStepper;
-import Stepper.ReadStepper.Exception.ReadException;
-import Stepper.ReadStepper.impl.StepperReaderFromXml;
-import Stepper.Stepper;
-import StepperConsole.Execute.Executor;
-import StepperConsole.Execute.ExecutorImpl;
-import StepperConsole.Execute.Flow.FlowExecutionData;
-import StepperConsole.Execute.Flow.FlowExecutionsCollector;
-import StepperConsole.Flow.ShowFlow;
+import StepperConsole.Execute.Flow.impl.IOData;
+import StepperConsole.FlowDetails.StepDetails.FlowIODetails.Input;
+import StepperConsole.FlowDetails.StepDetails.FlowIODetails.Output;
+import StepperEngine.Flow.FlowBuildExceptions.FlowBuildException;
+import StepperEngine.StepperReader.XMLReadClasses.TheStepper;
+import StepperEngine.StepperReader.Exception.ReaderException;
+import StepperEngine.StepperReader.impl.StepperReaderFromXml;
+import StepperEngine.Stepper;
+import StepperConsole.Execute.ExecutionsStatistics.api.FlowExecutionStatsDefinition;
+import StepperConsole.Execute.ExecutionsStatistics.impl.FlowExecutionStatsDefinitionImpl;
+import StepperConsole.Execute.ExecutionsStatistics.api.StepExecutionStats;
+import StepperConsole.Execute.api.Executor;
+import StepperConsole.Execute.impl.ExecutorImpl;
+import StepperConsole.Execute.Flow.api.FlowExecutionData;
+import StepperConsole.Execute.Flow.impl.FlowExecutionsCollector;
+import StepperConsole.FlowDetails.FlowDetails;
+import StepperConsole.FlowDetails.StepDetails.StepDetails;
 import StepperConsole.Scanner.InputFromUser;
 import StepperConsole.Scanner.InputFromUserImpl;
+import javafx.util.Pair;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     private final Stepper stepper = new Stepper();
     private final InputFromUser inputFromUser=new InputFromUserImpl();
-
-    private Map<String,List<FlowExecutionData>> flowExecutions = new HashMap<>();
-
     private Map<String,FlowExecutionsCollector> flowExecutionsCollectorMap = new HashMap<>();
-
     private List<String> flowNames;
-
     private ConsoleStatus consoleStatus = ConsoleStatus.RUN;
-
-
+    private boolean isLoaded = false;
     public static void main(String[] args){
         StepperConsoleDefinition stepperConsoleDefinition=new StepperConsoleDefinitionImpl();
         stepperConsoleDefinition.run();
     }
-    @Override
-    public boolean load() {
-        System.out.println("Please enter file path to load an xml application-wise file.\n" +
-                "Make sure it's a valid .xml file!");
-        String filePath = getFilePath();
-        TheStepper stStepper = null;
 
-        try {
-            stStepper = new StepperReaderFromXml().read(filePath);
-            stepper.newFlows(stStepper);
-        } catch (ReadException | FlowBuildException e ) {
-            System.out.println(e.getMessage());
-            return false;
+    @Override
+    public void run() {
+        welcomeUser();
+        while(consoleStatus == ConsoleStatus.RUN){
+            StepperConsoleOptions choice = getUserChoice();
+            if(!askToLoadIfNotLoaded(choice)) {
+                switch (choice) {
+                    case LOAD:
+                        load();
+                        break;
+                    case SHOW_FLOW:
+                        showFlowDetails();
+                        break;
+                    case EXECUTE_FLOW:
+                        executeFlow();
+                        break;
+                    case SHOW_EXECUTE_HISTORY:
+                        showExecuteHistory();
+                        break;
+                    case SHOW_STATS:
+                        showStats();
+                        break;
+                    case EXIT:
+                        exit();
+                }
+            }
         }
 
-        System.out.println("Stepper has been loaded successfully!");
-        flowNames = stepper.getFlowNames();
-        flowExecutionsCollectorMap.clear();
-        flowNames.stream().forEach(flowName -> flowExecutionsCollectorMap.put(flowName, new FlowExecutionsCollector(flowName)));
-        return true;
-    }
-
-
-    private static String getFilePath() {
-        Scanner scanner = new Scanner(System.in);
-        String filePath=scanner.nextLine();
-        return filePath;
     }
 
     private void welcomeUser(){
@@ -68,74 +70,167 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
                 "marvelous flow.");
     }
 
-    @Override
-    public void run() {
-        welcomeUser();
-        while(consoleStatus == ConsoleStatus.RUN){
-            System.out.println("Please choose what you would like to do:\n1. Load file\n2. Show flow details\n" +
-                    "3. Execute flow\n4. Watch flow execution history\n5. Watch stats about flow executions.\n6. Exit");
-            Integer choice = inputFromUser.getIntByRange(6);
-            switch (choice) {
-                case 1:load(); break;
-                case 2:showFlowDetails(); break;
-                case 3:executeFlow();break;
-                case 4:showExecuteHistory();break;
-                case 5:showStats();break;
-                case 6: exit();
-            }
+    private boolean askToLoadIfNotLoaded(StepperConsoleOptions choice) {
+        if((choice != StepperConsoleOptions.LOAD && choice != StepperConsoleOptions.EXIT) && (!isLoaded || stepper.getNumOfFlows() == 0)){
+            System.out.println("There are no flows yet in the system. Try load some from main menu and then try again. ");
+            return true;
         }
-
+        return false;
     }
 
+    private StepperConsoleOptions getUserChoice() {
+        System.out.println("Please choose one of the following options, by entering the number near the desired option:");
+        for(StepperConsoleOptions option:StepperConsoleOptions.values()){
+            System.out.println(option.getValue() + ". " + option.getUserString());
+        }
+        return StepperConsoleOptions.getOption(inputFromUser.getIntByRange(StepperConsoleOptions.values().length));
+    }
+
+    @Override
+    public void load() {
+        System.out.println("Please enter file path to load an xml application-wise file.\n" +
+                "Make sure it's a valid .xml file!");
+        String filePath = getFilePath();
+
+        try {
+            TheStepper stStepper = new StepperReaderFromXml().read(filePath);
+            stepper.newFlows(stStepper);
+        } catch (ReaderException | FlowBuildException | RuntimeException e ) {
+            System.out.println(e.getMessage());
+        }
+        setupConsole();
+    }
+
+    private void setupConsole() {
+        flowNames = stepper.getFlowNames();
+        flowExecutionsCollectorMap.clear();
+        flowNames.stream().forEach(flowName -> flowExecutionsCollectorMap.put(flowName, new FlowExecutionsCollector(flowName)));
+        isLoaded = true;
+        System.out.println("Stepper has been loaded successfully!");
+    }
+
+    private static String getFilePath() {
+        Scanner scanner = new Scanner(System.in);
+        String filePath=scanner.nextLine();
+        return filePath;
+    }
 
     @Override
     public void showFlowDetails() {
-        printFlows();
-        ShowFlow showFlow = stepper.buildShowFlow(getFlowName());
-        showFlow.showFlowDetails();
+        FlowDetails flowDetails = stepper.buildShowFlow(getFlowFromUser());
+        printFlowDetails(flowDetails);
     }
-    private int getFlowNumber() {
-        System.out.println("The Flow's that in the system :");
-        System.out.println(stepper.getNamesOfFlowsToPrint());
-        System.out.println("Please choose the number of the flow");
-        int choose =inputFromUser.getIntByRange(stepper.getNumOfFlows());
-        while(!stepper.isFlowExsitByNumber(choose)){
-            System.out.println("The flow number doesn't exsit");
-            System.out.println("The Flow's that in the system :");
-            System.out.println(stepper.getNamesOfFlowsToPrint());
-            System.out.println("Please choose the number of the flow");
-            //choose =inputFromUser.getInt();
+
+    private static void printFlowDetails(FlowDetails flowDetails) {
+        seperateBlocksOfContent();
+        printFlowNameAndDescription(flowDetails);
+        lineSpace();
+        printFormalOutputs(flowDetails.getFormalOutputs());
+        lineSpace();
+        printIfFlowReadOnly(flowDetails);
+        lineSpace();
+        printSteps(flowDetails.getSteps());
+        lineSpace();
+        printFreeInputs(flowDetails.getFreeInputs());
+        lineSpace();
+        printOutputs(flowDetails);
+        seperateBlocksOfContent();
+    }
+
+    private static void printOutputs(FlowDetails flowDetails) {
+        System.out.println("The outputs produced by the flow: ");
+        for(Output output: flowDetails.getOutputs()){
+            System.out.println("Name:" + output.getDataName() + ", Type: " + output.getTypeName() +
+                    ", Step related: " + output.getStepRelated());
         }
-        return choose;
     }
 
-    private String getFlowName(){
-        Integer choice = inputFromUser.getIntByRange(stepper.getNumOfFlows());
-        return stepper.getFlowsByNumber().get(choice);
+    private static void printFlowNameAndDescription(FlowDetails flowDetails) {
+        System.out.println("Flow Name: " + flowDetails.getFlowName());
+        System.out.println("Flow description: "+ flowDetails.getFlowDescription());
     }
 
-    private void printFlows(){
-        stepper.getFlowsByNumber().forEach((place, name) -> System.out.println(place + ". " + name));
+    private static void printFormalOutputs(List<String> formalOutputs) {
+        if(formalOutputs.isEmpty()){
+            System.out.println("Flow has no formal outputs");
+        }
+        else{
+            System.out.println("Flow's formal outputs: ");
+            formalOutputs.forEach(System.out::println);
+        }
+    }
+
+    private static void printIfFlowReadOnly(FlowDetails flowDetails) {
+        System.out.println("The flow is "+ (flowDetails.isFlowReadOnly()? "":"not " + "read only"));
+    }
+
+    private static void printSteps(List<StepDetails> steps) {
+        if(steps.isEmpty()){
+            System.out.println("The flow has no steps.");
+        }
+        else {
+            System.out.println("The flow's steps are:");
+            steps.forEach(step -> System.out.println(step.getStepName() + ", " + (step.isReadOnly() ?
+                    "is read only" : "is not read only")));
+        }
+    }
+
+    private static void printFreeInputs(List<Input> freeInputs) {
+        System.out.println("The free inputs are: ");
+        freeInputs.forEach(input -> {
+            System.out.println("Name: " + input.getDataName() + ", type: " + input.getTypeName() + ", " + input.getNecessity());
+            System.out.println("Related to steps: ");
+            input.getRelatedSteps().forEach(System.out::println);
+        });
     }
 
     @Override
     public void executeFlow() {
         Executor executor = new ExecutorImpl(stepper);
-        executor.executeFlow(inputFromUser).ifPresent(flowExecutionData ->
-                flowExecutionsCollectorMap.get(flowExecutionData.getFlowName())
-                        .addFlowExecutionData(flowExecutionData)
-        );
+        String flowName = getFlowFromUser();
+        execute(executor, flowName);
+    }
+
+    private void execute(Executor executor, String flowName) {
+        Optional<FlowExecutionData> optionalFlowExecutionData = executor.executeFlow(flowName,inputFromUser);
+        if(optionalFlowExecutionData.isPresent()){
+            FlowExecutionData flowExecutionData = optionalFlowExecutionData.get();
+            flowExecutionsCollectorMap.get(optionalFlowExecutionData.get().getFlowName()).addFlowExecutionData(optionalFlowExecutionData.get());
+            seperateBlocksOfContent();
+            printExecutionMetaData(flowExecutionData);
+            lineSpace();
+            printExecutionResult(flowExecutionData);
+            lineSpace();
+            printFlowFormalOutputsContentWithUserString(flowExecutionData);
+            seperateBlocksOfContent();
+        }
+    }
+
+    private static void printFlowFormalOutputsContentWithUserString(FlowExecutionData flowExecutionData) {
+        for(IOData output: flowExecutionData.getFormalOutputs()){
+            System.out.println(output.getUserString());
+            System.out.println(output.getContent());
+        }
     }
 
     @Override
     public void showExecuteHistory() {
         System.out.println("Please choose which flow you want to see an execution of it:\n");
-        printFlows();
-        String flowName = getFlowName();
+        FlowExecutionsCollector flowExecutionsCollector = getFlowExecutionsCollector();
+        String uuid = getExecutionUUID(flowExecutionsCollector);
+        printFlowExecutionHistory(flowExecutionsCollector.getFlowExecutionData(uuid));
+    }
+
+    private FlowExecutionsCollector getFlowExecutionsCollector() {
+        String flowName = getFlowFromUser();
         FlowExecutionsCollector flowExecutionsCollector = flowExecutionsCollectorMap.get(flowName);
+        return flowExecutionsCollector;
+    }
+
+    private String getExecutionUUID(FlowExecutionsCollector flowExecutionsCollector) {
         flowExecutionsCollector.getFlowExecutionByNumber().forEach((id, name) -> System.out.println(id + ". " + name));
         String uuid = getUUID(flowExecutionsCollector);
-        showAFlowExecutionHistory(flowExecutionsCollector.getFlowExecutionData(uuid));
+        return uuid;
     }
 
     private String getUUID(FlowExecutionsCollector flowExecutionsCollector) {
@@ -145,26 +240,107 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     }
 
 
-    private static void showAFlowExecutionHistory(FlowExecutionData flowExecutionData) {
+    private static void printFlowExecutionHistory(FlowExecutionData flowExecutionData) {
+        seperateBlocksOfContent();
+        printExecutionMetaData(flowExecutionData);
+        lineSpace();
+        printExecutionResult(flowExecutionData);
+        lineSpace();
+        printFlowMainData(flowExecutionData);
+        seperateBlocksOfContent();
+    }
+
+    private static void printExecutionMetaData(FlowExecutionData flowExecutionData) {
         System.out.println("UUID: "+ flowExecutionData.getUniqueExecutionId());
         System.out.println("Name: " + flowExecutionData.getFlowName());
+    }
+
+    private static void printExecutionResult(FlowExecutionData flowExecutionData) {
         System.out.println("execution final result: "+ flowExecutionData.getFlowExecutionFinalResult());
-        System.out.println("Duration (in milis): "+ flowExecutionData.getFlowExecutionDuration());
+    }
+
+    private static void printFlowMainData(FlowExecutionData flowExecutionData) {
+        if(!flowExecutionData.getFlowExecutionFinalResult().equals("NOT_INVOKED")) {
+            printFlowDuration(flowExecutionData);
+            lineSpace();
+            printFlowInputs(flowExecutionData);
+            lineSpace();
+            printFlowOutputs(flowExecutionData);
+            lineSpace();
+            printSteps(flowExecutionData);
+        }
+    }
+
+    private static void printSteps(FlowExecutionData flowExecutionData) {
+        System.out.println("Steps execution data: ");
+        flowExecutionData.getStepExecuteDataList().forEach(step -> {
+            System.out.println("Name: "+step.getFinalName());
+            System.out.println("Duration (in milliseconds): " + step.getTotalTime().toMillis());
+            System.out.println("Result: " + step.getStepStatus());
+            System.out.println("Summery line: " + step.getInvokeSummery());
+            System.out.println("Logs: ");
+            for(Pair<String, String> log : step.getLogs()){
+                System.out.println(log.getKey()+ " - " + log.getValue());
+            }
+            lineSpace();
+        });
+    }
+
+    private static void printFlowOutputs(FlowExecutionData flowExecutionData) {
+        System.out.println("Outputs:");
+        flowExecutionData.getOutputs().forEach(output ->{
+            System.out.println("Name: "+output.getName());
+            System.out.println("Type: " + output.getType());
+            System.out.println("Content: " + output.getContent());
+        });
+    }
+
+    private static void printFlowDuration(FlowExecutionData flowExecutionData) {
+        System.out.println("Duration (in milliseconds): " + flowExecutionData.getFlowExecutionDuration());
+    }
+
+    private static void printFlowInputs(FlowExecutionData flowExecutionData) {
         System.out.println("Inputs:");
         flowExecutionData.getFreeInputs()
                 .forEach(data -> {
-                        System.out.println("Name: " + data.getName());
-                        System.out.println("Content: " + data.getContent());
-                        System.out.println("Type: "+data.getType());
-                        System.out.println("Necessity: "+data.getNecessity());
-                }
+                            System.out.println("Name: " + data.getName());
+                            System.out.println("Content: " + data.getContent());
+                            System.out.println("Type: " + data.getType());
+                            System.out.println("Necessity: " + data.getNecessity());
+                        }
                 );
     }
 
 
     @Override
     public void showStats() {
+        String flowName = getFlowFromUser();
+        FlowExecutionStatsDefinition flowExecutionStatsDefinition = new FlowExecutionStatsDefinitionImpl(
+                flowExecutionsCollectorMap.get(flowName));
+        printStats(flowExecutionStatsDefinition);
+    }
 
+    private static void printStats(FlowExecutionStatsDefinition flowExecutionStatsDefinition) {
+        seperateBlocksOfContent();
+        printFlowStats(flowExecutionStatsDefinition);
+        lineSpace();
+        printFlowStepsStats(flowExecutionStatsDefinition);
+        seperateBlocksOfContent();
+    }
+
+    private static void printFlowStats(FlowExecutionStatsDefinition flowExecutionStatsDefinition) {
+        System.out.println(flowExecutionStatsDefinition.getFlowName() + " executions stats: ");
+        System.out.println("Number of executions:  "+ flowExecutionStatsDefinition.getNumOfExecutions());
+        System.out.println("Average time of execution duration: " + flowExecutionStatsDefinition.getAvgTimeOfExecutions());
+    }
+
+    private static void printFlowStepsStats(FlowExecutionStatsDefinition flowExecutionStatsDefinition) {
+        System.out.println("Steps stats: ");
+        for(StepExecutionStats stepExecutionStats: flowExecutionStatsDefinition.getStepExecutionsStats()){
+            System.out.println("Step name: " + stepExecutionStats.getStepName());
+            System.out.println("Step number of executions: " + stepExecutionStats.getNumOfExecutions());
+            System.out.println("Step Average time of execution duration: " + stepExecutionStats.getAvgTimeOfExecutions());
+        }
     }
 
     @Override
@@ -173,45 +349,28 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         consoleStatus = ConsoleStatus.EXIT;
     }
 
-    @Override
-    public int chooseMenu() {
-        int choose;
-        do {
-            System.out.println("\nPlease choose which action you would like to perform");
-            System.out.println("1. Load new file to the system\n2.Introducing the Flow definition.\n" +
-                    "3.Flow activation (Execution).\n" +
-                    "4.Displaying full details of past flow execution.\n" +
-                    "5.Statistics on the flow execution's that have happened in the system until now.\n" +
-                    "6.exit.");
-            choose = inputFromUser.getIntByRange(6);
-            if(choose<1 || choose>6)
-                System.out.println(choose+" is not in range.\nchoose number between 1 to 6.");
-        }while (choose<1 || choose>6);
-
-        return choose;
+    private String getFlowFromUser() {
+        System.out.println("Please choose a flow, by his number.");
+        printFlowsOrderList();
+        String flowName = getFlowName();
+        return flowName;
     }
 
-    @Override
-    public void doCommand(int choose) {
-        switch (choose){
-            case (1):
-                this.load();
-                break;
-            case (2):
-                this.showFlowDetails();
-                break;
-            case(3):
-                this.executeFlow();
-                break;
-            case (4):
-                this.showExecuteHistory();
-                break;
-            case (5):
-                this.showStats();
-                break;
-            case(6):
-                this.exit();
-                break;
-        }
+    private String getFlowName(){
+        Integer choice = inputFromUser.getIntByRange(stepper.getNumOfFlows());
+        return stepper.getFlowsByNumber().get(choice);
     }
+
+    private void printFlowsOrderList() {
+        stepper.getFlowsByNumber().forEach((place, name) -> System.out.println(place + ". " + name));
+    }
+
+    private static void seperateBlocksOfContent() {
+        System.out.println("----------------------------------------------------");
+    }
+
+    private static void lineSpace() {
+        System.out.println();
+    }
+
 }

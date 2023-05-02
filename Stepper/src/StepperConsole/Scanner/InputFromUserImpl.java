@@ -1,5 +1,7 @@
 package StepperConsole.Scanner;
 
+import StepperConsole.StepperConsoleOptions;
+
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -40,6 +42,8 @@ public class InputFromUserImpl implements InputFromUser{
         }
         return choose;
     }
+
+
 
     @Override
     public Double getDouble() {
