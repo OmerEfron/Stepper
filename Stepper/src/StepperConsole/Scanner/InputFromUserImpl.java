@@ -13,7 +13,8 @@ public class InputFromUserImpl implements InputFromUser{
     public Integer getInt() {
         Integer choose=-1;
         boolean exceptionCaught = false;
-        while (choose == -1 || exceptionCaught) {
+        //while (choose == -1 || exceptionCaught) {
+        do {
             try {
                 exceptionCaught = false; // reset the flag
                 choose = scanner.nextInt();
@@ -22,20 +23,26 @@ public class InputFromUserImpl implements InputFromUser{
                 System.out.println("You need to enter a number!\nplease try again");
                 scanner.next(); // consume the invalid input
             }
-        }
+        }while (exceptionCaught);
         return choose;
     }
 
     @Override
     public Integer getIntByRange(Integer range) {
-        Integer choose=-1;
-        boolean exceptionCaught = false;
-        while (choose == -1 || exceptionCaught || choose > range) {
+        Integer choose=null;
+        boolean isInt = false;
+        while (!isInt) {
             try {
-                exceptionCaught = false; // reset the flag
+
                 choose = scanner.nextInt();
+                if(choose>range || choose<1) {
+                    System.out.println(choose + " is not in range.\nPlease try again.");
+                    isInt = false;
+                }
+                else
+                    isInt=true;
             } catch (InputMismatchException e) {
-                exceptionCaught = true; // set the flag
+                isInt = false; // set the flag
                 System.out.println("You need to enter a number!\nplease try again");
                 scanner.next(); // consume the invalid input
             }
