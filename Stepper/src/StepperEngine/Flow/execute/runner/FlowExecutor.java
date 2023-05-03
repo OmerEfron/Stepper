@@ -23,23 +23,24 @@ public class FlowExecutor {
             stepExecutionContext.updateCustomMap(step);
             stepExecutionContext.addStepData(step);
             Instant stepStart = Instant.now();
+
             if(flowStatus != FlowStatus.FAIL) {
-                StepStatus stepStatus = step.getStepDefinition().invoke(stepExecutionContext, step.getNameToAlias(), step.getStepFinalName());
+                StepStatus stepStatus = invokeStep(stepExecutionContext, step);
                 Instant stepEnd = Instant.now();
+                setStepTotalTime(stepExecutionContext, step, stepStart, stepEnd);
                 if (stepStatus == StepStatus.FAIL && !step.skipIfFail()) {
                     flowStatus = FlowStatus.FAIL;
                     break;
-                } else if (stepStatus == StepStatus.WARNING) {
+                }
+                else if (stepStatus == StepStatus.WARNING) {
                     flowStatus = FlowStatus.WARNING;
                 }
-                stepExecutionContext.setTotalTime(step.getStepFinalName(), Duration.between(stepStart, stepEnd));
             }
             else{
                 stepExecutionContext.setStepStatus(step.getStepFinalName() ,StepStatus.NOT_INVOKED);
             }
         }
 
-        //todo:update flow data
         currFlow.setTotalTime(Duration.between(start, Instant.now()));
         currFlow.createUUID();
         currFlow.setFlowStatus(flowStatus);
@@ -47,6 +48,14 @@ public class FlowExecutor {
         currFlow.setStepsData(stepExecutionContext.getStepsData());
     }
 
+    private static StepStatus invokeStep(StepExecutionContext stepExecutionContext, StepUsageDeclerationInterface step) {
+        StepStatus stepStatus = step.getStepDefinition().invoke(stepExecutionContext, step.getNameToAlias(), step.getStepFinalName());
+        return stepStatus;
+    }
+
+    private static void setStepTotalTime(StepExecutionContext stepExecutionContext, StepUsageDeclerationInterface step, Instant stepStart, Instant stepEnd) {
+        stepExecutionContext.setTotalTime(step.getStepFinalName(), Duration.between(stepStart, stepEnd));
+    }
 
 
     private static Instant updateTime(FlowExecution currFlow) {

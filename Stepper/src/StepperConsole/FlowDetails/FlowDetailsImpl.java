@@ -41,7 +41,7 @@ public class FlowDetailsImpl implements FlowDetails {
     private void buildOutputs(FlowDefinitionInterface flow) {
         for(String outputName: flow.getAllOutputs().keySet()){
             DataDefinitionsDeclaration data = flow.getAllOutputs().get(outputName).getKey();
-            outputs.add(new Output(outputName, data.dataDefinition().getType().getSimpleName(),
+            outputs.add(new Output(outputName, data.dataDefinition().getName(),
                     flow.getAllOutputs().get(outputName).getValue()));
         }
     }
@@ -61,7 +61,7 @@ public class FlowDetailsImpl implements FlowDetails {
             DataDefinitionsDeclaration data = entry.getKey();
             freeInputs.add(new Input(
                     data.getAliasName(),
-                    data.dataDefinition().getType().getSimpleName(),
+                    data.dataDefinition().getName(),
                     String.valueOf(data.necessity()),
                     entry.getValue()
             ));

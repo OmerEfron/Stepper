@@ -35,6 +35,9 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         stepperConsoleDefinition.run();
     }
 
+    /**
+     * runs the console until the user exits
+     */
     @Override
     public void run() {
         welcomeUser();
@@ -65,11 +68,21 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
 
     }
 
+    /**
+     * prints a welcome greeting to the user.
+     */
     private void welcomeUser(){
-        System.out.println("Welcome to Stepper. A place that all of your steps connects in a glorious way to one" +
+        System.out.println("Welcome to Stepper. A place that all of your steps connects in a glorious way to one " +
                 "marvelous flow.");
     }
 
+    /**
+     * a method to check the validity of the user's choice.
+     * If the user chose to see history executions or flow details and so, but there are no flows in the
+     * system, returns true. else false.
+     * @param choice - the option the user chose
+     * @return true if there are no flows in the system.
+     */
     private boolean askToLoadIfNotLoaded(StepperConsoleOptions choice) {
         if((choice != StepperConsoleOptions.LOAD && choice != StepperConsoleOptions.EXIT) && (!isLoaded || stepper.getNumOfFlows() == 0)){
             System.out.println("There are no flows yet in the system. Try load some from main menu and then try again. ");
@@ -78,6 +91,11 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         return false;
     }
 
+    /**
+     * a method to get the user choice from the main menu.
+     * prints the options from the Enum StepperConsoleOptions, and returns the one he chose.
+     * @return StepperConsoleOption value that the user chose.
+     */
     private StepperConsoleOptions getUserChoice() {
         System.out.println("Please choose one of the following options, by entering the number near the desired option:");
         for(StepperConsoleOptions option:StepperConsoleOptions.values()){
@@ -86,6 +104,12 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         return StepperConsoleOptions.getOption(inputFromUser.getIntByRange(StepperConsoleOptions.values().length));
     }
 
+    /**
+     * a method to load a new xml file to the system.
+     * Uses the TheStepper class to first read it from the xml file
+     * then, converts it to a Stepper, if it's valid.
+     * If it is not an application-valid file, prints a message with the problem in the file and the file is not loaded.
+     */
     @Override
     public void load() {
         System.out.println("Please enter file path to load an xml application-wise file.\n" +
@@ -95,12 +119,18 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         try {
             TheStepper stStepper = new StepperReaderFromXml().read(filePath);
             stepper.newFlows(stStepper);
+            setupConsole();
         } catch (ReaderException | FlowBuildException | RuntimeException e ) {
+            lineSpace();
             System.out.println(e.getMessage());
+            seperateBlocksOfContent();
         }
-        setupConsole();
     }
 
+    /**
+     * a private method to setup the console after it has been loaded.
+     * sets the flowNames and a collection of executions.
+     */
     private void setupConsole() {
         flowNames = stepper.getFlowNames();
         flowExecutionsCollectorMap.clear();
@@ -109,18 +139,29 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         System.out.println("Stepper has been loaded successfully!");
     }
 
+    /**
+     * a private method to get from user the file path for the xml file
+     * @return String - the file path from user.
+     */
     private static String getFilePath() {
         Scanner scanner = new Scanner(System.in);
         String filePath=scanner.nextLine();
         return filePath;
     }
 
+    /**
+     * The method to show a flow details from system.
+     */
     @Override
     public void showFlowDetails() {
         FlowDetails flowDetails = stepper.buildShowFlow(getFlowFromUser());
         printFlowDetails(flowDetails);
     }
 
+    /**
+     * Prints the flow details, from the FlowDetails instance.
+     * @param flowDetails - the flow to show
+     */
     private static void printFlowDetails(FlowDetails flowDetails) {
         seperateBlocksOfContent();
         printFlowNameAndDescription(flowDetails);
@@ -137,6 +178,10 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         seperateBlocksOfContent();
     }
 
+    /**
+     * prints the flowDetails outputs
+     * @param flowDetails - the flow to display it outputs
+     */
     private static void printOutputs(FlowDetails flowDetails) {
         System.out.println("The outputs produced by the flow: ");
         for(Output output: flowDetails.getOutputs()){
@@ -145,11 +190,20 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         }
     }
 
+
+    /**
+     * prints the flowDetails name and description
+     * @param flowDetails - the flow to display it outputs
+     */
     private static void printFlowNameAndDescription(FlowDetails flowDetails) {
         System.out.println("Flow Name: " + flowDetails.getFlowName());
         System.out.println("Flow description: "+ flowDetails.getFlowDescription());
     }
 
+    /**
+     * prints the flowDetails formal outputs
+     * @param formalOutputs
+     */
     private static void printFormalOutputs(List<String> formalOutputs) {
         if(formalOutputs.isEmpty()){
             System.out.println("Flow has no formal outputs");
@@ -160,10 +214,18 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         }
     }
 
+    /**
+     * prints the flowDetails readOnly definition
+     * @param flowDetails - the flow to display it outputs
+     */
     private static void printIfFlowReadOnly(FlowDetails flowDetails) {
         System.out.println("The flow is "+ (flowDetails.isFlowReadOnly()? "":"not " + "read only"));
     }
 
+    /**
+     * prints the flowDetails steps
+     * @param steps - the steps list of the flow
+     */
     private static void printSteps(List<StepDetails> steps) {
         if(steps.isEmpty()){
             System.out.println("The flow has no steps.");
@@ -175,6 +237,10 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         }
     }
 
+    /**
+     * prints the flowDetails freeInputs
+     * @param freeInputs - the inputs list of the flow
+     */
     private static void printFreeInputs(List<Input> freeInputs) {
         System.out.println("The free inputs are: ");
         freeInputs.forEach(input -> {
@@ -184,6 +250,12 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         });
     }
 
+
+    /**
+     * The method that executes a flow.
+     * First it gets from the user which flow he would like to execute
+     * Then executes the flow using the Executor instance.
+     */
     @Override
     public void executeFlow() {
         Executor executor = new ExecutorImpl(stepper);
@@ -191,8 +263,22 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         execute(executor, flowName);
     }
 
+    /**
+     * Execute the flow that it's name is flowName, using executor instance.
+     * @param executor - an Executor instance.
+     * @param flowName - the flow name to execute.
+     */
     private void execute(Executor executor, String flowName) {
         Optional<FlowExecutionData> optionalFlowExecutionData = executor.executeFlow(flowName,inputFromUser);
+        printExecutionDetailsAfterExecution(optionalFlowExecutionData);
+    }
+
+    /**
+     * prints an Execution details, if accured. else does nothing.
+     * @param optionalFlowExecutionData - an optional instance of FlowExecutionData. if param.isPresent null,
+     *                                  then the execution did not happend for some reason.
+     */
+    private void printExecutionDetailsAfterExecution(Optional<FlowExecutionData> optionalFlowExecutionData) {
         if(optionalFlowExecutionData.isPresent()){
             FlowExecutionData flowExecutionData = optionalFlowExecutionData.get();
             flowExecutionsCollectorMap.get(optionalFlowExecutionData.get().getFlowName()).addFlowExecutionData(optionalFlowExecutionData.get());
@@ -206,6 +292,10 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         }
     }
 
+    /**
+     * Prints a flow execution's formal output with their content.
+     * @param flowExecutionData - the execution to print
+     */
     private static void printFlowFormalOutputsContentWithUserString(FlowExecutionData flowExecutionData) {
         for(IOData output: flowExecutionData.getFormalOutputs()){
             System.out.println(output.getUserString());
@@ -221,6 +311,10 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         printFlowExecutionHistory(flowExecutionsCollector.getFlowExecutionData(uuid));
     }
 
+    /**
+     *
+     * @return
+     */
     private FlowExecutionsCollector getFlowExecutionsCollector() {
         String flowName = getFlowFromUser();
         FlowExecutionsCollector flowExecutionsCollector = flowExecutionsCollectorMap.get(flowName);

@@ -32,9 +32,15 @@ public class FlowExecutionDataImpl implements FlowExecutionData {
         stepExecuteDataList = flowExecution.getStepsData();
         setFreeInputs(flowExecution);
         setOutputs(flowExecution);
+        formalOutputs = getFormalOutputs(flowExecution);
+    }
+
+    private Set<IOData> getFormalOutputs(FlowExecution flowExecution) {
+        final Set<IOData> formalOutputs;
         formalOutputs = outputs.stream()
                 .filter(output -> flowExecution.getFormalOutputs().containsKey(output.getName()))
                 .collect(Collectors.toSet());
+        return formalOutputs;
     }
 
     public List<StepExecuteData> getStepExecuteDataList() {
