@@ -70,7 +70,7 @@ public class FlowExecutionDataImpl implements FlowExecutionData {
                             false,
                             data.getAliasName(),
                             data.userString(),
-                            data.dataDefinition().getType().getSimpleName(),
+                            data.dataDefinition().getName(),
                             content,
                             String.valueOf(data.necessity()));
                 })
@@ -91,7 +91,7 @@ public class FlowExecutionDataImpl implements FlowExecutionData {
                             true,
                             data.getAliasName(),
                             data.userString(),
-                            data.dataDefinition().getType().getSimpleName(),
+                            data.dataDefinition().getName(),
                             content, String.valueOf(data.necessity()));
                 })
                 .forEach(outputs::add);

@@ -14,6 +14,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * a class that repesents the engine of the system.
+ * includes flow
+ */
 public class Stepper {
     private List<FlowDefinitionInterface> flows = new ArrayList<>();
 

@@ -303,17 +303,21 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         }
     }
 
+    /**
+     * The method to let the user see a history of a flow execution.
+     */
     @Override
     public void showExecuteHistory() {
         System.out.println("Please choose which flow you want to see an execution of it:\n");
         FlowExecutionsCollector flowExecutionsCollector = getFlowExecutionsCollector();
-        String uuid = getExecutionUUID(flowExecutionsCollector);
+        String uuid = getExecutionUUIDFromUser(flowExecutionsCollector);
         printFlowExecutionHistory(flowExecutionsCollector.getFlowExecutionData(uuid));
     }
 
     /**
-     *
-     * @return
+     * Gets from the user the flow he wants to watch one of it past executions.
+     * Then gets the collection of the flow's executions.
+     * @return an Instance that repesents the flow's past executions.
      */
     private FlowExecutionsCollector getFlowExecutionsCollector() {
         String flowName = getFlowFromUser();
@@ -321,19 +325,32 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         return flowExecutionsCollector;
     }
 
-    private String getExecutionUUID(FlowExecutionsCollector flowExecutionsCollector) {
+    /**
+     * prints to the user the list of the past executions, so He could choose one, and gets it from him.
+     * @param flowExecutionsCollector the flow to get from the user it uuid of the execution he wants.
+     * @return the chosen uuid of the execution the user asked.
+     */
+    private String getExecutionUUIDFromUser(FlowExecutionsCollector flowExecutionsCollector) {
         flowExecutionsCollector.getFlowExecutionByNumber().forEach((id, name) -> System.out.println(id + ". " + name));
         String uuid = getUUID(flowExecutionsCollector);
         return uuid;
     }
 
+    /**
+     * Gets from a user a valid uuid of a past execution.
+     * @param flowExecutionsCollector the flow's collection of executions
+     * @return the uuid chosen by the user.
+     */
     private String getUUID(FlowExecutionsCollector flowExecutionsCollector) {
-        String uuid = flowExecutionsCollector.getFlowExecutionByNumber().get(inputFromUser.getIntByRange(
+        return flowExecutionsCollector.getFlowExecutionByNumber().get(inputFromUser.getIntByRange(
                 flowExecutionsCollector.getFlowExecutionByNumber().size()));
-        return uuid;
     }
 
 
+    /**
+     * prints all the details of a flow past execution.
+     * @param flowExecutionData an instance of a past flow execution to print.
+     */
     private static void printFlowExecutionHistory(FlowExecutionData flowExecutionData) {
         seperateBlocksOfContent();
         printExecutionMetaData(flowExecutionData);
@@ -406,6 +423,10 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     }
 
 
+    /**
+     * shows a flow's statistics of past executions.
+     * gets from user the flow he wants to see it statistics, and then prints it.
+     */
     @Override
     public void showStats() {
         String flowName = getFlowFromUser();
@@ -437,12 +458,19 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         }
     }
 
+    /**
+     * changes the console status to EXIT so the program will end.
+     */
     @Override
     public void exit() {
         System.out.println("Goodbye!");
         consoleStatus = ConsoleStatus.EXIT;
     }
 
+    /**
+     * gets a flow name from the user, by the matching index of it in the flow list.
+     * @return the name of the chosen flow
+     */
     private String getFlowFromUser() {
         System.out.println("Please choose a flow, by his number.");
         printFlowsOrderList();
@@ -450,6 +478,10 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         return flowName;
     }
 
+    /**
+     * gets from the user the index of the wanted flow, and extract the name of it.
+     * @return the name of the chosen flow
+     */
     private String getFlowName(){
         Integer choice = inputFromUser.getIntByRange(stepper.getNumOfFlows());
         return stepper.getFlowsByNumber().get(choice);
