@@ -6,14 +6,14 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Holds all the flow executions history data.
+ */
 public class FlowExecutionsCollector {
 
     private final String flowName;
-
-
-
-    private final Map<String, FlowExecutionData> flowExecutionDataMap;
-    private final Map<Integer, String> flowExecutionByNumber;
+    private final Map<String, FlowExecutionData> flowExecutionDataMap; //uuid -> execution data
+    private final Map<Integer, String> flowExecutionByNumber; // id -> uuid
 
     public FlowExecutionsCollector(String flowName) {
         this.flowName = flowName;

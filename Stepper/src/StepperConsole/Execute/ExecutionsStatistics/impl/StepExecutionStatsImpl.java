@@ -15,8 +15,8 @@ public class StepExecutionStatsImpl implements StepExecutionStats {
 
     public StepExecutionStatsImpl(String stepName, FlowExecutionsCollector flowExecutionsCollector){
         this.stepName = stepName;
-        Long totalTimeCount = 0L;
-        Integer exeCount = 0;
+        long totalTimeCount = 0L;
+        int exeCount = 0;
         for(FlowExecutionData flowExecutionData: flowExecutionsCollector.getFlowExecutionDataMap().values()){
             exeCount++;
             for(StepExecuteData stepExecuteData: flowExecutionData.getStepExecuteDataList()){

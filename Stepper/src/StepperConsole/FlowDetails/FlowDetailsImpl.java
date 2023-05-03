@@ -12,6 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * holds the details of a flow
+ */
 public class FlowDetailsImpl implements FlowDetails {
 
 
@@ -38,6 +41,10 @@ public class FlowDetailsImpl implements FlowDetails {
         buildOutputs(flow);
     }
 
+    /**
+     * extract the outputs details from the flow definition,
+     * @param flow the flow definition to extract the outputs from
+     */
     private void buildOutputs(FlowDefinitionInterface flow) {
         for(String outputName: flow.getAllOutputs().keySet()){
             DataDefinitionsDeclaration data = flow.getAllOutputs().get(outputName).getKey();
@@ -46,16 +53,28 @@ public class FlowDetailsImpl implements FlowDetails {
         }
     }
 
+    /**
+     * extract the steps details from the flow definition,
+     * @param flow the flow definition to extract the steps from
+     */
     private void buildSteps(FlowDefinitionInterface flow) {
         flow.getSteps().forEach(step -> steps.add(new StepDetailsImpl(step)));
     }
 
+    /**
+     * extract the formal outputs details from the flow definition,
+     * @param flow the flow definition to extract the formal outputs from
+     */
     private List<String> buildFormalOutputs(FlowDefinitionInterface flow) {
         final List<String> formalOutputs;
         formalOutputs = Arrays.asList(flow.outputStrings().split(","));
         return formalOutputs;
     }
 
+    /**
+     * extract the inputs details from the flow definition,
+     * @param flow the flow definition to extract the inputs from
+     */
     private void buildFreeInputsDetails(FlowDefinitionInterface flow) {
         for (Map.Entry<DataDefinitionsDeclaration, List<String>> entry : flow.getFreeInputsWithOptional().entrySet()) {
             DataDefinitionsDeclaration data = entry.getKey();

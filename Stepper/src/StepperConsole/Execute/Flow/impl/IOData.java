@@ -1,5 +1,8 @@
 package StepperConsole.Execute.Flow.impl;
 
+/**
+ * holds an input/output data from a flow that has been executed.
+ */
 public class IOData {
 
     private final boolean isOutput;
