@@ -61,12 +61,13 @@ public class CollectFilesInFolder extends StepDefinitionAbstractClass {
 
         context.storeValue(nameToAlias.get("FILES_LIST"),new FilesListDataDef(fileList));
         context.storeValue(nameToAlias.get("TOTAL_FOUND"),size);
-
         if (fileList.size() == 0) {
+            context.addLog(stepName,"No files in folder matching the filter.");
             context.setInvokeSummery(stepName,"The folder is empty.");
             context.setStepStatus(stepName,StepStatus.WARNING);
             return StepStatus.WARNING;
         }
+        context.addLog(stepName,"Found "+size+" files in folder matching the filter ");
         context.setInvokeSummery(stepName,"The files in "+folderPath+" collected successfully");
         context.setStepStatus(stepName,StepStatus.SUCCESS);
         return StepStatus.SUCCESS;

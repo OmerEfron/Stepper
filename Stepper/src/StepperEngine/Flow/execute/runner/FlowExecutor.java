@@ -23,7 +23,7 @@ public class FlowExecutor {
             stepExecutionContext.updateCustomMap(step);
             stepExecutionContext.addStepData(step);
             Instant stepStart = Instant.now();
-            if(flowStatus == FlowStatus.SUCCESS) {
+            if(flowStatus != FlowStatus.FAIL) {
                 StepStatus stepStatus = step.getStepDefinition().invoke(stepExecutionContext, step.getNameToAlias(), step.getStepFinalName());
                 Instant stepEnd = Instant.now();
                 if (stepStatus == StepStatus.FAIL && !step.skipIfFail()) {
