@@ -47,4 +47,6 @@ public class RelationOfStringRows extends Relation<List<String>> {
                         .map(row -> String.join("|", row))
                         .collect(Collectors.joining("\n"));
     }
+
+
 }

@@ -104,6 +104,8 @@ public class FlowDefinition implements FlowDefinitionInterface {
             return problems;
         }
 
+
+
         customMapping();
         if(!problems.isEmpty()){
             return problems;
@@ -154,7 +156,7 @@ public class FlowDefinition implements FlowDefinitionInterface {
                 .collect(Collectors.toSet());
         for(DataDefinitionsDeclaration dd: freeInputs){
             if(!dd.dataDefinition().isUserFriendly() && dd.necessity() == DataNecessity.MANDATORY){
-                problems.add("Mandatory input "+ dd.userString() + " is not accessible");
+                problems.add("Mandatory input \""+ dd.userString() + "\" is not accessible");
             }
         }
 
@@ -419,13 +421,6 @@ public class FlowDefinition implements FlowDefinitionInterface {
                 .flatMap(step -> step.getStepDefinition().getOutputs().stream()
                         .map(dd -> new AbstractMap.SimpleEntry<>(dd.getAliasName(), new Pair<>(dd, step.getStepFinalName()))))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v1, HashMap::new));
-//        steps.forEach(step -> step.getDataMap()
-//                .forEach((k, v) -> allOuputs.remove(v.getValue())));
-//        steps.stream()
-//                .flatMap(step -> step.getStepDefinition().getInputs().stream()
-//                        .filter(dd -> !flow.getFlowOutput().contains(dd.getAliasName()))
-//                        .map(DataDefinitionsDeclaration::getAliasName))
-//                .forEach(allOuputs::remove);
         this.updateFormalOutputs();
     }
     @Override

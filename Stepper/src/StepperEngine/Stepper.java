@@ -24,20 +24,7 @@ public class Stepper {
     private Map<Integer, String> flowsByNumber = new LinkedHashMap<>();
 
     public Stepper(){
-//        checkForDuplicateNames(stepper);
-//        checkForDuplicateOutputs(stepper);
-//
-//        flows = stepper.getFlows().getFlows().stream()
-//                .map(element-> {
-//                    try {
-//                        return new FlowDefinition(element);
-//                    } catch (RuntimeException | FlowBuildException e) {
-//                        throw new RuntimeException("Error while building stepper: " + e.toString());
-//                    }
-//                })
-//                .collect(Collectors.toList());
-//
-//        flowsMap = flows.stream().collect(Collectors.toMap(FlowDefinitionInterface::getName, flow -> flow));
+
     }
 
     public void newFlows(TheStepper stepper) throws FlowBuildException {
@@ -103,7 +90,7 @@ public class Stepper {
     private static void checkForDuplicateNames(TheStepper stepper) throws FlowBuildException {
         String duplicate;
         if((duplicate = findDuplicateFlowName(stepper)) != null){
-            throw new FlowBuildException("flow " + duplicate + " is already exist", duplicate);
+            throw new FlowBuildException("Duplicate flow error. " + duplicate + " is already exist", duplicate);
         }
     }
 
