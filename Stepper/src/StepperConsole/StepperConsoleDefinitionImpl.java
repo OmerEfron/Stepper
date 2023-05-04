@@ -77,6 +77,10 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
 
     }
 
+    /**
+     * Saves a current state of a stepper to file
+     * @throws IOException if the file isn't exist or not valid
+     */
     @Override
     public void saveToFile() throws IOException {
         System.out.println("Please enter the full file's path to save the data to:");
@@ -90,6 +94,11 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         }
     }
 
+    /**
+     * loads an old state of stepper from a file
+     * @throws IOException if the file isn't exist or not valid
+     * @throws ClassNotFoundException .
+     */
     @Override
     public void uploadFromFile() throws IOException, ClassNotFoundException {
         System.out.println("Please enter the full file's path to load the data from:");
