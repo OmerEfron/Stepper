@@ -17,10 +17,17 @@ public class CSVExporter extends StepDefinitionAbstract {
         addInput(new DataDefinitionDeclarationImpl("SOURCE", "Source data", DataNecessity.MANDATORY, DataDefinitionRegistry.RELATION));
         addOutput(new DataDefinitionDeclarationImpl("RESULT", "CSV export result", DataNecessity.NA, DataDefinitionRegistry.STRING));
     }
+
+    /***
+     *Given some tabular information, converts it to CSV format (in string format)
+     * @param context-interface that saves all system data
+     * @param nameToAlias-Map of the name of the information definition to the name of the information in the current flow
+     * @param stepName- The step name in the flow
+     */
     @Override
     public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName) {
-        RelationInterface relation=context.getDataValue(nameToAlias.get("SOURCE"),Relation.class);
-        String result=relation.relationToCSV();
+        RelationInterface relation=context.getDataValue(nameToAlias.get("SOURCE"),Relation.class);//get tabular information
+        String result=relation.relationToCSV();//Converts the relation to CSV string
         context.addLog(stepName,"About to process "+relation.numOfRows().toString()+" lines of data");
 
         context.storeValue(nameToAlias.get("RESULT"),result);

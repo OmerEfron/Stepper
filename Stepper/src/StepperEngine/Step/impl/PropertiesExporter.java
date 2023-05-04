@@ -20,6 +20,12 @@ public class PropertiesExporter extends StepDefinitionAbstract {
         addOutput(new DataDefinitionDeclarationImpl("RESULT", "Properties export result", DataNecessity.NA, DataDefinitionRegistry.STRING));
     }
 
+    /***
+     *Given some tabular information, converts it to the format of a properties file (in the form of a string).
+     * @param context-interface that saves all system data
+     * @param nameToAlias-Map of the name of the information definition to the name of the information in the current flow
+     * @param stepName- The step name in the flow
+     */
     @Override
     public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName) {
         Instant start = Instant.now();

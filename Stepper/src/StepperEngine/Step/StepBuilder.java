@@ -3,7 +3,11 @@ package StepperEngine.Step;
 import StepperEngine.Step.api.StepDefinition;
 
 public class StepBuilder  {
-
+    /***
+     * creates a step by his name with reflection.
+     * @param name
+     * @return an instance of the step.
+     */
 
     public StepDefinition getStepInstance(String name){
         try {

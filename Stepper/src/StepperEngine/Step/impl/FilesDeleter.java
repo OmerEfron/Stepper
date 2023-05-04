@@ -23,6 +23,12 @@ public class FilesDeleter extends StepDefinitionAbstract {
         addOutput(new DataDefinitionDeclarationImpl("DELETION_STATS", "Deletion summary results", DataNecessity.NA, DataDefinitionRegistry.MAPPING));
     }
 
+    /***
+     * Given a list, files, goes through all of them and deletes them.
+     * @param context-interface that saves all system data
+     * @param nameToAlias-Map of the name of the information definition to the name of the information in the current flow
+     * @param stepName- The step name in the flow
+     */
     @Override
     public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName) {
         FilesListDataDef filesListDataDef = context.getDataValue(nameToAlias.get("FILES_LIST"), FilesListDataDef.class);
@@ -42,7 +48,7 @@ public class FilesDeleter extends StepDefinitionAbstract {
         context.storeValue(nameToAlias.get("DELETION_STATS"),stats);
         context.storeValue(nameToAlias.get("DELETED_LIST"),new StringListDataDef(failToDelete));
 
-        if(countHowMuchNotDeleted==numOfFiles){
+        if(countHowMuchNotDeleted==numOfFiles&& !filesToDelete.isEmpty()){
             context.setInvokeSummery(stepName,"No file was Deleted.");
             context.setStepStatus(stepName,StepStatus.FAIL);
         }
@@ -51,7 +57,10 @@ public class FilesDeleter extends StepDefinitionAbstract {
             context.setInvokeSummery(stepName,"There are "+countHowMuchNotDeleted+" files that didn't deleted");
             context.setStepStatus(stepName,StepStatus.WARNING);
         }else {
-            context.setInvokeSummery(stepName,"All files deleted successfully.");
+            if (filesToDelete.isEmpty())
+                context.setInvokeSummery(stepName,"There are no files to delete.");
+            else
+                context.setInvokeSummery(stepName,"All files deleted successfully.");
             context.setStepStatus(stepName, StepStatus.SUCCESS);
         }
         return context.getStepStatus(stepName);

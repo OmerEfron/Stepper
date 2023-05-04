@@ -19,6 +19,12 @@ public class FileDumper extends StepDefinitionAbstract {
         addOutput(new DataDefinitionDeclarationImpl("RESULT", "File Creation Result", DataNecessity.NA, DataDefinitionRegistry.STRING));
     }
 
+    /***
+     * Generates a text file by name and name in it's content
+     * @param context-interface that saves all system data
+     * @param nameToAlias-Map of the name of the information definition to the name of the information in the current flow
+     * @param stepName- The step name in the flow
+     */
     @Override
     public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName)  {
         String content = context.getDataValue(nameToAlias.get("CONTENT"), String.class);

@@ -4,10 +4,13 @@ import StepperEngine.DataDefinitions.api.DataDefinition;
 
 import java.util.Objects;
 
+/***
+ * A class that represents the inputs and outputs of each step.
+ */
 public class DataDefinitionDeclarationImpl implements DataDefinitionsDeclaration{
 
     String name;
-    String userString;
+    String userString;//Displays the string to be displayed to the user when entering or exiting the information
     DataNecessity dataNecessity;
     String alias;
     DataDefinition dataDefinition;
@@ -50,7 +53,10 @@ public class DataDefinitionDeclarationImpl implements DataDefinitionsDeclaration
     }
 
 
-
+    /***
+     * Implementation of equals by name or the same class or a successor class
+     * @param obj
+     */
     @Override
     public boolean equals(Object obj){
         if(obj == this)

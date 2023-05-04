@@ -26,6 +26,13 @@ public class FilesRenamer extends StepDefinitionAbstract {
         this.addOutput(new DataDefinitionDeclarationImpl("RENAME_RESULT","Rename operation summary",DataNecessity.NA,DataDefinitionRegistry.RELATION_STRING));
     }
 
+    /***
+     *Given a list of filenames, renames all of them by adding a prefix or suffix as defined in the input.
+     * @param context-interface that saves all system data
+     * @param nameToAlias-Map of the name of the information definition to the name of the information in the current flow
+     * @param stepName- The step name in the flow
+     * @return List in a table configuration describing all files with their original name and their final name
+     */
     @Override
     public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName) {
         FilesListDataDef filesListDataDef = context.getDataValue(nameToAlias.get("FILES_TO_RENAME"), FilesListDataDef.class);
@@ -37,7 +44,7 @@ public class FilesRenamer extends StepDefinitionAbstract {
         RelationOfStringRows result = createRelationOfStringRows();
         Integer num=0;
 
-        context.addLog(stepName,"About to start rename" + filesToRename.size() + " files. Adding prefix: " + prefix + " adding suffix: " + suffix);
+        context.addLog(stepName,"About to start rename" + filesToRename.size() + " files. Adding prefix: " + prefix.orElse("") + " adding suffix: " + suffix.orElse(""));
         StepStatus success = checkIfTheFolderEmpty(context, filesToRename, result,nameToAlias.get("RENAME_RESULT"),stepName);
         if (success != null) {
             context.setTotalTime(stepName,Duration.between(start, Instant.now()));
@@ -57,7 +64,6 @@ public class FilesRenamer extends StepDefinitionAbstract {
             row.add(newFileName);
             file.renameTo(newFile);
             result.addRow(row);
-            context.addLog(stepName,"Prefix and postfix added to file names successfully.");
         } catch(Exception e){
                 row.add(originalFileName);
                 context.addLog(stepName,"Problem renaming file " + originalFileName);

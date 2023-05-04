@@ -21,10 +21,11 @@ import StepperConsole.Scanner.InputFromUser;
 import StepperConsole.Scanner.InputFromUserImpl;
 import javafx.util.Pair;
 
+import java.io.*;
 import java.util.*;
 
 public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
-    private final Stepper stepper = new Stepper();
+    private Stepper stepper = new Stepper();
     private final InputFromUser inputFromUser=new InputFromUserImpl();
     private Map<String,FlowExecutionsCollector> flowExecutionsCollectorMap = new HashMap<>();
     private List<String> flowNames;
@@ -60,11 +61,27 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
                     case SHOW_STATS:
                         showStats();
                         break;
+                    case SAVE_TO_FILE:
+                        saveToFile();
+                        break;
+                    case LOAD_FROM_FILE:
+                        uploadFromFile();
+                        break;
                     case EXIT:
                         exit();
                 }
             }
         }
+
+    }
+
+    @Override
+    public void saveToFile() {
+
+    }
+
+    @Override
+    public void uploadFromFile() {
 
     }
 
@@ -455,6 +472,7 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         }
     }
 
+
     private static void printStats(FlowExecutionStatsDefinition flowExecutionStatsDefinition) {
         seperateBlocksOfContent();
         printFlowStats(flowExecutionStatsDefinition);
@@ -517,5 +535,7 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     private static void lineSpace() {
         System.out.println();
     }
+
+
 
 }

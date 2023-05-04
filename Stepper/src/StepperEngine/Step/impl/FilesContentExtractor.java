@@ -22,6 +22,12 @@ public class FilesContentExtractor extends StepDefinitionAbstract {
         this.addOutput(new DataDefinitionDeclarationImpl("DATA","Data extraction",DataNecessity.NA,DataDefinitionRegistry.RELATION_STRING));
     }
 
+    /***
+     *Given a list of text files and a relevant line number, returns the content of the relevant line.
+     * @param context-interface that saves all system data
+     * @param nameToAlias-Map of the name of the information definition to the name of the information in the current flow
+     * @param stepName- The step name in the flow
+     */
     @Override
     public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName) {
         FilesListDataDef filesListDataDef=context.getDataValue(nameToAlias.get("FILES_LIST"),FilesListDataDef.class);
@@ -58,7 +64,10 @@ public class FilesContentExtractor extends StepDefinitionAbstract {
             result.addRow(row);
         }
         context.storeValue(nameToAlias.get("DATA"),result);
-        if(files.isEmpty()){context.setInvokeSummery(stepName,"There are no files to extract");}
+        if(files.isEmpty()){
+            context.setInvokeSummery(stepName,"There are no files to extract");
+            context.setStepStatus(stepName,StepStatus.SUCCESS);
+        }
         if(result.isEmpty()){
             context.setStepStatus(stepName,StepStatus.WARNING);
         }else {

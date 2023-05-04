@@ -16,7 +16,12 @@ public class SpendSomeTimeStep extends StepDefinitionAbstract {
         super("Spend Some Time", true);
         this.addInput(new DataDefinitionDeclarationImpl("TIME_TO_SPEND","Total sleeping time (sec)", DataNecessity.MANDATORY, DataDefinitionRegistry.NUMBER));
     }
-
+    /***
+     *Sleep operation for a time limited in seconds.
+     * @param context-interface that saves all system data
+     * @param nameToAlias-Map of the name of the information definition to the name of the information in the current flow
+     * @param stepName- The step name in the flow
+     */
     @Override
     public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName)  {
         Integer timeToSleep= context.getDataValue(nameToAlias.get("TIME_TO_SPEND"), Integer.class);
@@ -31,7 +36,7 @@ public class SpendSomeTimeStep extends StepDefinitionAbstract {
             Thread.sleep(timeToSleep*1000);
             context.addLog(stepName,"Done sleeping…");
         } catch (InterruptedException e) {
-            //throw new RuntimeException(e);
+            context.setInvokeSummery(stepName,e.getMessage());
             context.setStepStatus(stepName,StepStatus.FAIL);
             return StepStatus.FAIL;
         }

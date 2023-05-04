@@ -9,6 +9,8 @@ public interface StepperConsoleDefinition {
     void showExecuteHistory();
 
     void showStats();
+    void saveToFile();
+    void uploadFromFile();
 
     void exit();
 

@@ -10,7 +10,9 @@ public enum StepperConsoleOptions {
     EXECUTE_FLOW(3, "Execute a flow"),
     SHOW_EXECUTE_HISTORY(4, "Show a flow execute history"),
     SHOW_STATS(5, "Show a flow Executions stats"),
-    EXIT(6, "Exit");
+    SAVE_TO_FILE(6,"Save stepper to file"),
+    LOAD_FROM_FILE(7,"Load stepper from file"),
+    EXIT(8, "Exit");
 
     private final Integer value;
     private final String userString;

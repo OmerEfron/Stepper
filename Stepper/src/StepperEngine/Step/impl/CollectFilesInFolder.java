@@ -28,11 +28,18 @@ public class CollectFilesInFolder extends StepDefinitionAbstract {
         addOutput(new DataDefinitionDeclarationImpl("TOTAL_FOUND", "Total files found", DataNecessity.NA, DataDefinitionRegistry.NUMBER));
     }
 
+    /**
+     * Given a path to the directory, it will go through and scan all the files that are in it and return a list of values of type File.
+     * @param context-interface that saves all system data
+     * @param nameToAlias-Map of the name of the information definition to the name of the information in the current flow
+     * @param stepName- The step name in the flow
+     */
     @Override
     public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName) {
         String folderPath = context.getDataValue(nameToAlias.get("FOLDER_NAME"), String.class);
         Optional<String> filterStr = Optional.ofNullable(context.getDataValue(nameToAlias.get("FILTER"), String.class));
-        context.setInvokeSummery(stepName,"Reading folder " + folderPath + "content with filter " + filterStr);
+
+        context.addLog(stepName,"Reading folder " + folderPath + "content with filter " + filterStr.orElse(""));
         Path path = Paths.get(folderPath);
         if(!Files.isDirectory(path)){
             context.addLog(stepName,"There are no folder in path "+folderPath);
@@ -52,11 +59,7 @@ public class CollectFilesInFolder extends StepDefinitionAbstract {
                 }
             }
         }
-//        }else{
-//            context.addLog(stepName,"There are no folder in path "+folderPath);
-//            context.setInvokeSummery(stepName,"There are no folder in path "+folderPath);
-//            context.setStepStatus(stepName,StepStatus.FAIL);
-//        }
+
         Integer size=fileList.size();
 
         context.storeValue(nameToAlias.get("FILES_LIST"),new FilesListDataDef(fileList));
