@@ -443,9 +443,14 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     @Override
     public void showStats() {
         String flowName = getFlowFromUser();
-        FlowExecutionStatsDefinition flowExecutionStatsDefinition = new FlowExecutionStatsDefinitionImpl(
-                flowExecutionsCollectorMap.get(flowName));
-        printStats(flowExecutionStatsDefinition);
+        if (notExecuted(flowExecutionsCollectorMap.get(flowName))){
+            printNoExecutionYet(flowExecutionsCollectorMap.get(flowName));
+        }
+        else {
+            FlowExecutionStatsDefinition flowExecutionStatsDefinition = new FlowExecutionStatsDefinitionImpl(
+                    flowExecutionsCollectorMap.get(flowName));
+            printStats(flowExecutionStatsDefinition);
+        }
     }
 
     private static void printStats(FlowExecutionStatsDefinition flowExecutionStatsDefinition) {
