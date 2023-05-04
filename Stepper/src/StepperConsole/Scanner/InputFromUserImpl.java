@@ -1,14 +1,22 @@
 package StepperConsole.Scanner;
 
-import StepperConsole.StepperConsoleOptions;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+/**
+ * a class that helps to get inputs from the user
+ * implements methods for getting a string from the user, an integer, double and so
+ */
 public class InputFromUserImpl implements InputFromUser{
 
-    private Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner = new Scanner(System.in);
 
+    /**
+     * gets an int from the user and returns it
+     * won't proceed until it gets an integer
+     * @return the int the user inserted
+     */
     @Override
     public Integer getInt() {
         Integer choose=-1;
@@ -27,6 +35,12 @@ public class InputFromUserImpl implements InputFromUser{
         return choose;
     }
 
+    /**
+     * gets an int from the user from range (1,range]
+     * won't proceed until it gets a valid integer.
+     * @param range the max number the user can insert.
+     * @return the integer the user inserted.
+     */
     @Override
     public Integer getIntByRange(Integer range) {
         Integer choose=null;
@@ -51,7 +65,11 @@ public class InputFromUserImpl implements InputFromUser{
     }
 
 
-
+    /**
+     * gets a floating point positive number from the user and returns it
+     * won't proceed until it gets a floating point positive
+     * @return the number the user inserted
+     */
     @Override
     public Double getDouble() {
         Double choose=-1.0;
@@ -65,6 +83,10 @@ public class InputFromUserImpl implements InputFromUser{
         return choose;
     }
 
+    /**
+     * gets a line from the user
+     * @return a string of the line
+     */
     @Override
     public String getString() {
         return scanner.nextLine();

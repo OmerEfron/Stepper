@@ -1,5 +1,8 @@
 package StepperConsole.FlowDetails.StepDetails.FlowIODetails;
 
+/**
+ * holds details of a single input/output in a certain flow.
+ */
 public class FlowIODetailsImpl {
 
     private final String dataName;

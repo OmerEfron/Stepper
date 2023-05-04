@@ -13,15 +13,20 @@ public class StepExecutionStatsImpl implements StepExecutionStats {
     private final Integer numOfExecutions;
     private final Long avgTimeOfExecutions;
 
+    /**
+     * builds a statistic information of a step from a flow, based on the current data in flowExecutionCollector
+     * @param flowExecutionsCollector holds all the flow's history of executions
+     * @param stepName holds the name of the step to evaluate the stats of it.
+     */
     public StepExecutionStatsImpl(String stepName, FlowExecutionsCollector flowExecutionsCollector){
         this.stepName = stepName;
-        Long totalTimeCount = 0L;
-        Integer exeCount = 0;
+        long totalTimeCount = 0L;
+        int exeCount = 0;
         for(FlowExecutionData flowExecutionData: flowExecutionsCollector.getFlowExecutionDataMap().values()){
-            exeCount++;
             for(StepExecuteData stepExecuteData: flowExecutionData.getStepExecuteDataList()){
-                if (stepExecuteData.getFinalName().equals(stepName) && stepExecuteData.getStepStatus() != StepStatus.NOT_INVOKED){
-
+                if (stepExecuteData.getFinalName().equals(stepName) &&
+                        stepExecuteData.getStepStatus() != StepStatus.NOT_INVOKED){
+                    exeCount++;
                     totalTimeCount += stepExecuteData.getTotalTime().toMillis();
                 }
             }

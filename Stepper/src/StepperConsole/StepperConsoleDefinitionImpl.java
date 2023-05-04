@@ -108,7 +108,8 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
      * a method to load a new xml file to the system.
      * Uses the TheStepper class to first read it from the xml file
      * then, converts it to a Stepper, if it's valid.
-     * If it is not an application-valid file, prints a message with the problem in the file and the file is not loaded.
+     * If it is not an application-valid file, prints a message with the problem in the file and the file has not been
+     * loaded.
      */
     @Override
     public void load() {
@@ -128,13 +129,13 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     }
 
     /**
-     * a private method to setup the console after it has been loaded.
+     * a private method to set up the console after it has been loaded.
      * sets the flowNames and a collection of executions.
      */
     private void setupConsole() {
         flowNames = stepper.getFlowNames();
         flowExecutionsCollectorMap.clear();
-        flowNames.stream().forEach(flowName -> flowExecutionsCollectorMap.put(flowName, new FlowExecutionsCollector(flowName)));
+        flowNames.forEach(flowName -> flowExecutionsCollectorMap.put(flowName, new FlowExecutionsCollector(flowName)));
         isLoaded = true;
         System.out.println("Stepper has been loaded successfully!");
     }
@@ -145,8 +146,7 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
      */
     private static String getFilePath() {
         Scanner scanner = new Scanner(System.in);
-        String filePath=scanner.nextLine();
-        return filePath;
+        return scanner.nextLine();
     }
 
     /**
@@ -202,7 +202,7 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
 
     /**
      * prints the flowDetails formal outputs
-     * @param formalOutputs
+     * @param formalOutputs the list of the formal outputs
      */
     private static void printFormalOutputs(List<String> formalOutputs) {
         if(formalOutputs.isEmpty()){
@@ -276,7 +276,7 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     /**
      * prints an Execution details, if accured. else does nothing.
      * @param optionalFlowExecutionData - an optional instance of FlowExecutionData. if param.isPresent null,
-     *                                  then the execution did not happend for some reason.
+     *                                  then the execution did not happened for some reason.
      */
     private void printExecutionDetailsAfterExecution(Optional<FlowExecutionData> optionalFlowExecutionData) {
         if(optionalFlowExecutionData.isPresent()){
@@ -303,37 +303,52 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         }
     }
 
+    /**
+     * The method to let the user see a history of a flow execution.
+     */
     @Override
     public void showExecuteHistory() {
         System.out.println("Please choose which flow you want to see an execution of it:\n");
         FlowExecutionsCollector flowExecutionsCollector = getFlowExecutionsCollector();
-        String uuid = getExecutionUUID(flowExecutionsCollector);
+        String uuid = getExecutionUUIDFromUser(flowExecutionsCollector);
         printFlowExecutionHistory(flowExecutionsCollector.getFlowExecutionData(uuid));
     }
 
     /**
-     *
-     * @return
+     * Gets from the user the flow he wants to watch one of it past executions.
+     * Then gets the collection of the flow's executions.
+     * @return an Instance that represents the flow's past executions.
      */
     private FlowExecutionsCollector getFlowExecutionsCollector() {
         String flowName = getFlowFromUser();
-        FlowExecutionsCollector flowExecutionsCollector = flowExecutionsCollectorMap.get(flowName);
-        return flowExecutionsCollector;
+        return flowExecutionsCollectorMap.get(flowName);
     }
 
-    private String getExecutionUUID(FlowExecutionsCollector flowExecutionsCollector) {
+    /**
+     * prints to the user the list of the past executions, so He could choose one, and gets it from him.
+     * @param flowExecutionsCollector the flow to get from the user it uuid of the execution he wants.
+     * @return the chosen uuid of the execution the user asked.
+     */
+    private String getExecutionUUIDFromUser(FlowExecutionsCollector flowExecutionsCollector) {
         flowExecutionsCollector.getFlowExecutionByNumber().forEach((id, name) -> System.out.println(id + ". " + name));
-        String uuid = getUUID(flowExecutionsCollector);
-        return uuid;
+        return getUUID(flowExecutionsCollector);
     }
 
+    /**
+     * Gets from a user a valid uuid of a past execution.
+     * @param flowExecutionsCollector the flow's collection of executions
+     * @return the uuid chosen by the user.
+     */
     private String getUUID(FlowExecutionsCollector flowExecutionsCollector) {
-        String uuid = flowExecutionsCollector.getFlowExecutionByNumber().get(inputFromUser.getIntByRange(
+        return flowExecutionsCollector.getFlowExecutionByNumber().get(inputFromUser.getIntByRange(
                 flowExecutionsCollector.getFlowExecutionByNumber().size()));
-        return uuid;
     }
 
 
+    /**
+     * prints all the details of a flow past execution.
+     * @param flowExecutionData an instance of a past flow execution to print.
+     */
     private static void printFlowExecutionHistory(FlowExecutionData flowExecutionData) {
         seperateBlocksOfContent();
         printExecutionMetaData(flowExecutionData);
@@ -406,6 +421,10 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     }
 
 
+    /**
+     * shows a flow's statistics of past executions.
+     * gets from user the flow he wants to see it statistics, and then prints it.
+     */
     @Override
     public void showStats() {
         String flowName = getFlowFromUser();
@@ -437,19 +456,29 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         }
     }
 
+    /**
+     * changes the console status to EXIT so the program will end.
+     */
     @Override
     public void exit() {
         System.out.println("Goodbye!");
         consoleStatus = ConsoleStatus.EXIT;
     }
 
+    /**
+     * gets a flow name from the user, by the matching index of it in the flow list.
+     * @return the name of the chosen flow
+     */
     private String getFlowFromUser() {
         System.out.println("Please choose a flow, by his number.");
         printFlowsOrderList();
-        String flowName = getFlowName();
-        return flowName;
+        return getFlowName();
     }
 
+    /**
+     * gets from the user the index of the wanted flow, and extract the name of it.
+     * @return the name of the chosen flow
+     */
     private String getFlowName(){
         Integer choice = inputFromUser.getIntByRange(stepper.getNumOfFlows());
         return stepper.getFlowsByNumber().get(choice);

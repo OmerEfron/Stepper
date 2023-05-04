@@ -9,14 +9,17 @@ import StepperConsole.Scanner.InputFromUser;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * this class is in-charge of getting the execution ready to execute.
+ * gets from the user the inputs, makes sure that all the mandatory inputs has been given.
+ */
 public class ConsoleFlowExecutorImpl implements ConsoleFlowExecutor {
     private final int TO_MENU=1;
     private final int FREE_INPUTS=2;
-
     private final int EXECUTE=3;
 
-    private FlowExecution flowExecution;
-    private InputFromUser inputFromUser;
+    private final FlowExecution flowExecution;
+    private final InputFromUser inputFromUser;
 
 
     public ConsoleFlowExecutorImpl(FlowExecution flowExecution, InputFromUser inputFromUser) {
@@ -24,19 +27,25 @@ public class ConsoleFlowExecutorImpl implements ConsoleFlowExecutor {
         this.inputFromUser=inputFromUser;
     }
 
+    /**
+     * starting the execution by running the execution menu.
+     * @return the status of the execution. START if all mandatory inputs inserted and the user asks to execute.
+     *                                      GIVEN_UP if the user decided to give up on this execution.
+     *
+     */
     @Override
-    public FlowExecutionStatus stratExcuteFlow() {
+    public FlowExecutionStatus startExecuteFlow() {
         System.out.println("Starting execution of flow " + flowExecution.getFlowDefinition().getName() + " [ID: " + flowExecution.getId() + "]");
         return executeMenu();
     }
     @Override
-    public void doneExcuteFlow() {
+    public void doneExecuteFlow() {
         System.out.println("End execution of flow " + flowExecution.getFlowDefinition().getName() + " [ID: " + flowExecution.getId() + "]. Status: " + flowExecution.getFlowExecutionResult());
     }
     private FlowExecutionStatus executeMenu(){
         FlowExecutionStatus flowExecutionStatus=FlowExecutionStatus.NOT_READY;
-        List<DataDefinitionsDeclaration> freeInputs=flowExecution.getFlowDefinition().getFreeInputsWithOptional()
-                .keySet().stream().collect(Collectors.toList());
+        List<DataDefinitionsDeclaration> freeInputs= new ArrayList<>(flowExecution.getFlowDefinition().getFreeInputsWithOptional()
+                .keySet());
         List<DataDefinitionsDeclaration> mandatoryInputs=getMandatoryInputs(freeInputs);
 
         while (flowExecutionStatus==FlowExecutionStatus.NOT_READY) {
@@ -60,7 +69,11 @@ public class ConsoleFlowExecutorImpl implements ConsoleFlowExecutor {
     }
 
 
-
+    /**
+     * shows all the free inputs of the flow, and update the user's desired one.
+     * @param freeInputs a list of free inputs
+     * @param mandatoryInputs a list of the mandatory free inputs.
+     */
     private void showFreeInputs(List<DataDefinitionsDeclaration> freeInputs,List<DataDefinitionsDeclaration> mandatoryInputs) {
 
         System.out.println("\nThe free input's are:");
@@ -75,12 +88,15 @@ public class ConsoleFlowExecutorImpl implements ConsoleFlowExecutor {
         updateFreeInputs(freeInputs,mandatoryInputs);
     }
 
+    /**
+     * shows the options for the user to get the flow ready to execute.
+     * @return the int value of the user's choice
+     */
     private int showMenu(){
         String menu="What would you like to accomplish? (enter the number of your choice)\n" +
                 "1.Return to the main menu.\n"+"2.Update the free inputs.\n"
                 +"3.Execute "+flowExecution.getFlowDefinition().getName();
         System.out.println(menu);
-        Scanner scanner = new Scanner(System.in);
         int input=inputFromUser.getIntByRange(3);
         while (input<1 || input>3 ){
             System.out.println("The number is not between 1 to 3 \nplease try again\n"+menu);
@@ -88,12 +104,24 @@ public class ConsoleFlowExecutorImpl implements ConsoleFlowExecutor {
         }
         return input;
     }
+
+    /**
+     * filters free inputs to mandatory only
+     * @param freeinputs the free inputs of a flow
+     * @return list of free mandatory inputs.
+     */
     private List<DataDefinitionsDeclaration> getMandatoryInputs(List<DataDefinitionsDeclaration> freeinputs){
         return freeinputs.stream()
                 .filter(dataDefinitionsDeclaration -> dataDefinitionsDeclaration.necessity()== DataNecessity.MANDATORY)
                 .collect(Collectors.toList());
     }
 
+
+    /**
+     * gets from user the input he wants and stores it.
+     * @param freeInputs the free inputs in the flow
+     * @param mandatoryInputs the mandatory free inputs in the flow.
+     */
     public void updateFreeInputs(List<DataDefinitionsDeclaration> freeInputs,List<DataDefinitionsDeclaration> mandatoryInputs) {
         System.out.println("Please choose (by number) the input that you want to update :");
 
