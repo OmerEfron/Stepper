@@ -4,14 +4,14 @@ import StepperEngine.DataDefinitions.impl.DataDefinitionRegistry;
 import StepperEngine.Flow.execute.context.StepExecutionContext;
 import StepperEngine.Step.api.DataDefinitionDeclarationImpl;
 import StepperEngine.Step.api.DataNecessity;
-import StepperEngine.Step.api.StepDefinitionAbstractClass;
+import StepperEngine.Step.api.StepDefinitionAbstract;
 import StepperEngine.Step.api.StepStatus;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 
-public class FileDumper extends StepDefinitionAbstractClass {
+public class FileDumper extends StepDefinitionAbstract {
     public FileDumper() {
         super("File Dumper", true);
         addInput(new DataDefinitionDeclarationImpl("CONTENT", "Content", DataNecessity.MANDATORY, DataDefinitionRegistry.STRING));

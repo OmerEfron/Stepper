@@ -1,8 +1,8 @@
 package StepperEngine;
 
 import StepperEngine.Flow.FlowBuildExceptions.FlowBuildException;
+import StepperEngine.Flow.api.FlowDefinitionImpl;
 import StepperEngine.Flow.api.FlowDefinition;
-import StepperEngine.Flow.api.FlowDefinitionInterface;
 import StepperEngine.Flow.execute.FlowExecution;
 import StepperEngine.Flow.execute.runner.FlowExecutor;
 import StepperEngine.StepperReader.XMLReadClasses.Flow;
@@ -19,11 +19,11 @@ import java.util.stream.IntStream;
  * includes flow
  */
 public class Stepper {
-    private List<FlowDefinitionInterface> flows = new ArrayList<>();
+    private List<FlowDefinition> flows = new ArrayList<>();
 
     private List<String> flowNames = new ArrayList<>();
 
-    private Map<String, FlowDefinitionInterface> flowsMap = new HashMap<>();
+    private Map<String, FlowDefinition> flowsMap = new HashMap<>();
 
     private Map<Integer, String> flowsByNumber = new LinkedHashMap<>();
 
@@ -32,14 +32,14 @@ public class Stepper {
     }
 
     public void newFlows(TheStepper stepper) throws FlowBuildException {
-        List<FlowDefinitionInterface> newFlows = new ArrayList<>();
-        Map<String, FlowDefinitionInterface> newFlowsMap = new HashMap<>();
+        List<FlowDefinition> newFlows = new ArrayList<>();
+        Map<String, FlowDefinition> newFlowsMap = new HashMap<>();
         checkForDuplicateNames(stepper);
         checkForDuplicateOutputs(stepper);
         stepper.getFlows().getFlows().stream()
                 .forEach(flow -> {
                     try {
-                        newFlows.add(new FlowDefinition(flow));
+                        newFlows.add(new FlowDefinitionImpl(flow));
                     } catch (FlowBuildException e) {
                         throw new RuntimeException(e);
                     }
@@ -51,7 +51,7 @@ public class Stepper {
                 .boxed()
                 .collect(Collectors.toMap(i -> i + 1, i -> flows.get(i).getName()));
         flowNames = flows.stream()
-                .map(FlowDefinitionInterface::getName)
+                .map(FlowDefinition::getName)
                 .collect(Collectors.toList());
 
     }
@@ -128,7 +128,7 @@ public class Stepper {
     }
 
     public FlowDetails showFlowByName(String flowName){
-        Optional<FlowDefinitionInterface> flowByName = flows.stream()
+        Optional<FlowDefinition> flowByName = flows.stream()
                 .filter(flow->flow.getName().equals(flowName))
                 .findFirst();
         return flowByName.map(FlowDetailsImpl::new).orElse(null);

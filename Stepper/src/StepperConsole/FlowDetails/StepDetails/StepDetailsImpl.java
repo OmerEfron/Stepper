@@ -1,6 +1,6 @@
 package StepperConsole.FlowDetails.StepDetails;
 
-import StepperEngine.Flow.api.StepUsageDeclerationInterface;
+import StepperEngine.Flow.api.StepUsageDecleration;
 
 /**
  * holds a step details from a certain flow.
@@ -10,7 +10,7 @@ public class StepDetailsImpl implements StepDetails{
 
     private final String stepName; // its final name.
     private final boolean readOnly;
-    public StepDetailsImpl(StepUsageDeclerationInterface step){
+    public StepDetailsImpl(StepUsageDecleration step){
         stepName = step.getStepFinalName();
         readOnly = step.isReadOnlyStep();
     }

@@ -6,12 +6,12 @@ import StepperEngine.DataDefinitions.impl.DataDefinitionRegistry;
 import StepperEngine.Flow.execute.context.StepExecutionContext;
 import StepperEngine.Step.api.DataDefinitionDeclarationImpl;
 import StepperEngine.Step.api.DataNecessity;
-import StepperEngine.Step.api.StepDefinitionAbstractClass;
+import StepperEngine.Step.api.StepDefinitionAbstract;
 import StepperEngine.Step.api.StepStatus;
 
 import java.util.Map;
 
-public class CSVExporter extends StepDefinitionAbstractClass {
+public class CSVExporter extends StepDefinitionAbstract {
     public CSVExporter (){
         super("CSV Exporter", true);
         addInput(new DataDefinitionDeclarationImpl("SOURCE", "Source data", DataNecessity.MANDATORY, DataDefinitionRegistry.RELATION));

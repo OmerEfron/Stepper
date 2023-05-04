@@ -1,8 +1,8 @@
 package StepperEngine.DataDefinitions.impl;
 
-import StepperEngine.DataDefinitions.api.DataDefinitionAbstractClass;
+import StepperEngine.DataDefinitions.api.DataDefinitionAbstract;
 
-public class StepperString extends DataDefinitionAbstractClass {
+public class StepperString extends DataDefinitionAbstract {
     public StepperString(){
         super("String", true, String.class);
     }

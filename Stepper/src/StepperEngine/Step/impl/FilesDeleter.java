@@ -7,7 +7,7 @@ import StepperEngine.DataDefinitions.impl.DataDefinitionRegistry;
 import StepperEngine.Flow.execute.context.StepExecutionContext;
 import StepperEngine.Step.api.DataDefinitionDeclarationImpl;
 import StepperEngine.Step.api.DataNecessity;
-import StepperEngine.Step.api.StepDefinitionAbstractClass;
+import StepperEngine.Step.api.StepDefinitionAbstract;
 import StepperEngine.Step.api.StepStatus;
 
 import java.io.File;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class FilesDeleter extends StepDefinitionAbstractClass {
+public class FilesDeleter extends StepDefinitionAbstract {
     public FilesDeleter() {
         super("Files Deleter", false);
         addInput(new DataDefinitionDeclarationImpl("FILES_LIST", "Files to delete", DataNecessity.MANDATORY, DataDefinitionRegistry.FILES_LIST));

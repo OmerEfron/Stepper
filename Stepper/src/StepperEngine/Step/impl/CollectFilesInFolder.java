@@ -5,7 +5,7 @@ import StepperEngine.DataDefinitions.impl.DataDefinitionRegistry;
 import StepperEngine.Flow.execute.context.StepExecutionContext;
 import StepperEngine.Step.api.DataDefinitionDeclarationImpl;
 import StepperEngine.Step.api.DataNecessity;
-import StepperEngine.Step.api.StepDefinitionAbstractClass;
+import StepperEngine.Step.api.StepDefinitionAbstract;
 import StepperEngine.Step.api.StepStatus;
 
 import java.io.File;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class CollectFilesInFolder extends StepDefinitionAbstractClass {
+public class CollectFilesInFolder extends StepDefinitionAbstract {
 
 
     public CollectFilesInFolder() {

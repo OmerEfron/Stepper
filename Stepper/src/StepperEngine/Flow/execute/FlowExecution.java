@@ -1,8 +1,9 @@
 package StepperEngine.Flow.execute;
 
-import StepperEngine.Flow.api.FlowDefinitionInterface;
+import StepperEngine.Flow.api.FlowDefinition;
 import StepperEngine.Flow.execute.StepData.StepExecuteData;
 import StepperEngine.Step.api.DataDefinitionsDeclaration;
+import javafx.util.Pair;
 
 import java.time.Duration;
 import java.util.*;
@@ -10,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class FlowExecution {
 
-    private final FlowDefinitionInterface flowDefinition;
+    private final FlowDefinition flowDefinition;
     private final String id;
     private static Integer idCounter = 1;
     private Duration totalTime;
@@ -18,21 +19,21 @@ public class FlowExecution {
     private String formattedStartTime;
 
     private boolean hasExecuted = false;
-    private Map<String, Object> freeInputsValue = new HashMap<>();
+    private final Map<String, Object> freeInputsValue = new HashMap<>();
     private String uuidAsString;
-    private Map<String, Object> formalOutputs = new HashMap<>();
+    private final Map<String, Object> formalOutputs = new HashMap<>();
     private List<StepExecuteData> stepsData = new ArrayList<>();
 
-    private Set<DataDefinitionsDeclaration> freeInputs;
-    private Set<DataDefinitionsDeclaration> outputs;
+    private final Set<DataDefinitionsDeclaration> freeInputs;
+    private final Set<DataDefinitionsDeclaration> outputs;
 
-    public FlowExecution(FlowDefinitionInterface flowDefinition) {
+    public FlowExecution(FlowDefinition flowDefinition) {
         this.flowDefinition = flowDefinition;
         this.id = idCounter.toString();
         idCounter++;
         freeInputs = flowDefinition.getFreeInputs();
         outputs = flowDefinition.getAllOutputs().values().stream()
-                .map(pair->pair.getKey())
+                .map(Pair::getKey)
                 .collect(Collectors.toSet());
     }
 
@@ -57,7 +58,7 @@ public class FlowExecution {
         return totalTime;
     }
 
-    public FlowDefinitionInterface getFlowDefinition() {
+    public FlowDefinition getFlowDefinition() {
         return flowDefinition;
     }
 

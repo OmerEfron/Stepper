@@ -4,14 +4,14 @@ import StepperEngine.DataDefinitions.impl.DataDefinitionRegistry;
 import StepperEngine.Flow.execute.context.StepExecutionContext;
 import StepperEngine.Step.api.DataDefinitionDeclarationImpl;
 import StepperEngine.Step.api.DataNecessity;
-import StepperEngine.Step.api.StepDefinitionAbstractClass;
+import StepperEngine.Step.api.StepDefinitionAbstract;
 import StepperEngine.Step.api.StepStatus;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 
-public class SpendSomeTimeStep extends StepDefinitionAbstractClass {
+public class SpendSomeTimeStep extends StepDefinitionAbstract {
     public SpendSomeTimeStep(){
         super("Spend Some Time", true);
         this.addInput(new DataDefinitionDeclarationImpl("TIME_TO_SPEND","Total sleeping time (sec)", DataNecessity.MANDATORY, DataDefinitionRegistry.NUMBER));

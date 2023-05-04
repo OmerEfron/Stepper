@@ -1,6 +1,6 @@
 package StepperEngine.Step;
 
-import StepperEngine.Step.api.StepDefinitionInterface;
+import StepperEngine.Step.api.StepDefinition;
 import StepperEngine.Step.impl.*;
 
 public enum StepDefinitionRegistry {
@@ -14,12 +14,12 @@ public enum StepDefinitionRegistry {
     CSV_EXPORTER(new CSVExporter())
     ;
 
-    private StepDefinitionInterface stepDefinition;
-    StepDefinitionRegistry(StepDefinitionInterface stepDefinition) {
+    private final StepDefinition stepDefinition;
+    StepDefinitionRegistry(StepDefinition stepDefinition) {
         this.stepDefinition = stepDefinition;
     }
 
-    public StepDefinitionInterface getStepDefinition() {
+    public StepDefinition getStepDefinition() {
         return stepDefinition;
     }
 

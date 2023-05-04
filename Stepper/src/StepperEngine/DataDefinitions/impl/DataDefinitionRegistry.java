@@ -1,6 +1,6 @@
 package StepperEngine.DataDefinitions.impl;
 
-import StepperEngine.DataDefinitions.api.DataDefinitionInterface;
+import StepperEngine.DataDefinitions.api.DataDefinition;
 import StepperEngine.DataDefinitions.impl.List.StepperFilesList;
 import StepperEngine.DataDefinitions.impl.List.StepperList;
 import StepperEngine.DataDefinitions.impl.List.StepperStringsList;
@@ -9,7 +9,7 @@ import StepperEngine.DataDefinitions.impl.Mapping.StepperNumberMapping;
 import StepperEngine.DataDefinitions.impl.Relation.SteeperRelation;
 import StepperEngine.DataDefinitions.impl.Relation.StepperRelationString;
 
-public enum DataDefinitionRegistry implements DataDefinitionInterface {
+public enum DataDefinitionRegistry implements DataDefinition {
     STRING(new StepperString()),
     DOUBLE(new StepperDouble()),
     FILE(new StepperFile()),
@@ -22,10 +22,10 @@ public enum DataDefinitionRegistry implements DataDefinitionInterface {
     RELATION(new SteeperRelation()),
     RELATION_STRING(new StepperRelationString());
 
-    DataDefinitionRegistry(DataDefinitionInterface dataDefinitionInterface){
+    DataDefinitionRegistry(DataDefinition dataDefinitionInterface){
         this.dataDefinitionInterface=dataDefinitionInterface;
     }
-    private final DataDefinitionInterface dataDefinitionInterface;
+    private final DataDefinition dataDefinitionInterface;
 
     @Override
     public boolean isUserFriendly() {

@@ -306,6 +306,8 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
 
     /**
      * The method to let the user see a history of a flow execution.
+     * recieve from the user the flow to show it history, and the execution of it to show
+     * prints it to the screen.
      */
     @Override
     public void showExecuteHistory() {

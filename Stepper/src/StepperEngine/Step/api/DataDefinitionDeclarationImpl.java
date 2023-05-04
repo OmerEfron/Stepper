@@ -1,6 +1,6 @@
 package StepperEngine.Step.api;
 
-import StepperEngine.DataDefinitions.api.DataDefinitionInterface;
+import StepperEngine.DataDefinitions.api.DataDefinition;
 
 import java.util.Objects;
 
@@ -10,8 +10,8 @@ public class DataDefinitionDeclarationImpl implements DataDefinitionsDeclaration
     String userString;
     DataNecessity dataNecessity;
     String alias;
-    DataDefinitionInterface dataDefinition;
-    public DataDefinitionDeclarationImpl(String name, String userString,DataNecessity dataNecessity,DataDefinitionInterface dataDefinition){
+    DataDefinition dataDefinition;
+    public DataDefinitionDeclarationImpl(String name, String userString, DataNecessity dataNecessity, DataDefinition dataDefinition){
         this.name=name;
         this.userString=userString;
         this.dataNecessity=dataNecessity;
@@ -45,7 +45,7 @@ public class DataDefinitionDeclarationImpl implements DataDefinitionsDeclaration
     }
 
     @Override
-    public DataDefinitionInterface dataDefinition() {
+    public DataDefinition dataDefinition() {
         return dataDefinition;
     }
 

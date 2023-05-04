@@ -1,6 +1,6 @@
 package StepperEngine.Step.api;
 
-import StepperEngine.DataDefinitions.api.DataDefinitionInterface;
+import StepperEngine.DataDefinitions.api.DataDefinition;
 
 public interface DataDefinitionsDeclaration {
     String getName();
@@ -10,7 +10,7 @@ public interface DataDefinitionsDeclaration {
 
     DataNecessity necessity();
 
-    DataDefinitionInterface dataDefinition();
+    DataDefinition dataDefinition();
 
     boolean equals(Object obj);
 

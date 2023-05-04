@@ -1,20 +1,19 @@
 package StepperEngine.Flow.execute.StepData;
 
-import StepperEngine.Flow.api.StepUsageDeclerationInterface;
+import StepperEngine.Flow.api.StepUsageDecleration;
 import StepperEngine.Step.api.StepStatus;
 import javafx.util.Pair;
 
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class StepExecuteData{
-    private StepUsageDeclerationInterface step;
-    private String finalName;
-    private String name;
+
+    private final String finalName;
+    private final String name;
     private Duration totalTime;
     private String invokeSummery;
     private StepStatus stepStatus;
@@ -23,19 +22,13 @@ public class StepExecuteData{
 
 
 
-    public StepExecuteData(StepUsageDeclerationInterface step) {
-        this.step=step;
+    public StepExecuteData(StepUsageDecleration step) {
         this.finalName =step.getStepFinalName();
         this.name=step.getStepDefinition().getName();
-
     }
 
     public String getFinalName() {
         return finalName;
-    }
-
-    public void setFinalName(String finalName) {
-        this.finalName = finalName;
     }
 
 

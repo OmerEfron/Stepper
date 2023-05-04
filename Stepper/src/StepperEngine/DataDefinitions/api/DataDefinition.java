@@ -1,6 +1,6 @@
 package StepperEngine.DataDefinitions.api;
 
-public interface DataDefinitionInterface {
+public interface DataDefinition {
 
     boolean isUserFriendly();
     String getName();

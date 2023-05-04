@@ -3,14 +3,14 @@ package StepperEngine.Step.api;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class StepDefinitionAbstractClass implements StepDefinitionInterface {
+public abstract class StepDefinitionAbstract implements StepDefinition {
     private final String name;
     private final boolean isReadOnly;
 
     private final List<DataDefinitionsDeclaration> inputs = new ArrayList<>();
     private final List<DataDefinitionsDeclaration> outputs = new ArrayList<>();
 
-    protected StepDefinitionAbstractClass(String name, boolean isReadOnly){
+    protected StepDefinitionAbstract(String name, boolean isReadOnly){
         this.name = name;
         this.isReadOnly = isReadOnly;
     }

@@ -1,15 +1,15 @@
 package StepperEngine.Flow.api;
 
-import StepperEngine.Step.api.StepDefinitionInterface;
+import StepperEngine.Step.api.StepDefinition;
 import javafx.util.Pair;
 
 import java.util.Map;
 
-public interface StepUsageDeclerationInterface {
+public interface StepUsageDecleration {
 
 
 
-    StepDefinitionInterface getStepDefinition();
+    StepDefinition getStepDefinition();
     String getStepFinalName();
     void setAliasName(String alias);
     boolean skipIfFail();
