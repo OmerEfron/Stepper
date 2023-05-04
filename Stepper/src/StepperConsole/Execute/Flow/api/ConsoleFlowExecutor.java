@@ -4,6 +4,6 @@ import StepperConsole.Execute.Flow.impl.FlowExecutionStatus;
 
 public interface ConsoleFlowExecutor {
 
-  FlowExecutionStatus stratExcuteFlow();
-  void doneExcuteFlow();
+  FlowExecutionStatus startExecuteFlow();
+  void doneExecuteFlow();
 }

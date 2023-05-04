@@ -19,6 +19,10 @@ public class FlowExecutionStatsDefinitionImpl implements FlowExecutionStatsDefin
 
     private final List<StepExecutionStats> stepExecutionStatisticsList = new ArrayList<>();
 
+    /**
+     * builds a statistic information based on the current data in flowExecutionCollector
+     * @param flowExecutionsCollector holds all the flow's history of executions
+     */
     public FlowExecutionStatsDefinitionImpl(FlowExecutionsCollector flowExecutionsCollector){
 
         flowName = flowExecutionsCollector.getFlowName();
