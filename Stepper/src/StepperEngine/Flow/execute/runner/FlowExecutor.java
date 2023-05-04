@@ -12,13 +12,22 @@ import java.time.Instant;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+/***
+ * The purpose of the class is to execute different flows each time
+ */
 public class FlowExecutor {
-
+    /***
+     *The function receives an instance of flow that needs to be executed.
+     * As part of the execution, we execute each step.
+     * @param currFlow flow execution data wich we want to execute
+     */
     public void executeFlow(FlowExecution currFlow) {
         StepExecutionContext stepExecutionContext = new StepExecutionContextClass(currFlow);
         FlowStatus flowStatus = FlowStatus.SUCCESS;
         Instant start = updateTime(currFlow);
-
+        /*
+        execute each step in order .
+         */
         for (StepUsageDecleration step : currFlow.getFlowDefinition().getSteps()) {
             stepExecutionContext.updateCustomMap(step);
             stepExecutionContext.addStepData(step);
@@ -27,7 +36,7 @@ public class FlowExecutor {
             StepStatus stepStatus = invokeStep(stepExecutionContext, step);
             Instant stepEnd = Instant.now();
             setStepTotalTime(stepExecutionContext, step, stepStart, stepEnd);
-            if (stepStatus == StepStatus.FAIL && !step.skipIfFail()) {
+            if (stepStatus == StepStatus.FAIL && !step.skipIfFail()) {// if the step failed all the flow his failed and we need to stop.
                 flowStatus = FlowStatus.FAIL;
                 break;
             }
@@ -39,6 +48,13 @@ public class FlowExecutor {
         finishExecution(currFlow, stepExecutionContext, flowStatus, start);
     }
 
+    /***
+     * Updates the results of the flow run
+     * @param currFlow
+     * @param stepExecutionContext
+     * @param flowStatus
+     * @param start
+     */
     private static void finishExecution(FlowExecution currFlow, StepExecutionContext stepExecutionContext, FlowStatus flowStatus, Instant start) {
         currFlow.setTotalTime(Duration.between(start, Instant.now()));
         currFlow.createUUID();

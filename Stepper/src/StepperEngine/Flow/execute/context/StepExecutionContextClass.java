@@ -11,12 +11,16 @@ import StepperEngine.Step.api.StepStatus;
 import java.time.Duration;
 import java.util.*;
 
+/***
+ * The purpose of the department is to link system definition to system execution.
+ * The department saves all the input and output information and updates each step with the required information when it is invoked.
+ */
 public class StepExecutionContextClass implements StepExecutionContext {
 
-    Map<String, DataDefinition> dataTypes = new HashMap<>();
-    Map<String, Object> dataValues = new HashMap<>();
+    Map<String, DataDefinition> dataTypes = new HashMap<>();//saves the data types of the input and outputs
+    Map<String, Object> dataValues = new HashMap<>();//map name of data definition to in\output to the value
     Map<String, String> customMapping = new HashMap<>();
-    Map<String, StepExecuteData> stepExecuteDataMap=new HashMap<>();
+    Map<String, StepExecuteData> stepExecuteDataMap=new HashMap<>();//
 
 
 
@@ -28,13 +32,17 @@ public class StepExecutionContextClass implements StepExecutionContext {
         updateDataTypes(flowExecution);
         storeFreeInputs(flowExecution.getFreeInputsValue());
     }
-
+    /***
+     * Gets the value of the free input and update it in storeValue map
+     * @param freeInputsValue
+     */
     private void storeFreeInputs(Map<String,Object> freeInputsValue){
-        for(String dataname:freeInputsValue.keySet())
+        for(String dataName:freeInputsValue.keySet())
         {
-            storeValue(dataname,freeInputsValue.get(dataname));
+            storeValue(dataName,freeInputsValue.get(dataName));
         }
     }
+
 
     private void updateDataTypes(FlowExecution flowExecution) {
         FlowDefinition flow= flowExecution.getFlowDefinition();
@@ -48,25 +56,23 @@ public class StepExecutionContextClass implements StepExecutionContext {
         }
     }
 
+    /***
+     * Map by custom map of the current step.
+     * the step input name is the key and the value is from where we need to take it.
+     * @param currStep
+     */
+    @Override
     public void updateCustomMap(StepUsageDecleration currStep) {
         if (!currStep.getDataMap().isEmpty()) {
             currStep.getDataMap().forEach((s, stringStringPair) -> customMapping.put(s, stringStringPair.getValue()));
         }
     }
 
-
-    @Override
-    public <T> T getOutput(String dataName, Class<T> exceptedDataType) {
-        DataDefinition theExeptedDataType = dataTypes.get(dataName);
-
-        if (exceptedDataType.isAssignableFrom(theExeptedDataType.getType())) {
-            Object aValue = dataValues.get(dataName);
-            return exceptedDataType.cast(aValue);
-        }
-        return null;
-
-    }
-
+    /***
+     * @param dataName name of in\output that we want to get
+     * @param exceptedDataType what is the type of data name.
+     * @return return value of data name.
+     */
     @Override
     public <T> T getDataValue(String dataName, Class<T> exceptedDataType) {
         DataDefinition theExeptedDataType = dataTypes.get(dataName);
@@ -97,6 +103,9 @@ public class StepExecutionContextClass implements StepExecutionContext {
 
     }
 
+    /***
+     * Update's formal outputs value of the flow
+     */
     @Override
     public void addFormalOutput(FlowExecution flowExecution) {
         for (String name :flowExecution.getFlowDefinition().getFormalOuputs().keySet()){

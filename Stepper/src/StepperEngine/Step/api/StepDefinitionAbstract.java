@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/***
+ * The base class of the various steps
+ */
 public abstract class StepDefinitionAbstract implements StepDefinition, Serializable {
     private final String name;
     private final boolean isReadOnly;

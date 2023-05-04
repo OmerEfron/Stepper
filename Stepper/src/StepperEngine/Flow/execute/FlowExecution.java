@@ -9,6 +9,9 @@ import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/***
+ * Saves information about execution of flow
+ */
 public class FlowExecution {
 
     private final FlowDefinition flowDefinition;
