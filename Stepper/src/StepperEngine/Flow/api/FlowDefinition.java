@@ -104,8 +104,6 @@ public class FlowDefinition implements FlowDefinitionInterface {
             return problems;
         }
 
-
-
         customMapping();
         if(!problems.isEmpty()){
             return problems;
@@ -118,6 +116,10 @@ public class FlowDefinition implements FlowDefinitionInterface {
             return problems;
         }
 
+        checkForDuplicateOutputsNames();
+        if(!problems.isEmpty()){
+            return problems;
+        }
         if(!flow.getFlowOutput().isEmpty()) {
             updateAlloutputs();
         }
@@ -143,6 +145,24 @@ public class FlowDefinition implements FlowDefinitionInterface {
             flow.getCustomMappings().getCustomMappings()
                     .forEach(this::customMap);
 
+        }
+    }
+
+    /**
+     * checks if there are duplicates in the names of the flow outputs.
+     */
+    private void checkForDuplicateOutputsNames() {
+        Set<String> tempSet = new HashSet<>();
+        for(StepUsageDeclerationInterface step : steps){
+            for(DataDefinitionsDeclaration dd: step.getStepDefinition().getOutputs()){
+                if(tempSet.contains(dd.getAliasName())){
+                    problems.add("Duplicate outputs names \"" + dd.getAliasName() + "\". cannot define flow.");
+                    break;
+                }
+                else {
+                    tempSet.add(dd.getAliasName());
+                }
+            }
         }
     }
 

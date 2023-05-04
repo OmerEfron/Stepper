@@ -10,11 +10,7 @@ public class StepBuilder  {
             Class<?> stepClass = Class.forName(name);
             Object newStep = stepClass.newInstance();
             return (StepDefinitionInterface)newStep;
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
             throw new RuntimeException(e);
         }
     }

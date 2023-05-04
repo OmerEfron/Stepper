@@ -91,6 +91,7 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         return false;
     }
 
+
     /**
      * a method to get the user choice from the main menu.
      * prints the options from the Enum StepperConsoleOptions, and returns the one he chose.
@@ -310,8 +311,22 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     public void showExecuteHistory() {
         System.out.println("Please choose which flow you want to see an execution of it:\n");
         FlowExecutionsCollector flowExecutionsCollector = getFlowExecutionsCollector();
-        String uuid = getExecutionUUIDFromUser(flowExecutionsCollector);
-        printFlowExecutionHistory(flowExecutionsCollector.getFlowExecutionData(uuid));
+        if(notExecuted(flowExecutionsCollector)){
+            printNoExecutionYet(flowExecutionsCollector);
+        }
+        else {
+            String uuid = getExecutionUUIDFromUser(flowExecutionsCollector);
+            printFlowExecutionHistory(flowExecutionsCollector.getFlowExecutionData(uuid));
+        }
+    }
+
+    private static boolean notExecuted(FlowExecutionsCollector flowExecutionsCollector) {
+        return flowExecutionsCollector.getNumOfExecutions() == 0;
+    }
+
+    private static void printNoExecutionYet(FlowExecutionsCollector flowExecutionsCollector) {
+        System.out.println("Flow "+ flowExecutionsCollector.getFlowName() + " has not been executed yet." +
+                "Try execute and then you can see it's details here.");
     }
 
     /**
