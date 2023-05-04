@@ -4,13 +4,14 @@ import StepperEngine.Flow.api.StepUsageDecleration;
 import StepperEngine.Step.api.StepStatus;
 import javafx.util.Pair;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 
-public class StepExecuteData{
+public class StepExecuteData implements Serializable {
 
     private final String finalName;
     private final String name;

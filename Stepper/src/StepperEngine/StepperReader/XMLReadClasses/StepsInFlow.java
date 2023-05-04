@@ -2,11 +2,12 @@ package StepperEngine.StepperReader.XMLReadClasses;
 
 import generated.STStepsInFlow;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class StepsInFlow {
+public class StepsInFlow implements Serializable {
 
 
     private List<StepInFlow> stepsInFlowList;

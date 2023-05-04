@@ -2,7 +2,9 @@ package StepperEngine.StepperReader.XMLReadClasses;
 
 import generated.STCustomMapping;
 
-public class CustomMapping {
+import java.io.Serializable;
+
+public class CustomMapping implements Serializable {
 
 
     private String targetStep;

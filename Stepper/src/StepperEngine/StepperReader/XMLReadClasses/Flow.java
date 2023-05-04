@@ -2,9 +2,10 @@ package StepperEngine.StepperReader.XMLReadClasses;
 
 import generated.STFlow;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class Flow {
+public class Flow implements Serializable {
     private String flowOutput;
     private CustomMappings customMappings;
     private FlowLevelAliasing flowLevelAliasing;

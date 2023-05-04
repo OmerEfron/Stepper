@@ -5,6 +5,7 @@ import StepperEngine.Flow.execute.FlowExecution;
 import StepperEngine.Flow.execute.FlowStatus;
 import StepperEngine.Flow.execute.StepData.StepExecuteData;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
  * the data is for presentation only and is not related directly to the main objects that the flow has created,
  * nor the flow itself.
  */
-public class FlowExecutionDataImpl implements FlowExecutionData {
+public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
 
 
     private final String flowName;

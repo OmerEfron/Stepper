@@ -2,6 +2,7 @@ package StepperConsole.Execute.Flow.impl;
 
 import StepperConsole.Execute.Flow.api.FlowExecutionData;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -9,7 +10,7 @@ import java.util.Map;
 /**
  * Holds all the flow executions history data.
  */
-public class FlowExecutionsCollector {
+public class FlowExecutionsCollector implements Serializable {
 
     private final String flowName;
     private final Map<String, FlowExecutionData> flowExecutionDataMap; //uuid -> execution data

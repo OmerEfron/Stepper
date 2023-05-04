@@ -3,10 +3,11 @@ package StepperEngine.Flow.api;
 import StepperEngine.Step.api.StepDefinition;
 import javafx.util.Pair;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StepUsageDeclerationImpl implements StepUsageDecleration {
+public class StepUsageDeclerationImpl implements StepUsageDecleration, Serializable {
 
     private String name;
     private final boolean skipIfFail;

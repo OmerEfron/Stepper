@@ -1,9 +1,11 @@
 package StepperConsole.Execute.Flow.impl;
 
+import java.io.Serializable;
+
 /**
  * holds an input/output data from a flow that has been executed.
  */
-public class IOData {
+public class IOData implements Serializable {
 
     private final boolean isOutput;
     private final String name;

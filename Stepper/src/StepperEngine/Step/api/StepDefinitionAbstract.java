@@ -1,9 +1,10 @@
 package StepperEngine.Step.api;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class StepDefinitionAbstract implements StepDefinition {
+public abstract class StepDefinitionAbstract implements StepDefinition, Serializable {
     private final String name;
     private final boolean isReadOnly;
 

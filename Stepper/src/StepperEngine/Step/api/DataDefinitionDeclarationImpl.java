@@ -2,12 +2,13 @@ package StepperEngine.Step.api;
 
 import StepperEngine.DataDefinitions.api.DataDefinition;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /***
  * A class that represents the inputs and outputs of each step.
  */
-public class DataDefinitionDeclarationImpl implements DataDefinitionsDeclaration{
+public class DataDefinitionDeclarationImpl implements DataDefinitionsDeclaration, Serializable {
 
     String name;
     String userString;//Displays the string to be displayed to the user when entering or exiting the information

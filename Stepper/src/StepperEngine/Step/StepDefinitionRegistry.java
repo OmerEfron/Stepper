@@ -3,7 +3,9 @@ package StepperEngine.Step;
 import StepperEngine.Step.api.StepDefinition;
 import StepperEngine.Step.impl.*;
 
-public enum StepDefinitionRegistry {
+import java.io.Serializable;
+
+public enum StepDefinitionRegistry implements Serializable {
     TIME_TO_SPEND(new SpendSomeTimeStep()),
     FILES_COLLECTOR(new CollectFilesInFolder()),
     FILES_DELETER (new FilesDeleter()),

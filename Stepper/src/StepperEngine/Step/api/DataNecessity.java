@@ -1,6 +1,8 @@
 package StepperEngine.Step.api;
 
-public enum DataNecessity {
+import java.io.Serializable;
+
+public enum DataNecessity implements Serializable {
     NA,
     MANDATORY,
     OPTIONAL

@@ -4,7 +4,9 @@ package StepperEngine.StepperReader.XMLReadClasses;
 import StepperEngine.Step.StepDefinitionRegistry;
 import generated.STStepInFlow;
 
-public class StepInFlow {
+import java.io.Serializable;
+
+public class StepInFlow implements Serializable {
 
     private String name;
 

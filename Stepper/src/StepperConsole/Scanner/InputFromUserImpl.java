@@ -89,6 +89,7 @@ public class InputFromUserImpl implements InputFromUser{
      */
     @Override
     public String getString() {
+        cleanBuffer();
         return scanner.nextLine();
     }
 

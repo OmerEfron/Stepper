@@ -41,6 +41,7 @@ public class PropertiesExporter extends StepDefinitionAbstract {
             context.setInvokeSummery(stepName,"There are no rows in the relation");
             context.setStepStatus(stepName,StepStatus.WARNING);
         }else {
+            context.setInvokeSummery(stepName,"We created the Properties successfully");
             context.setStepStatus(stepName,StepStatus.SUCCESS);
         }
         context.setTotalTime(stepName,Duration.between(start, Instant.now()));

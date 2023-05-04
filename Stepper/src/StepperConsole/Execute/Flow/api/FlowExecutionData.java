@@ -6,7 +6,7 @@ import StepperEngine.Flow.execute.StepData.StepExecuteData;
 import java.util.List;
 import java.util.Set;
 
-public interface FlowExecutionData {
+public interface FlowExecutionData  {
 
 
     String getFlowName();

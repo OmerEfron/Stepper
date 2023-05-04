@@ -31,7 +31,7 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     private List<String> flowNames;
     private ConsoleStatus consoleStatus = ConsoleStatus.RUN;
     private boolean isLoaded = false;
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         StepperConsoleDefinition stepperConsoleDefinition=new StepperConsoleDefinitionImpl();
         stepperConsoleDefinition.run();
     }
@@ -40,7 +40,7 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
      * runs the console until the user exits
      */
     @Override
-    public void run() {
+    public void run() throws IOException, ClassNotFoundException {
         welcomeUser();
         while(consoleStatus == ConsoleStatus.RUN){
             StepperConsoleOptions choice = getUserChoice();
@@ -76,12 +76,35 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
     }
 
     @Override
-    public void saveToFile() {
-
+    public void saveToFile() throws IOException {
+        System.out.println("Please enter the full file's path to save the data to:");
+        String filePath = inputFromUser.getString();
+        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filePath))){
+            outputStream.writeObject(stepper);
+            outputStream.writeObject(flowExecutionsCollectorMap);
+            System.out.println("Save succeed");
+        }catch (IOException e){
+            System.out.println("File not found: " + filePath);
+        }
     }
 
     @Override
-    public void uploadFromFile() {
+    public void uploadFromFile() throws IOException, ClassNotFoundException {
+        System.out.println("Please enter the full file's path to load the data from:");
+        String filePath = inputFromUser.getString();
+        try(ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filePath))){
+            Stepper loadedStepper = (Stepper) inputStream.readObject();
+            Map<String,FlowExecutionsCollector> loadedFlowExecutionsCollectorMap =
+                    (Map<String,FlowExecutionsCollector>) inputStream.readObject();
+            stepper = loadedStepper;
+            flowExecutionsCollectorMap = loadedFlowExecutionsCollectorMap;
+            isLoaded = true;
+            System.out.println("Load succeed");
+        }catch (IOException e){
+            System.out.println("File not found: " + filePath);
+        }catch (ClassNotFoundException e){
+            System.out.println("Something went wrong");
+        }
 
     }
 
@@ -101,7 +124,8 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
      * @return true if there are no flows in the system.
      */
     private boolean askToLoadIfNotLoaded(StepperConsoleOptions choice) {
-        if((choice != StepperConsoleOptions.LOAD && choice != StepperConsoleOptions.EXIT) && (!isLoaded || stepper.getNumOfFlows() == 0)){
+        if((choice != StepperConsoleOptions.LOAD && choice != StepperConsoleOptions.EXIT && choice != StepperConsoleOptions.LOAD_FROM_FILE)
+                && (!isLoaded || stepper.getNumOfFlows() == 0)){
             System.out.println("There are no flows yet in the system. Try load some from main menu and then try again. ");
             return true;
         }

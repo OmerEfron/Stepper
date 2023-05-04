@@ -11,10 +11,11 @@ import StepperEngine.Step.api.DataDefinitionsDeclaration;
 import StepperEngine.Step.api.DataNecessity;
 import javafx.util.Pair;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class FlowDefinitionImpl implements FlowDefinition {
+public class FlowDefinitionImpl implements FlowDefinition, Serializable {
 
     private final Flow flow;
 

@@ -2,7 +2,9 @@ package StepperEngine.StepperReader.XMLReadClasses;
 
 import generated.STStepper;
 
-public class TheStepper {
+import java.io.Serializable;
+
+public class TheStepper implements Serializable {
 
     private Flows flows;
 

@@ -2,7 +2,9 @@ package StepperEngine.StepperReader.XMLReadClasses;
 
 import generated.STFlowLevelAlias;
 
-public class FlowLevelAlias {
+import java.io.Serializable;
+
+public class FlowLevelAlias implements Serializable {
 
     private String step;
 

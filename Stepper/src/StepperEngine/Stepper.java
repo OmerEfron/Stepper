@@ -10,6 +10,7 @@ import StepperEngine.StepperReader.XMLReadClasses.TheStepper;
 import StepperConsole.FlowDetails.FlowDetails;
 import StepperConsole.FlowDetails.FlowDetailsImpl;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -18,7 +19,7 @@ import java.util.stream.IntStream;
  * a class that repesents the engine of the system.
  * includes flow
  */
-public class Stepper {
+public class Stepper implements Serializable {
     private List<FlowDefinition> flows = new ArrayList<>();
 
     private List<String> flowNames = new ArrayList<>();

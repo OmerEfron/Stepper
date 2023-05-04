@@ -139,7 +139,6 @@ public class ConsoleFlowExecutorImpl implements ConsoleFlowExecutor {
         } else if (dataDefinitionsDeclaration.dataDefinition().getType().isAssignableFrom(Integer.class)) {
             value = inputFromUser.getDouble();
         } else {
-            inputFromUser.cleanBuffer();
             value = inputFromUser.getString();
         }
         flowExecution.addFreeInput(dataDefinitionsDeclaration.getAliasName(), value);
