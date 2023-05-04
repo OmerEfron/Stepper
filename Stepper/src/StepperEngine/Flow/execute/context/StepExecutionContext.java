@@ -13,7 +13,6 @@ public interface StepExecutionContext {
     boolean storeValue(String dataName, Object value);
     void updateCustomMap(StepUsageDecleration currStep);
 
-    <T> T getOutput(String dataName, Class<T> exceptedDataType);
     void addFormalOutput(FlowExecution flowExecution);
     //void stepData(StepExecuteData name);
     void addLog(String stepName,String log);
@@ -21,7 +20,6 @@ public interface StepExecutionContext {
     void setStepStatus(String stepName, StepStatus stepStatus);
     void setTotalTime(String stepName,Duration totalTime);
     void addStepData(StepUsageDecleration step);
-
 
     StepStatus getStepStatus(String stepName);
     List<StepExecuteData>getStepsData();
