@@ -44,6 +44,7 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         welcomeUser();
         while(consoleStatus == ConsoleStatus.RUN){
             StepperConsoleOptions choice = getUserChoice();
+            seperateBlocksOfContent();
             if(!askToLoadIfNotLoaded(choice)) {
                 switch (choice) {
                     case LOAD:
@@ -71,6 +72,7 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
                         exit();
                 }
             }
+            seperateBlocksOfContent();
         }
 
     }
@@ -84,7 +86,7 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
             outputStream.writeObject(flowExecutionsCollectorMap);
             System.out.println("Save succeed");
         }catch (IOException e){
-            System.out.println("File not found: " + filePath);
+            printFileErrorMessage(filePath);
         }
     }
 
@@ -101,11 +103,16 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
             isLoaded = true;
             System.out.println("Load succeed");
         }catch (IOException e){
-            System.out.println("File not found: " + filePath);
+            printFileErrorMessage(filePath);
         }catch (ClassNotFoundException e){
             System.out.println("Something went wrong");
         }
 
+    }
+
+    private static void printFileErrorMessage(String filePath) {
+        System.out.println("An error accured while trying to read \"" + filePath + "\". File might not be exist," +
+                " or not application-readable.");
     }
 
     /**
@@ -217,7 +224,6 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         printFreeInputs(flowDetails.getFreeInputs());
         lineSpace();
         printOutputs(flowDetails);
-        seperateBlocksOfContent();
     }
 
     /**
@@ -261,7 +267,7 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
      * @param flowDetails - the flow to display it outputs
      */
     private static void printIfFlowReadOnly(FlowDetails flowDetails) {
-        System.out.println("The flow is "+ (flowDetails.isFlowReadOnly()? "":"not " + "read only"));
+        System.out.println("The flow is "+ (flowDetails.isFlowReadOnly()? "":"not ") + "read only");
     }
 
     /**
@@ -414,7 +420,6 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
         printExecutionResult(flowExecutionData);
         lineSpace();
         printFlowMainData(flowExecutionData);
-        seperateBlocksOfContent();
     }
 
     private static void printExecutionMetaData(FlowExecutionData flowExecutionData) {
@@ -498,11 +503,10 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
 
 
     private static void printStats(FlowExecutionStatsDefinition flowExecutionStatsDefinition) {
-        seperateBlocksOfContent();
+
         printFlowStats(flowExecutionStatsDefinition);
         lineSpace();
         printFlowStepsStats(flowExecutionStatsDefinition);
-        seperateBlocksOfContent();
     }
 
     private static void printFlowStats(FlowExecutionStatsDefinition flowExecutionStatsDefinition) {

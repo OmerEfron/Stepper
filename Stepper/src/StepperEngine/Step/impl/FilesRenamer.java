@@ -47,7 +47,6 @@ public class FilesRenamer extends StepDefinitionAbstract {
         context.addLog(stepName,"About to start rename" + filesToRename.size() + " files. Adding prefix: " + prefix.orElse("") + " adding suffix: " + suffix.orElse(""));
         StepStatus success = checkIfTheFolderEmpty(context, filesToRename, result,nameToAlias.get("RENAME_RESULT"),stepName);
         if (success != null) {
-            context.setTotalTime(stepName,Duration.between(start, Instant.now()));
             return success;}
 
         for (File file : filesToRename) {

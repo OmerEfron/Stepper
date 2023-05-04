@@ -22,7 +22,7 @@ public class FlowExecution {
     private final Map<String, Object> freeInputsValue = new HashMap<>();
     private String uuidAsString;
     private final Map<String, Object> formalOutputs = new HashMap<>();
-    private List<StepExecuteData> stepsData = new ArrayList<>();
+    private List<StepExecuteData> stepsData = new LinkedList<>();
 
     private final Set<DataDefinitionsDeclaration> freeInputs;
     private final Set<DataDefinitionsDeclaration> outputs;

@@ -40,7 +40,8 @@ public class SpendSomeTimeStep extends StepDefinitionAbstract {
             context.setStepStatus(stepName,StepStatus.FAIL);
             return StepStatus.FAIL;
         }
-        context.setInvokeSummery(stepName,"The step "+stepName+", performed a sleep for "+timeToSleep*1000+".");
+        context.setInvokeSummery(stepName,"The step "+stepName+", performed a sleep for "+timeToSleep*1000+
+                " milliseconds.");
         context.setStepStatus(stepName,StepStatus.SUCCESS);
         context.setTotalTime(stepName,Duration.between(start, Instant.now()));
         return StepStatus.SUCCESS;

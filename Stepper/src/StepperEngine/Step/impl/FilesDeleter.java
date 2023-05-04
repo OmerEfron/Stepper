@@ -11,6 +11,8 @@ import StepperEngine.Step.api.StepDefinitionAbstract;
 import StepperEngine.Step.api.StepStatus;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +33,7 @@ public class FilesDeleter extends StepDefinitionAbstract {
      */
     @Override
     public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName) {
+        Instant start = Instant.now();
         FilesListDataDef filesListDataDef = context.getDataValue(nameToAlias.get("FILES_LIST"), FilesListDataDef.class);
         List<File> filesToDelete = filesListDataDef.getFilesList();
         List<String> failToDelete=new ArrayList<>();
@@ -63,6 +66,7 @@ public class FilesDeleter extends StepDefinitionAbstract {
                 context.setInvokeSummery(stepName,"All files deleted successfully.");
             context.setStepStatus(stepName, StepStatus.SUCCESS);
         }
+        context.setTotalTime(stepName, Duration.between(start, Instant.now()));
         return context.getStepStatus(stepName);
     }
 }

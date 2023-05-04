@@ -9,6 +9,8 @@ import StepperEngine.Step.api.StepStatus;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 
 public class FileDumper extends StepDefinitionAbstract {
@@ -27,6 +29,7 @@ public class FileDumper extends StepDefinitionAbstract {
      */
     @Override
     public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName)  {
+        Instant start = Instant.now();
         String content = context.getDataValue(nameToAlias.get("CONTENT"), String.class);
         String fileName = context.getDataValue(nameToAlias.get("FILE_NAME"), String.class);
         context.addLog(stepName,"About to create file named " + fileName);
@@ -48,6 +51,7 @@ public class FileDumper extends StepDefinitionAbstract {
             context.storeValue(nameToAlias.get("RESULT"),"FAIL,"+e.toString());
             context.setStepStatus(stepName,StepStatus.FAIL);
         }
+        context.setTotalTime(stepName, Duration.between(start, Instant.now()));
         return context.getStepStatus(stepName);
     }
 }
