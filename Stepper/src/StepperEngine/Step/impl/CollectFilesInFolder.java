@@ -42,14 +42,9 @@ public class CollectFilesInFolder extends StepDefinitionAbstract {
         String folderPath = context.getDataValue(nameToAlias.get("FOLDER_NAME"), String.class);
         Optional<String> filterStr = Optional.ofNullable(context.getDataValue(nameToAlias.get("FILTER"), String.class));
         StepStatus stepStatus = StepStatus.SUCCESS;
-        context.addLog(stepName,"Reading folder " + folderPath + "content with filter " + filterStr.orElse(""));
+        context.addLog(stepName,"Reading folder " + folderPath + " content with filter " + filterStr.orElse(""));
         Path path = Paths.get(folderPath);
-        if(!Files.isDirectory(path)){
-            context.addLog(stepName,"There are no folder in path "+folderPath);
-            context.setInvokeSummery(stepName,"There are no folder in path "+folderPath);
-            context.setStepStatus(stepName,StepStatus.FAIL);
-            stepStatus = StepStatus.FAIL;
-        }
+
         File folder = path.toFile();
         File[] files = filterStr.map(filter -> folder.listFiles((dir, name) -> name.endsWith(filter)))
                 .orElse(folder.listFiles());
@@ -67,15 +62,23 @@ public class CollectFilesInFolder extends StepDefinitionAbstract {
 
         context.storeValue(nameToAlias.get("FILES_LIST"),new FilesListDataDef(fileList));
         context.storeValue(nameToAlias.get("TOTAL_FOUND"),size);
-        if (fileList.size() == 0) {
+        if(!Files.isDirectory(path)){
+            context.addLog(stepName,"There are no folder in path "+folderPath);
+            context.setInvokeSummery(stepName,"There are no folder in path "+folderPath);
+            context.setStepStatus(stepName,StepStatus.FAIL);
+            stepStatus = StepStatus.FAIL;
+        }
+        else if (fileList.size() == 0) {
             context.addLog(stepName,"No files in folder matching the filter.");
             context.setInvokeSummery(stepName,"The folder is empty.");
             context.setStepStatus(stepName,StepStatus.WARNING);
             stepStatus = StepStatus.WARNING;
         }
-        context.addLog(stepName,"Found "+size+" files in folder matching the filter ");
-        context.setInvokeSummery(stepName,"The files in "+folderPath+" collected successfully");
-        context.setStepStatus(stepName,StepStatus.SUCCESS);
+        else {
+            context.addLog(stepName, "Found " + size + " files in folder matching the filter ");
+            context.setInvokeSummery(stepName, "The files in " + folderPath + " collected successfully");
+            context.setStepStatus(stepName, StepStatus.SUCCESS);
+        }
         context.setTotalTime(stepName, Duration.between(start, Instant.now()));
         return stepStatus;
     }

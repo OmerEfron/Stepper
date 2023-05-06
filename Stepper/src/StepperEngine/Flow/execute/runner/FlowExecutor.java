@@ -32,10 +32,9 @@ public class FlowExecutor {
             stepExecutionContext.updateCustomMap(step);
             stepExecutionContext.addStepData(step);
             Instant stepStart = Instant.now();
-
             StepStatus stepStatus = invokeStep(stepExecutionContext, step);
             Instant stepEnd = Instant.now();
-            setStepTotalTime(stepExecutionContext, step, stepStart, stepEnd);
+            //setStepTotalTime(stepExecutionContext, step, stepStart, stepEnd);
             if (stepStatus == StepStatus.FAIL && !step.skipIfFail()) {// if the step failed all the flow his failed and we need to stop.
                 flowStatus = FlowStatus.FAIL;
                 break;

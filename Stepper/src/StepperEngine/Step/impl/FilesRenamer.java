@@ -35,8 +35,8 @@ public class FilesRenamer extends StepDefinitionAbstract {
      */
     @Override
     public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName) {
-        FilesListDataDef filesListDataDef = context.getDataValue(nameToAlias.get("FILES_TO_RENAME"), FilesListDataDef.class);
         Instant start = Instant.now();
+        FilesListDataDef filesListDataDef = context.getDataValue(nameToAlias.get("FILES_TO_RENAME"), FilesListDataDef.class);
         List<File> filesToRename = filesListDataDef.getFilesList();
         List<String> filesFailed=new ArrayList<>();
         Optional<String> prefix=Optional.ofNullable(context.getDataValue("PREFIX", String.class));
@@ -47,6 +47,7 @@ public class FilesRenamer extends StepDefinitionAbstract {
         context.addLog(stepName,"About to start rename" + filesToRename.size() + " files. Adding prefix: " + prefix.orElse("") + " adding suffix: " + suffix.orElse(""));
         StepStatus success = checkIfTheFolderEmpty(context, filesToRename, result,nameToAlias.get("RENAME_RESULT"),stepName);
         if (success != null) {
+            context.setTotalTime(stepName,Duration.between(start, Instant.now()));
             return success;}
 
         for (File file : filesToRename) {
