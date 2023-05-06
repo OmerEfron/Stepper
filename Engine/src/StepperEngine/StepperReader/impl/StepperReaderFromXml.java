@@ -25,6 +25,7 @@ public class StepperReaderFromXml implements StepperReader {
             STStepper stStepper = (STStepper) unmarshaller.unmarshal(inputStream);
             return new TheStepper(stStepper);
         } catch (IOException | JAXBException e) {
+            System.out.println(e.getMessage());
             throw new ReaderException("Cannot read file", filePath);
         }
     }
