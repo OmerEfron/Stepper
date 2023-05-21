@@ -140,6 +140,10 @@ public class Stepper implements Serializable {
         return new FlowDetailsImpl(flows.get(flowNumber-1));
     }
 
+    public List<FlowDetails> getFlowsDetails(){
+        return flows.stream().map(FlowDetailsImpl::new).collect(Collectors.toList());
+    }
+
     public FlowDetails buildShowFlow(String flowName){
         return new FlowDetailsImpl(flowsMap.get(flowName));
     }

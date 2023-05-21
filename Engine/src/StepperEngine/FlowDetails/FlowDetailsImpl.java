@@ -108,6 +108,11 @@ public class FlowDetailsImpl implements FlowDetails {
     }
 
     @Override
+    public String isFlowReadOnlyString() {
+        return "The flow is "+ (isFlowReadOnly()? "":"not ") + "read only";
+    }
+
+    @Override
     public List<StepDetails> getSteps() {
         return steps;
     }

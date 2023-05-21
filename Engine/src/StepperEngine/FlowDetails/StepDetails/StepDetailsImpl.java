@@ -15,6 +15,7 @@ public class StepDetailsImpl implements StepDetails{
         readOnly = step.isReadOnlyStep();
     }
 
+
     @Override
     public String getStepName() {
         return stepName;

@@ -15,6 +15,7 @@ public interface FlowDetails {
     List<String> getFormalOutputs();
 
     boolean isFlowReadOnly();
+    String isFlowReadOnlyString();
 
     List<StepDetails> getSteps();
 
