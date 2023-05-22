@@ -1,4 +1,4 @@
-package JavaFx.Body.Test.Tabels;
+package JavaFx.Body.FlowDefinition.Tabels;
 
 import StepperEngine.FlowDetails.StepDetails.StepDetails;
 

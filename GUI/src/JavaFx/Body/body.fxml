@@ -9,7 +9,7 @@
   <tabs>
       <Tab fx:id="flowDefinition" text="Flows Definition">
          <content>
-            <fx:include fx:id="flowDefnition" source="Test/FlowDefinitionTest.fxml" />
+            <fx:include fx:id="flowDefnition" minHeight="0.0" minWidth="0.0" source="FlowDefinition/FlowDefinition.fxml" />
          </content></Tab>
       <Tab fx:id="flowsExecution" text="Flows Execution" />
     <Tab text="Untitled Tab 1">
