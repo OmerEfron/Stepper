@@ -1,18 +1,24 @@
 package StepperEngine;
 
-import StepperEngine.FlowDetails.FlowDetails;
-import StepperEngine.FlowDetails.FlowDetailsImpl;
+import StepperEngine.DTO.FlowDetails.FlowDetails;
+import StepperEngine.DTO.FlowDetails.FlowDetailsImpl;
 import StepperEngine.Flow.FlowBuildExceptions.FlowBuildException;
 import StepperEngine.Flow.api.FlowDefinitionImpl;
 import StepperEngine.Flow.api.FlowDefinition;
 import StepperEngine.Flow.execute.FlowExecution;
 import StepperEngine.Flow.execute.runner.FlowExecutor;
+import StepperEngine.DTO.FlowExecutionData.api.FlowExecutionData;
+import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
 import StepperEngine.StepperReader.XMLReadClasses.Flow;
 import StepperEngine.StepperReader.XMLReadClasses.TheStepper;
 
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -28,6 +34,9 @@ public class Stepper implements Serializable {
     private Map<String, FlowDefinition> flowsMap = new HashMap<>();
 
     private Map<Integer, String> flowsByNumber = new LinkedHashMap<>();
+
+    private Map<String, FlowExecution> executionsMap = new HashMap<>();
+
 
     public Stepper(){
 
@@ -127,8 +136,14 @@ public class Stepper implements Serializable {
     public void ExecuteFlow(FlowExecution flowExecution){
         FlowExecutor flowExecutor=new FlowExecutor();
         flowExecutor.executeFlow(flowExecution);
+        executionsMap.put(flowExecution.getFlowDefinition().getName(), flowExecution);
     }
-
+    public FlowExecutionData ExecuteFlow2(FlowExecution flowExecution){
+        FlowExecutor flowExecutor=new FlowExecutor();
+        flowExecutor.executeFlow(flowExecution);
+        executionsMap.put(flowExecution.getFlowDefinition().getName(), flowExecution);
+        return new FlowExecutionDataImpl(flowExecution);
+    }
     public FlowDetails showFlowByName(String flowName){
         Optional<FlowDefinition> flowByName = flows.stream()
                 .filter(flow->flow.getName().equals(flowName))
