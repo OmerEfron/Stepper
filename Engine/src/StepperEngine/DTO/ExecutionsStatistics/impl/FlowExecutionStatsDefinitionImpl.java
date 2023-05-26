@@ -1,9 +1,9 @@
-package StepperEngine.ExecutionsStatistics.impl;
+package StepperEngine.DTO.ExecutionsStatistics.impl;
 
-import StepperEngine.FlowExecutionData.api.FlowExecutionData;
-import StepperEngine.FlowExecutionData.impl.FlowExecutionsCollector;
-import StepperEngine.ExecutionsStatistics.api.FlowExecutionStatsDefinition;
-import StepperEngine.ExecutionsStatistics.api.StepExecutionStats;
+import StepperEngine.DTO.FlowExecutionData.api.FlowExecutionData;
+import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionsCollector;
+import StepperEngine.DTO.ExecutionsStatistics.api.FlowExecutionStatsDefinition;
+import StepperEngine.DTO.ExecutionsStatistics.api.StepExecutionStats;
 import StepperEngine.Flow.execute.StepData.StepExecuteData;
 import StepperEngine.Step.api.StepStatus;
 

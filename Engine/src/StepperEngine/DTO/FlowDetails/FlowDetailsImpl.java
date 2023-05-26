@@ -1,11 +1,11 @@
-package StepperEngine.FlowDetails;
+package StepperEngine.DTO.FlowDetails;
 
-import StepperEngine.FlowDetails.StepDetails.FlowIODetails.Input;
-import StepperEngine.FlowDetails.StepDetails.FlowIODetails.Output;
+import StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails.Input;
+import StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails.Output;
+import StepperEngine.DTO.FlowDetails.StepDetails.StepDetails;
+import StepperEngine.DTO.FlowDetails.StepDetails.StepDetailsImpl;
 import StepperEngine.Flow.api.FlowDefinition;
 import StepperEngine.Step.api.DataDefinitionsDeclaration;
-import StepperEngine.FlowDetails.StepDetails.StepDetails;
-import StepperEngine.FlowDetails.StepDetails.StepDetailsImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;

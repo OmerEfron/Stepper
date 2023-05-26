@@ -1,6 +1,6 @@
-package StepperEngine.FlowExecutionData.impl;
+package StepperEngine.DTO.FlowExecutionData.impl;
 
-import StepperEngine.FlowExecutionData.api.FlowExecutionData;
+import StepperEngine.DTO.FlowExecutionData.api.FlowExecutionData;
 
 import java.io.Serializable;
 import java.util.HashMap;

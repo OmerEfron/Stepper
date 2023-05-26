@@ -1,6 +1,6 @@
 package StepperConsole.Execute.api;
 
-import StepperEngine.FlowExecutionData.api.FlowExecutionData;
+import StepperEngine.DTO.FlowExecutionData.api.FlowExecutionData;
 import StepperConsole.Scanner.InputFromUser;
 
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package StepperEngine.ExecutionsStatistics.api;
+package StepperEngine.DTO.ExecutionsStatistics.api;
 
 public interface StepExecutionStats {
 

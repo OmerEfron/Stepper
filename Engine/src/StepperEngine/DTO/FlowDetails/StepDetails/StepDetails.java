@@ -1,4 +1,4 @@
-package StepperEngine.FlowDetails.StepDetails;
+package StepperEngine.DTO.FlowDetails.StepDetails;
 
 import StepperEngine.FlowDetails.StepDetails.FlowIODetails.Input;
 import StepperEngine.FlowDetails.StepDetails.FlowIODetails.Output;

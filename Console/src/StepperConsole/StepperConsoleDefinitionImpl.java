@@ -1,11 +1,11 @@
 package StepperConsole;
 
-import StepperEngine.ExecutionsStatistics.api.FlowExecutionStatsDefinition;
-import StepperEngine.ExecutionsStatistics.api.StepExecutionStats;
-import StepperEngine.ExecutionsStatistics.impl.FlowExecutionStatsDefinitionImpl;
-import StepperEngine.FlowExecutionData.impl.IOData;
-import StepperEngine.FlowDetails.StepDetails.FlowIODetails.Input;
-import StepperEngine.FlowDetails.StepDetails.FlowIODetails.Output;
+import StepperEngine.DTO.ExecutionsStatistics.api.FlowExecutionStatsDefinition;
+import StepperEngine.DTO.ExecutionsStatistics.api.StepExecutionStats;
+import StepperEngine.DTO.ExecutionsStatistics.impl.FlowExecutionStatsDefinitionImpl;
+import StepperEngine.DTO.FlowExecutionData.impl.IOData;
+import StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails.Input;
+import StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails.Output;
 import StepperEngine.Flow.FlowBuildExceptions.FlowBuildException;
 import StepperEngine.StepperReader.XMLReadClasses.TheStepper;
 import StepperEngine.StepperReader.Exception.ReaderException;
@@ -14,10 +14,10 @@ import StepperEngine.Stepper;
 
 import StepperConsole.Execute.api.Executor;
 import StepperConsole.Execute.impl.ExecutorImpl;
-import StepperEngine.FlowExecutionData.api.FlowExecutionData;
-import StepperEngine.FlowExecutionData.impl.FlowExecutionsCollector;
-import StepperEngine.FlowDetails.FlowDetails;
-import StepperEngine.FlowDetails.StepDetails.StepDetails;
+import StepperEngine.DTO.FlowExecutionData.api.FlowExecutionData;
+import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionsCollector;
+import StepperEngine.DTO.FlowDetails.FlowDetails;
+import StepperEngine.DTO.FlowDetails.StepDetails.StepDetails;
 import StepperConsole.Scanner.InputFromUser;
 import StepperConsole.Scanner.InputFromUserImpl;
 import javafx.util.Pair;

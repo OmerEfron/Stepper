@@ -1,4 +1,4 @@
-package StepperEngine.FlowDetails.StepDetails.FlowIODetails;
+package StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails;
 
 /**
  * holds details of a single input/output in a certain flow.

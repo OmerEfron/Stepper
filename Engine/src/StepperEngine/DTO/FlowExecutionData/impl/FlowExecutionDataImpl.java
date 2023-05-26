@@ -1,6 +1,6 @@
-package StepperEngine.FlowExecutionData.impl;
+package StepperEngine.DTO.FlowExecutionData.impl;
 
-import StepperEngine.FlowExecutionData.api.FlowExecutionData;
+import StepperEngine.DTO.FlowExecutionData.api.FlowExecutionData;
 import StepperEngine.Flow.execute.FlowExecution;
 import StepperEngine.Flow.execute.FlowStatus;
 import StepperEngine.Flow.execute.StepData.StepExecuteData;
@@ -29,7 +29,7 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
 
     private final Set<IOData> formalOutputs;
 
-    private FlowExecutionDataImpl(FlowExecution flowExecution){
+    public FlowExecutionDataImpl(FlowExecution flowExecution){
         flowName = flowExecution.getFlowDefinition().getName();
         uuid = flowExecution.getUUID();
         executionTime = flowExecution.getTotalTimeInFormat();

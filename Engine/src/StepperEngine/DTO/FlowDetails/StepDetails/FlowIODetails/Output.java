@@ -1,4 +1,4 @@
-package StepperEngine.FlowDetails.StepDetails.FlowIODetails;
+package StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails;
 
 public class Output extends FlowIODetailsImpl{
 

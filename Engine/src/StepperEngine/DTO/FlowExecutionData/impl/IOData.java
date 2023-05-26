@@ -1,4 +1,4 @@
-package StepperEngine.FlowExecutionData.impl;
+package StepperEngine.DTO.FlowExecutionData.impl;
 
 import java.io.Serializable;
 
