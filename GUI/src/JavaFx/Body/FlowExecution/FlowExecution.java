@@ -1,5 +1,6 @@
 package JavaFx.Body.FlowExecution;
 
+import JavaFx.Body.BodyController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -103,7 +104,11 @@ public class FlowExecution {
 
     @FXML
     private Label ExecutionDetailsLabel;
+    private BodyController bodyController;
 
+    public void setMainController(BodyController bodyController) {
+        this.bodyController = bodyController;
+    }
     @FXML
     void addNewInput(ActionEvent event) {
 

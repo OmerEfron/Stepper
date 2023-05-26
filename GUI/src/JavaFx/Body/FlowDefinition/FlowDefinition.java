@@ -250,7 +250,6 @@ Updates the flows table (the main table in the left)
     }
 
 
-
     public FlowDetails getFlowDetails(String flowName){
         return flowDetails.get(IntStream.range(0, flowDetails.size())
                 .filter(i -> flowDetails.get(i).getFlowName().equals(flowName))

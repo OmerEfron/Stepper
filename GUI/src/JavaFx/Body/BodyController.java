@@ -16,14 +16,13 @@ import java.util.List;
 public class BodyController {
     private AppController mainController;
     @FXML private TabPane bodyComponent;
-
     @FXML private Tab flowDefinition;
-
     @FXML private FlowDefinition flowDefnitionController;
-
+    @FXML private Tab flowExecution;
     @FXML private FlowExecution flowExecutionController;
+    @FXML private Tab UntitledTab;
 
-    @FXML private Tab flowsExecution;
+
 
     @FXML
     public void initialize(){
@@ -39,6 +38,6 @@ public class BodyController {
 
 
     public void goToExecuteFlowTab(FlowDetails Flow) {
-        bodyComponent.getSelectionModel().select(flowsExecution);
+        bodyComponent.getSelectionModel().select(flowExecution);
     }
 }
