@@ -3,6 +3,9 @@ package JavaFx.Body;
 import JavaFx.AppController;
 
 import JavaFx.Body.FlowDefinition.FlowDefinition;
+
+import JavaFx.Body.FlowExecution.FlowExecution;
+import StepperEngine.DTO.FlowDetails.FlowDetails;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
 import StepperEngine.DTO.FlowDetails.FlowDetails;
@@ -17,6 +20,8 @@ public class BodyController {
     @FXML private Tab flowDefinition;
 
     @FXML private FlowDefinition flowDefnitionController;
+
+    @FXML private FlowExecution flowExecutionController;
 
     @FXML private Tab flowsExecution;
 
