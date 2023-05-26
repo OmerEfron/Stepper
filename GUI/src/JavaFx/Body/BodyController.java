@@ -3,9 +3,9 @@ package JavaFx.Body;
 import JavaFx.AppController;
 
 import JavaFx.Body.FlowDefinition.FlowDefinition;
-import StepperEngine.FlowDetails.FlowDetails;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
+import StepperEngine.DTO.FlowDetails.FlowDetails;
 import javafx.scene.control.TabPane;
 
 import java.util.List;

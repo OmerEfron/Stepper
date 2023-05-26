@@ -1,15 +1,14 @@
 package JavaFx;
 
+import StepperEngine.DTO.FlowDetails.FlowDetails;
+import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionsCollector;
 import StepperEngine.Flow.FlowBuildExceptions.FlowBuildException;
-import StepperEngine.FlowDetails.FlowDetails;
-import StepperEngine.FlowExecutionData.impl.FlowExecutionsCollector;
+
 import StepperEngine.Stepper;
 import StepperEngine.StepperReader.Exception.ReaderException;
 import StepperEngine.StepperReader.XMLReadClasses.TheStepper;
 import StepperEngine.StepperReader.impl.StepperReaderFromXml;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+
 
 import java.util.HashMap;
 import java.util.List;

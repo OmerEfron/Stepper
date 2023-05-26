@@ -1,7 +1,8 @@
 package StepperEngine.DTO.FlowDetails.StepDetails;
 
-import StepperEngine.FlowDetails.StepDetails.FlowIODetails.Input;
-import StepperEngine.FlowDetails.StepDetails.FlowIODetails.Output;
+
+import StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails.Input;
+import StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails.Output;
 import javafx.util.Pair;
 
 import java.util.List;
