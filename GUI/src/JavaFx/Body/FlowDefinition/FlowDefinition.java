@@ -3,10 +3,12 @@ package JavaFx.Body.FlowDefinition;
 import JavaFx.Body.BodyController;
 import JavaFx.Body.FlowDefinition.Tabels.FlowDefinitionTable;
 import JavaFx.Body.FlowDefinition.Tabels.StepDetailsTable;
-import StepperEngine.FlowDetails.FlowDetails;
-import StepperEngine.FlowDetails.StepDetails.FlowIODetails.Input;
+
+import StepperEngine.DTO.FlowDetails.FlowDetails;
+import StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails.Input;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -41,11 +43,17 @@ public class FlowDefinition {
     @FXML private TableColumn<Input, String> freeInputNecessity;
     @FXML private TableColumn<Input, String> freeInputSteps;
 
+    @FXML private Button executeFlow;
+
     private List<FlowDetails> flowDetails;
     private ObservableList<FlowDefinitionTable> flowDefinitionTableObservableList;
     private Map<String,ObservableList<StepDetailsTable>> stepsTableData =new HashMap<>();
     private Map<String,ObservableList<Input>> freeInputsData=new HashMap<>();
     private BodyController bodyController;
+
+
+
+
 
     @FXML
     void tableMouseClick(MouseEvent event) {
@@ -57,6 +65,7 @@ public class FlowDefinition {
             creatFreeInputsTable(currFlow);
         }
     }
+
 
     private void creatFreeInputsTable(FlowDetails currFlow) {
         freeInputName.setCellValueFactory(new PropertyValueFactory<Input,String>("dataName"));

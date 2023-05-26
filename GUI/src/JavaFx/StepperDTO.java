@@ -1,8 +1,9 @@
 package JavaFx;
 
+import StepperEngine.DTO.FlowDetails.FlowDetails;
+import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionsCollector;
 import StepperEngine.Flow.FlowBuildExceptions.FlowBuildException;
-import StepperEngine.FlowDetails.FlowDetails;
-import StepperEngine.FlowExecutionData.impl.FlowExecutionsCollector;
+
 import StepperEngine.Stepper;
 import StepperEngine.StepperReader.Exception.ReaderException;
 import StepperEngine.StepperReader.XMLReadClasses.TheStepper;
