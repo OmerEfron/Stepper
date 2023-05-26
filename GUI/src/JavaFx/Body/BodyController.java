@@ -33,4 +33,7 @@ public class BodyController {
     }
 
 
+    public void goToExecuteFlowTab(FlowDetails Flow) {
+        bodyComponent.getSelectionModel().select(flowsExecution);
+    }
 }

@@ -22,4 +22,5 @@ public interface FlowDetails {
     List<Input> getFreeInputs();
 
     List<Output> getOutputs();
+    List<String> getStepsNames();
 }

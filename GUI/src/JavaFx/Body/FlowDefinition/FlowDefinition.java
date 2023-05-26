@@ -5,8 +5,10 @@ import JavaFx.Body.FlowDefinition.Tabels.FlowDefinitionTable;
 import JavaFx.Body.FlowDefinition.Tabels.StepDetailsTable;
 import StepperEngine.FlowDetails.FlowDetails;
 import StepperEngine.FlowDetails.StepDetails.FlowIODetails.Input;
+import StepperEngine.FlowDetails.StepDetails.FlowIODetails.Output;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -21,6 +23,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class FlowDefinition {
+    @FXML private Button executeFlow;
+    @FXML private Button readOnlyButton;
     @FXML private TableView<FlowDefinitionTable> flowTable;
     @FXML private Label flowName;
     @FXML private TableColumn<FlowDefinitionTable, String> flowNameCol;
@@ -40,12 +44,34 @@ public class FlowDefinition {
     @FXML private TableColumn<Input, String> freeInputType;
     @FXML private TableColumn<Input, String> freeInputNecessity;
     @FXML private TableColumn<Input, String> freeInputSteps;
+    @FXML private TableView<Output> AllOutputsTable;
+    @FXML private TableColumn<Output, String> outputName;
+    @FXML private TableColumn<Output, String> outputType;
+    @FXML private TableColumn<Output, String> outputSteps;
+    @FXML private ChoiceBox<String> stepsSelection;
+    @FXML private TableView<Input> stepInputsTable;
+    @FXML private TableColumn<Input, String> stepInputsName;
+    @FXML private TableColumn<Input, String> stepInputsNecessity;
+    @FXML private TableColumn<Input, String> stepInputsConnected;
+    @FXML private TableColumn<Input, String> stepInputsFromOutputs;
+    @FXML private TableView<Output> stepOutputsTable;
+    @FXML private TableColumn<Output, String> stepOutputsNames;
+    @FXML private TableColumn<Output, String> stepOutputsConnect;
+    @FXML private TableColumn<Output, String> stepOutputsToInput;
 
     private List<FlowDetails> flowDetails;
     private ObservableList<FlowDefinitionTable> flowDefinitionTableObservableList;
     private Map<String,ObservableList<StepDetailsTable>> stepsTableData =new HashMap<>();
+    private Map<String,ObservableList<String>> stepsNames =new HashMap<>();
     private Map<String,ObservableList<Input>> freeInputsData=new HashMap<>();
+    private Map<String,ObservableList<Output>> outputsData=new HashMap<>();
     private BodyController bodyController;
+
+    @FXML
+    void executeFlow(ActionEvent event) {
+        FlowDetails currFlow = flowDetails.get(flowTable.getSelectionModel().getSelectedIndex());
+        bodyController.goToExecuteFlowTab(currFlow);
+    }
 
     @FXML
     void tableMouseClick(MouseEvent event) {
@@ -55,7 +81,51 @@ public class FlowDefinition {
             createFormalOutputsList(currFlow);
             createStepTable(currFlow);
             creatFreeInputsTable(currFlow);
+            creatOutputsTable(currFlow);
+            stepsSelection.setItems(stepsNames.get(currFlow.getFlowName()));
         }
+    }
+
+    public void setSelectedStepTables(ActionEvent event){
+        FlowDetails currFlow = flowDetails.get(flowTable.getSelectionModel().getSelectedIndex());
+        int stepIndex=stepsNames.get(currFlow.getFlowName()).indexOf(stepsSelection.getValue());
+        ObservableList<Input> currStepInputs = stepsTableData.get(currFlow.getFlowName()).get(stepIndex).getInputs();
+        ObservableList<Output> currStepOutputs = stepsTableData.get(currFlow.getFlowName()).get(stepIndex).getOutputs();
+        creteStepInputTable(currStepInputs);
+        creteStepOutputTable(currStepOutputs);
+    }
+
+    private void creteStepOutputTable(ObservableList<Output> currStepOutputs) {
+        stepOutputsNames.setCellValueFactory(new PropertyValueFactory<Output,String>("dataName"));
+        stepOutputsNames.setPrefWidth((currStepOutputs.stream()
+                .mapToDouble(input -> input.getDataName().length())
+                .max().orElse(-1))*9.5);
+        stepOutputsConnect.setCellValueFactory(new PropertyValueFactory<Output,String>("connectedToStep"));
+        stepOutputsConnect.setPrefWidth((currStepOutputs.stream()
+                .mapToDouble(input -> input.getConnectedToStep().length())
+                .max().orElse(-1))*9.5);
+        stepOutputsToInput.setCellValueFactory(new PropertyValueFactory<Output,String>("toInput"));
+        stepOutputsToInput.setPrefWidth((currStepOutputs.stream()
+                .mapToDouble(input -> input.getToInput().length())
+                .max().orElse(-1))*9.5);
+        stepOutputsTable.setItems(currStepOutputs);
+    }
+
+    private void creteStepInputTable(ObservableList<Input> currStepInputs) {
+        stepInputsName.setCellValueFactory(new PropertyValueFactory<Input,String>("dataName"));
+        stepInputsName.setPrefWidth((currStepInputs.stream()
+                .mapToDouble(input -> input.getDataName().length())
+                .max().orElse(-1))*9.5);
+        stepInputsNecessity.setCellValueFactory(new PropertyValueFactory<Input,String>("necessity") );
+        stepInputsConnected.setCellValueFactory(new PropertyValueFactory<Input,String>("connectedToStep"));
+        stepInputsConnected.setPrefWidth((currStepInputs.stream()
+                .mapToDouble(input -> input.getConnectedToStep().length())
+                .max().orElse(-1))*7.5);
+        stepInputsFromOutputs.setCellValueFactory(new PropertyValueFactory<Input,String>("formOutput"));
+        stepInputsFromOutputs.setPrefWidth((currStepInputs.stream()
+                .mapToDouble(input -> input.getFormOutput().length())
+                .max().orElse(-1))*7.5);
+        stepInputsTable.setItems(currStepInputs);
     }
 
     private void creatFreeInputsTable(FlowDetails currFlow) {
@@ -72,14 +142,34 @@ public class FlowDefinition {
         freeInputsTable.setItems(freeInputsData.get(currFlow.getFlowName()));
     }
 
-
-
+    private void creatOutputsTable(FlowDetails currFlow) {
+        outputName.setCellValueFactory(new PropertyValueFactory<Output,String>("dataName"));
+        outputName.setPrefWidth((outputsData.get(currFlow.getFlowName()).stream()
+                .mapToDouble(output -> output.getDataName().length())
+                .max().orElse(-1))*9.5);
+        outputType.setCellValueFactory(new PropertyValueFactory<Output,String>("typeName"));
+        outputSteps.setPrefWidth((outputsData.get(currFlow.getFlowName()).stream()
+                .mapToDouble(output -> output.getTypeName().length())
+                .max().orElse(-1))*9.5);
+        outputSteps.setCellValueFactory(new PropertyValueFactory<Output,String>("stepRelated"));
+        outputSteps.setPrefWidth((outputsData.get(currFlow.getFlowName()).stream()
+                .mapToDouble(output -> output.getStepRelated().length())
+                .max().orElse(-1))*7.5);
+        AllOutputsTable.setItems(outputsData.get(currFlow.getFlowName()));
+    }
 
 
     private void setDataByFlowName(FlowDetails currFlow) {
         flowName.setText(currFlow.getFlowName());
         flowDescription.setText(currFlow.getFlowDescription());
-        isReadOnlyFlow.setText(currFlow.isFlowReadOnlyString());
+        if (currFlow.isFlowReadOnly()) {
+            readOnlyButton.setText("Yes");
+            readOnlyButton.getStyleClass().setAll("status-button", "v-button");;
+        } else {
+            readOnlyButton.setText("No");
+            readOnlyButton.getStyleClass().setAll("status-button", "x-button");;
+        }
+
     }
 
     private void createFormalOutputsList(FlowDetails currFlow) {
@@ -89,6 +179,8 @@ public class FlowDefinition {
 
     private void createStepTable(FlowDetails currFlow) {
         stepCol.setCellValueFactory(new PropertyValueFactory<StepDetailsTable,String>("stepName"));
+        stepCol.setPrefWidth(stepsTableData.get(currFlow.getFlowName()).stream()
+                .mapToDouble(step -> step.getStepName().length()).max().orElse(-1)*7.5);
         readOnlyCol.setCellValueFactory(new PropertyValueFactory<StepDetailsTable,String>("isReadOnly"));
         stepsTable.setItems(stepsTableData.get(currFlow.getFlowName()));
     }
@@ -142,6 +234,8 @@ Updates the flows table (the main table in the left)
         for (FlowDetails flow :flowDetails){
             flowDefinitionTableList.add(new FlowDefinitionTable(flow));
             freeInputsData.put(flow.getFlowName(),FXCollections.observableList(flow.getFreeInputs()));
+            outputsData.put(flow.getFlowName(),FXCollections.observableList(flow.getOutputs()));
+            stepsNames.put(flow.getFlowName(),FXCollections.observableList(flow.getStepsNames()));
             stepsTableData.put(flow.getFlowName(),
                     FXCollections.observableList(
                             flow.getSteps().stream().map(StepDetailsTable::new).collect(Collectors.toList())));
@@ -152,8 +246,11 @@ Updates the flows table (the main table in the left)
     }
     public void setMainController(BodyController bodyController) {
         this.bodyController = bodyController;
-
+        stepsSelection.setOnAction(this::setSelectedStepTables);
     }
+
+
+
     public FlowDetails getFlowDetails(String flowName){
         return flowDetails.get(IntStream.range(0, flowDetails.size())
                 .filter(i -> flowDetails.get(i).getFlowName().equals(flowName))
