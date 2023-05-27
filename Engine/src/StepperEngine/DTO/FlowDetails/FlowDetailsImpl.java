@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * holds the details of a flow
@@ -127,4 +128,8 @@ public class FlowDetailsImpl implements FlowDetails {
         return outputs;
     }
 
+    @Override
+    public List<String> getStepsNames() {
+      return  steps.stream().map(StepDetails::getStepName).collect(Collectors.toList());
+    }
 }

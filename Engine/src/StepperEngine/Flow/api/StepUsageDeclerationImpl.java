@@ -4,7 +4,9 @@ import StepperEngine.Step.api.StepDefinition;
 import javafx.util.Pair;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class StepUsageDeclerationImpl implements StepUsageDecleration, Serializable {
@@ -17,8 +19,7 @@ public class StepUsageDeclerationImpl implements StepUsageDecleration, Serializa
 
     private final Integer index;
 
-
-
+    private final Map<String, List<Pair<String, String>>> outputsDataMap = new HashMap<>();
     // Map from name of data in step to the step that the data is in it with the name of the data in that step.
     private final Map<String, Pair<String, String>> dataMap = new HashMap<>();
 
@@ -109,5 +110,16 @@ public class StepUsageDeclerationImpl implements StepUsageDecleration, Serializa
         return stepDefinition.isReadOnly();
     }
 
+    @Override
+    public void addOutputToMap(String dataName, String stepRefName, String dataNameInStepRef) {
+        if (!outputsDataMap.containsKey(dataName)){
+            outputsDataMap.put(dataName,new ArrayList<>());
+        }
+        outputsDataMap.get(dataName).add(new Pair<>(stepRefName,dataNameInStepRef));
+    }
 
+    @Override
+    public Map<String, List<Pair<String, String>>> getOutputDataMap() {
+        return outputsDataMap;
+    }
 }

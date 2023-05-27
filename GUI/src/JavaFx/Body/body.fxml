@@ -11,8 +11,11 @@
          <content>
             <fx:include fx:id="flowDefnition" minHeight="0.0" minWidth="0.0" source="FlowDefinition/FlowDefinition.fxml" />
          </content></Tab>
-      <Tab fx:id="flowsExecution" text="Flows Execution" />
-    <Tab text="Untitled Tab 1">
+     <Tab fx:id="flowExecution" text="Flows Executions">
+        <content>
+           <fx:include fx:id="flowExecutionScrollPane" minHeight="0.0" minWidth="0.0" source="FlowExecution/FlowExecution.fxml" />
+        </content></Tab>
+    <Tab fx:id="UntitledTab" text="Untitled Tab 1">
       <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
       </content>

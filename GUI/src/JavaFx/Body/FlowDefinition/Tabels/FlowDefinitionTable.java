@@ -1,6 +1,7 @@
 package JavaFx.Body.FlowDefinition.Tabels;
 
-import StepperEngine.FlowDetails.FlowDetails;
+
+import StepperEngine.DTO.FlowDetails.FlowDetails;
 
 public class FlowDefinitionTable {
     private String flowName;

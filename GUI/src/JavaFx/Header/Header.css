@@ -1,0 +1,33 @@
+#rnd{
+    -fx-text-fill: #333232;
+    -fx-font-family: "Arial Narrow";
+    -fx-font-weight: bold;
+    -fx-border-color:null;
+    -fx-background-color: #d9d7d7;
+    -fx-background-radius: 0%;
+}
+
+#rnd:hover{
+    -fx-background-color: null;
+    -fx-text-fill: #151515;
+    -fx-font-weight:bold;
+    -fx-background-radius: 0%;
+    -fx-border-color: black;
+
+}
+.label{
+    -fx-text-fill: linear-gradient(#151515, #6e6d6d);
+    -fx-background-color: null;
+    -fx-alignment: center;
+    -fx-font-family: "Gill Sans", sans-serif;
+    -fx-font-size: 23px;
+    -fx-font-weight: bold;
+}
+.label1{
+    -fx-text-fill: #424242;
+    -fx-background-color: #cbc8c8;
+    -fx-alignment: center;
+    -fx-font-family: "Gill Sans", sans-serif;
+    -fx-border-color: black;
+    -fx-font-size: 15px;
+}
