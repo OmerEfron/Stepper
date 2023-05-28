@@ -176,6 +176,10 @@ public class FlowExecution {
 
     public void setExecutionInfo(){
         setFlowDetails();
+        setFreeInputTable();
+    }
+
+    private void setFreeInputTable() {
         ObservableList<FreeInputsTableRow> inputObservableList = FXCollections.observableArrayList();
         currFlowToExecute.getFreeInputs().forEach(input -> inputObservableList.add(new FreeInputsTableRow(input.getDataName(),
                 input.getTypeName(), input.getNecessity())));
