@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane fx:id="flowExecutionScrollPane" fitToHeight="true" fitToWidth="true" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFx.Body.FlowExecution.FlowExecution">
+<ScrollPane fitToHeight="true" fitToWidth="true" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFx.Body.FlowExecution.FlowExecution">
    <content>
       <BorderPane id="flowExecutionBorderPane" fx:id="flowExecutionBorderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="537.0" minWidth="841.0" prefHeight="537.0" prefWidth="841.0">
          <top>
@@ -25,10 +25,10 @@
                         <Button fx:id="FlowExecutionFreeInputsAddButton" mnemonicParsing="false" onAction="#addNewInput" text="ADD" />
                         <TableView id="freeInputsTableView" fx:id="FlowExecutionFreeInputsTable" editable="true" prefHeight="200.0" prefWidth="624.0">
                           <columns>
-                            <TableColumn id="freeInputNameColumn" prefWidth="75.0" text="Name" />
-                            <TableColumn id="freeInputTypeColumn" prefWidth="75.0" text="Type" />
-                              <TableColumn id="freeInputNecessityColumn" prefWidth="75.0" text="Necessity" />
-                              <TableColumn id="freeInputValueColumn" prefWidth="541.0" text="Value" />
+                            <TableColumn id="freeInputNameColumn" fx:id="freeInputsNameCol" prefWidth="75.0" text="Name" />
+                            <TableColumn id="freeInputTypeColumn" fx:id="freeInputsTypeCol" prefWidth="75.0" text="Type" />
+                              <TableColumn id="freeInputNecessityColumn" fx:id="freeInputsNecessityCol" prefWidth="75.0" text="Necessity" />
+                              <TableColumn id="freeInputValueColumn" fx:id="freeInputsValueCol" prefWidth="541.0" text="Value" />
                           </columns>
                         </TableView>
                      </children>
@@ -60,7 +60,7 @@
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints maxHeight="56.0" minHeight="20.0" prefHeight="21.0" vgrow="SOMETIMES" />
-                      <RowConstraints maxHeight="111.0" minHeight="40.0" prefHeight="47.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="111.0" minHeight="40.0" prefHeight="47.0" vgrow="NEVER" />
                       <RowConstraints maxHeight="139.0" minHeight="80.0" prefHeight="112.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
@@ -79,6 +79,23 @@
                               <Insets left="10.0" />
                            </padding>
                         </Label>
+                        <Label fx:id="flowDetailsActualName" GridPane.columnIndex="1">
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding></Label>
+                        <Label fx:id="flowDetailsActualDescription" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding></Label>
+                        <ScrollPane vbarPolicy="ALWAYS" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           <content>
+                              <Label fx:id="flowDetailsActualSteps">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </Label>
+                           </content>
+                        </ScrollPane>
                      </children>
                      <padding>
                         <Insets bottom="40.0" />
@@ -164,6 +181,31 @@
                            </padding>
                         </Label>
                         <Label id="executionDetailsStepsLabel" fx:id="ExecutionStepsLabel" text="steps" GridPane.rowIndex="4">
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding>
+                        </Label>
+                        <Label fx:id="executionActualUuid" GridPane.columnIndex="1">
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding>
+                        </Label>
+                        <Label fx:id="executionActualTimestamp" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding>
+                        </Label>
+                        <Label GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding>
+                        </Label>
+                        <Label fx:id="executionActualFormalOutputs" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding>
+                        </Label>
+                        <Label fx:id="executionActualSteps" GridPane.columnIndex="1" GridPane.rowIndex="4">
                            <padding>
                               <Insets left="10.0" />
                            </padding>

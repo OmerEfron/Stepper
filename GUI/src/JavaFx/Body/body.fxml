@@ -7,13 +7,13 @@
 <TabPane fx:id="bodyComponent" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFx.Body.BodyController">
 
   <tabs>
-      <Tab fx:id="flowDefinition" text="Flows Definition">
+      <Tab fx:id="flowDefinitionTab" text="Flows Definition">
          <content>
-            <fx:include fx:id="flowDefnition" minHeight="0.0" minWidth="0.0" source="FlowDefinition/FlowDefinition.fxml" />
+            <fx:include fx:id="flowDefinition" minHeight="0.0" minWidth="0.0" source="FlowDefinition/FlowDefinition.fxml" />
          </content></Tab>
-     <Tab fx:id="flowExecution" text="Flows Executions">
+     <Tab fx:id="flowExecutionTab" text="Flows Executions">
         <content>
-           <fx:include fx:id="flowExecutionScrollPane" minHeight="0.0" minWidth="0.0" source="FlowExecution/FlowExecution.fxml" />
+           <fx:include fx:id="flowExecution" minHeight="0.0" minWidth="0.0" source="FlowExecution/FlowExecution.fxml" />
         </content></Tab>
     <Tab fx:id="UntitledTab" text="Untitled Tab 1">
       <content>

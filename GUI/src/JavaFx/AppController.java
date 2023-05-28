@@ -26,7 +26,7 @@ public class AppController {
 
         headerComponentController.setMainController(this);
         bodyComponentController.setMainController(this);
-
+        loadFile("C:\\Users\\Gil\\Desktop\\StepperNewNew\\ex1.xml");
     }
     public boolean loadFile(String filePath) {
         try {
