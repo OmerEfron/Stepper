@@ -22,6 +22,7 @@ public class FlowExecution {
     private String formattedStartTime;
 
     private boolean hasExecuted = false;
+
     private final Map<String, Object> freeInputsValue = new HashMap<>();
     private String uuidAsString;
     private final Map<String, Object> formalOutputs = new HashMap<>();
@@ -29,6 +30,9 @@ public class FlowExecution {
 
     private final Set<DataDefinitionsDeclaration> freeInputs;
     private final Set<DataDefinitionsDeclaration> outputs;
+
+    private final int numOfSteps;
+    private int numOfStepsExecuted = 0;
 
     public FlowExecution(FlowDefinition flowDefinition) {
         this.flowDefinition = flowDefinition;
@@ -38,6 +42,7 @@ public class FlowExecution {
         outputs = flowDefinition.getAllOutputs().values().stream()
                 .map(Pair::getKey)
                 .collect(Collectors.toSet());
+        numOfSteps = flowDefinition.getSteps().size();
     }
 
     public void setStepsData(List<StepExecuteData> stepsData) {
@@ -80,7 +85,6 @@ public class FlowExecution {
 
     public void setTotalTime(Duration totalTime) {
         this.totalTime = totalTime;
-        this.hasExecuted = true;
     }
 
     public boolean hasExecuted() {
@@ -133,7 +137,23 @@ public class FlowExecution {
         return freeInputsValue.containsKey(inputName) ? exceptedDataType.cast(freeInputsValue.get(inputName)): null;
     }
 
+    public void setHasExecuted(boolean hasExecuted) {
+        this.hasExecuted = hasExecuted;
+    }
+
     public Map<String, Object> getFormalOutputs() {
         return formalOutputs;
+    }
+
+    public int getNumOfStepsExecuted() {
+        return numOfStepsExecuted;
+    }
+
+    public void setNumOfStepsExecuted(int numOfStepsExecuted) {
+        this.numOfStepsExecuted = numOfStepsExecuted;
+    }
+
+    public int getNumOfSteps() {
+        return numOfSteps;
     }
 }

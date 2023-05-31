@@ -6,11 +6,13 @@ import JavaFx.Body.FlowDefinition.FlowDefinition;
 
 import JavaFx.Body.FlowExecution.FlowExecution;
 import StepperEngine.DTO.FlowDetails.FlowDetails;
+import StepperEngine.Stepper;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 
 import java.util.List;
+import java.util.Optional;
 
 public class BodyController {
     private AppController mainController;
@@ -36,10 +38,17 @@ public class BodyController {
         flowDefinitionController.setDataByFlowName(flowDetails);
     }
 
+    public Optional<StepperEngine.Flow.execute.FlowExecution> getFlowExecution(String flowName){
+        return mainController.getFlowExecution(flowName);
+    }
 
     public void goToExecuteFlowTab(FlowDetails Flow) {
         flowExecutionController.setFlowToExecute(Flow);
         flowExecutionController.setExecutionInfo();
         bodyComponent.getSelectionModel().select(flowExecutionTab);
+    }
+
+    public Stepper getStepper(){
+        return mainController.getStepper();
     }
 }

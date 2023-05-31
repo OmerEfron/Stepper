@@ -47,6 +47,7 @@ public class FlowExecutor {
             else if (stepStatus == StepStatus.WARNING) {
                 flowStatus = FlowStatus.WARNING;
             }
+            currFlow.setNumOfStepsExecuted(currFlow.getNumOfStepsExecuted() + 1);
         }
 
         finishExecution(currFlow, stepExecutionContext, flowStatus, start);
@@ -65,6 +66,7 @@ public class FlowExecutor {
         currFlow.setFlowStatus(flowStatus);
         stepExecutionContext.addFormalOutput(currFlow);
         currFlow.setStepsData(stepExecutionContext.getStepsData());
+        currFlow.setHasExecuted(true);
     }
 
     private static StepStatus invokeStep(StepExecutionContext stepExecutionContext, StepUsageDecleration step) {

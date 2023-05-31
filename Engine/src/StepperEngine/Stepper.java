@@ -15,16 +15,12 @@ import StepperEngine.StepperReader.XMLReadClasses.TheStepper;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
  * a class that repesents the engine of the system.
- * includes flow
  */
 public class Stepper implements Serializable {
     private List<FlowDefinition> flows = new ArrayList<>();
@@ -36,6 +32,8 @@ public class Stepper implements Serializable {
     private Map<Integer, String> flowsByNumber = new LinkedHashMap<>();
 
     private Map<String, FlowExecution> executionsMap = new HashMap<>();
+
+    private final ExecutorService executorService = Executors.newFixedThreadPool(6);
 
 
     public Stepper(){
@@ -65,6 +63,10 @@ public class Stepper implements Serializable {
                 .map(FlowDefinition::getName)
                 .collect(Collectors.toList());
 
+    }
+
+    public boolean isFlowExist(String name){
+        return flowNames.contains(name);
     }
 
     public List<String> getFlowNames() {
@@ -126,6 +128,9 @@ public class Stepper implements Serializable {
     }
 
     public FlowExecution getFlowExecution(String flowName){
+        if(!isFlowExist(flowName)){
+            return null;
+        }
         return new FlowExecution(flowsMap.get(flowName));
     }
 
@@ -135,8 +140,13 @@ public class Stepper implements Serializable {
 
     public void ExecuteFlow(FlowExecution flowExecution){
         FlowExecutor flowExecutor=new FlowExecutor();
-        flowExecutor.executeFlow(flowExecution);
-        executionsMap.put(flowExecution.getFlowDefinition().getName(), flowExecution);
+        executorService.submit(() -> {
+            flowExecutor.executeFlow(flowExecution);
+            synchronized (this){
+                executionsMap.put(flowExecution.getFlowDefinition().getName(), flowExecution);
+            }
+        });
+
     }
     public FlowExecutionData ExecuteFlow2(FlowExecution flowExecution){
         FlowExecutor flowExecutor=new FlowExecutor();
