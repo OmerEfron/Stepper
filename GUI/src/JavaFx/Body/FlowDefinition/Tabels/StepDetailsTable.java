@@ -25,10 +25,10 @@ public class StepDetailsTable {
     }
 
     public ObservableList<Input> getInputs() {
-        return inputs;
+        return FXCollections.observableArrayList(inputs);
     }
     public ObservableList<Output> getOutputs() {
-        return outputs;
+        return FXCollections.observableArrayList(outputs);
     }
 
     public String getStepName() {

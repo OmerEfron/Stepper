@@ -17,8 +17,5 @@ public class StringListDataDef extends DataDefList<String>{
                 res+="\n";
         }
         return res;
-//        return IntStream.range(1, list.size())
-//                .mapToObj(i -> i + "." + list.get(i - 1))
-//                .collect(Collectors.joining("\n"));
     }
 }

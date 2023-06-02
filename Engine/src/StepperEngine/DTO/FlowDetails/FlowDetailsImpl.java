@@ -20,7 +20,7 @@ public class FlowDetailsImpl implements FlowDetails {
 
 
     private final String flowName;
-
+    private final int continuationNumber;
     private final String flowDescription;
     private final boolean readOnly;
 
@@ -40,6 +40,12 @@ public class FlowDetailsImpl implements FlowDetails {
         formalOutputs = buildFormalOutputs(flow);
         buildSteps(flow);
         buildOutputs(flow);
+        continuationNumber =flow.getContinuationNumber();
+    }
+
+    @Override
+    public int getContinuationNumber() {
+        return continuationNumber;
     }
 
     /**

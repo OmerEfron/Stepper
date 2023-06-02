@@ -25,6 +25,4 @@ public interface StepUsageDecleration {
     Map<String, String> getNameToAlias();
     boolean isReadOnlyStep();
 
-
-
 }

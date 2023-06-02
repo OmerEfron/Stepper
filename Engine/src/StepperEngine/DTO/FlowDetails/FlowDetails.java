@@ -20,7 +20,7 @@ public interface FlowDetails {
     List<StepDetails> getSteps();
 
     List<Input> getFreeInputs();
-
+    int getContinuationNumber();
     List<Output> getOutputs();
     List<String> getStepsNames();
 }
