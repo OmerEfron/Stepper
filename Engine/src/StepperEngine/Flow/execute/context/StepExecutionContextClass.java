@@ -5,6 +5,7 @@ import StepperEngine.Flow.api.FlowDefinition;
 import StepperEngine.Flow.api.StepUsageDecleration;
 import StepperEngine.Flow.execute.FlowExecution;
 import StepperEngine.Flow.execute.StepData.StepExecuteData;
+import StepperEngine.Step.api.DataDefinitionDeclarationImpl;
 import StepperEngine.Step.api.DataDefinitionsDeclaration;
 import StepperEngine.Step.api.StepStatus;
 
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
  */
 public class StepExecutionContextClass implements StepExecutionContext {
 
-    Map<String, DataDefinition> dataTypes = new HashMap<>();//saves the data types of the input and outputs
+    Map<String, DataDefinitionsDeclaration> dataTypes = new HashMap<>();//saves the data types of the input and outputs
     Map<String, Object> dataValues = new HashMap<>();//map name of data definition to in\output to the value
     Map<String, String> customMapping = new HashMap<>();
     Map<String, StepExecuteData> stepExecuteDataMap=new HashMap<>();//
@@ -48,10 +49,10 @@ public class StepExecutionContextClass implements StepExecutionContext {
         FlowDefinition flow= flowExecution.getFlowDefinition();
         for (StepUsageDecleration currStep : flow.getSteps()) {
             for (DataDefinitionsDeclaration dd : currStep.getStepDefinition().getInputs()) {
-                dataTypes.put(dd.getAliasName(), dd.dataDefinition());
+                dataTypes.put(dd.getAliasName(), dd);
             }
             for (DataDefinitionsDeclaration dd : currStep.getStepDefinition().getOutputs()) {
-                dataTypes.put(dd.getAliasName(), dd.dataDefinition());
+                dataTypes.put(dd.getAliasName(), dd);
             }
         }
     }
@@ -80,9 +81,9 @@ public class StepExecutionContextClass implements StepExecutionContext {
      */
     @Override
     public <T> T getDataValue(String dataName, Class<T> exceptedDataType) {
-        DataDefinition theExeptedDataType = dataTypes.get(dataName);
+        DataDefinitionsDeclaration theExeptedDataType = dataTypes.get(dataName);
 
-        if (exceptedDataType.isAssignableFrom(theExeptedDataType.getType())) {
+        if (exceptedDataType.isAssignableFrom(theExeptedDataType.dataDefinition().getType())) {
             Object aValue = dataValues.get(dataName);
             if(aValue==null) {
                 String name=customMapping.get(dataName);
@@ -96,11 +97,12 @@ public class StepExecutionContextClass implements StepExecutionContext {
 
     @Override
     public boolean storeValue(String dataName, Object value) {
-        DataDefinition theExeptedDataType = dataTypes.get(dataName);
+        DataDefinitionsDeclaration theExeptedDataType = dataTypes.get(dataName);
         if (theExeptedDataType == null){
             theExeptedDataType=dataTypes.get(customMapping.get(dataName));
         }
-        if (theExeptedDataType.getType().isAssignableFrom(value.getClass())) {
+        if (theExeptedDataType.dataDefinition().getType().isAssignableFrom(value.getClass())
+        && !theExeptedDataType.isInitial()) {
             dataValues.put(dataName, value);
             return true;
         }

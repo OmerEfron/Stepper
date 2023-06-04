@@ -11,6 +11,7 @@ import StepperEngine.DataDefinitions.impl.Relation.StepperRelationString;
 
 public enum DataDefinitionRegistry implements DataDefinition {
     STRING(new StepperString()),
+    FILE_PATH(new StepperFilePath()),
     DOUBLE(new StepperDouble()),
     FILE(new StepperFile()),
     LIST(new StepperList()),

@@ -17,13 +17,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.ImageView;
@@ -118,7 +113,7 @@ public class FlowExecution {
     private ImageView continuationButtonImage;
 
     @FXML
-    private ChoiceBox<?> continuationChoiceBox;
+    private ChoiceBox<String> continuationChoiceBox;
 
     private BodyController bodyController;
     private FlowDetails flowDetails;
@@ -219,6 +214,7 @@ public class FlowExecution {
             steps = steps.concat(step + "\n");
         }
         floeStepsLabel.textProperty().set(steps);
+        continuationChoiceBox.setItems(FXCollections.observableList(flowDetails.getContinuationNames()));
     }
 
     public void initFreeInputTable(){
@@ -227,6 +223,7 @@ public class FlowExecution {
         necessityCol.setCellValueFactory(new PropertyValueFactory<FreeInputsTableRow, String>("necessity"));
         valueCol.setCellValueFactory(new PropertyValueFactory<FreeInputsTableRow, String>("value"));
         valueCol.setCellFactory(TextFieldTableCell.forTableColumn());
+
         valueCol.setOnEditCommit(event -> {
             if (!addNewValue(event)) {
                 event.getTableView().refresh();

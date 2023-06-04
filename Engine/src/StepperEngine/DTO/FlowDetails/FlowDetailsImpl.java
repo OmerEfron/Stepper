@@ -6,6 +6,7 @@ import StepperEngine.DTO.FlowDetails.StepDetails.StepDetails;
 import StepperEngine.DTO.FlowDetails.StepDetails.StepDetailsImpl;
 import StepperEngine.Flow.api.FlowDefinition;
 import StepperEngine.Step.api.DataDefinitionsDeclaration;
+import StepperEngine.StepperReader.XMLReadClasses.Continuation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +29,7 @@ public class FlowDetailsImpl implements FlowDetails {
 
     private final List<StepDetails> steps = new ArrayList<>();
     private final List<Input> freeInputs = new ArrayList<>();
-
+    private final List<String> continuationNames;
     private final List<Output> outputs = new ArrayList<>();
 
 
@@ -41,6 +42,13 @@ public class FlowDetailsImpl implements FlowDetails {
         buildSteps(flow);
         buildOutputs(flow);
         continuationNumber =flow.getContinuationNumber();
+        this.continuationNames = flow.getContinuation().stream()
+                .map(Continuation::getTargetFlow)
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List<String> getContinuationNames() {
+        return continuationNames;
     }
 
     @Override

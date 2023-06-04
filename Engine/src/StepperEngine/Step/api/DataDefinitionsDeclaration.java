@@ -3,6 +3,8 @@ package StepperEngine.Step.api;
 import StepperEngine.DataDefinitions.api.DataDefinition;
 
 public interface DataDefinitionsDeclaration {
+    void setInitial(boolean initial);
+    boolean isInitial();
     String getName();
     String getAliasName();
 
