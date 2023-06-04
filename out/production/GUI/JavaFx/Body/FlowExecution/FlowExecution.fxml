@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+
+<ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="724.0" prefWidth="1046.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFx.Body.FlowExecution.FlowExecution">
+   <content>
+      <BorderPane prefHeight="500.0" prefWidth="1000.0">
+         <center>
+            <AnchorPane fx:id="flowExecutionAnchorPane" minWidth="180.0" prefHeight="362.0" prefWidth="686.0" BorderPane.alignment="TOP_LEFT">
+               <children>
+                  <Label layoutX="30.0" layoutY="25.0" text="Execution Details">
+                     <font>
+                        <Font size="22.0" />
+                     </font>
+                  </Label>
+                  <GridPane fx:id="executionDetailsGridPane" focusTraversable="true" layoutX="14.0" layoutY="64.0" maxHeight="1.7976931348623157E308" prefHeight="304.0" prefWidth="283.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="137.0" minWidth="10.0" prefWidth="102.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="191.0" minWidth="10.0" prefWidth="181.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints maxHeight="47.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="107.0" minHeight="6.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="127.0" minHeight="8.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="0.0" vgrow="ALWAYS" />
+                        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="7.0" prefHeight="0.0" vgrow="ALWAYS" />
+                    </rowConstraints>
+                     <children>
+                        <Label text="uuid" />
+                        <Label text="timestamp" GridPane.rowIndex="1" />
+                        <Label text="result" GridPane.rowIndex="2" />
+                        <Label text="formal outputs" GridPane.rowIndex="3" />
+                        <Label text="steps info" GridPane.rowIndex="4" />
+                        <ListView fx:id="formalOutputsListView" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS" />
+                        <ListView fx:id="stepsInfoListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
+                        <Label fx:id="executionUuidLabel" GridPane.columnIndex="1" />
+                        <Label fx:id="executionTimestampLabel" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label fx:id="executionResultLabel" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                     </children>
+                  </GridPane>
+                  <Label layoutX="326.0" layoutY="25.0" text="Step" />
+                  <Separator fx:id="executionDetailsDataSeperator" layoutX="287.0" layoutY="4.0" orientation="VERTICAL" prefHeight="469.0" prefWidth="14.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="296.0" AnchorPane.topAnchor="7.0" />
+                  <Separator fx:id="StepOutputSeperator" layoutX="309.0" layoutY="144.0" maxHeight="-Infinity" prefHeight="22.0" prefWidth="422.0" AnchorPane.bottomAnchor="165.0" AnchorPane.leftAnchor="309.0" AnchorPane.rightAnchor="0.0" />
+                  <Label layoutX="326.0" layoutY="166.0" text="Output" AnchorPane.bottomAnchor="144.0" />
+                  <Label fx:id="stepNameDisplayNameLabel" layoutX="326.0" layoutY="54.0" text="No step to display" />
+                  <Label fx:id="outputNameDisplayNameLabel" layoutX="326.0" layoutY="282.0" text="No output to display" AnchorPane.bottomAnchor="114.0" />
+               </children>
+            </AnchorPane>
+         </center>
+         <top>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <children>
+                  <TableView fx:id="flowExecutionFreeInputTable" editable="true" prefHeight="172.0" prefWidth="810.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="234.0">
+                    <columns>
+                      <TableColumn fx:id="nameCol" editable="false" prefWidth="75.0" text="Name" />
+                      <TableColumn fx:id="typeCol" editable="false" prefWidth="75.0" text="Type" />
+                        <TableColumn fx:id="necessityCol" editable="false" prefWidth="106.0" text="Necessity" />
+                        <TableColumn fx:id="valueCol" maxWidth="1.7976931348623157E308" minWidth="241.0" prefWidth="553.0" resizable="false" text="Value" />
+                    </columns>
+                  </TableView>
+                  <ImageView fx:id="flowExecutionButtonImage" fitHeight="50.0" fitWidth="50.0" layoutX="901.0" layoutY="50.0" onMouseClicked="#executeFlow" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="93.0" AnchorPane.topAnchor="50.0">
+                     <image>
+                        <Image url="@executionIcon.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+                  <ProgressBar fx:id="executionProgressBar" layoutX="820.0" layoutY="149.0" prefHeight="23.0" prefWidth="212.0" progress="0.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="149.0" />
+               </children>
+            </AnchorPane>
+         </top>
+         <left>
+            <AnchorPane prefHeight="297.0" prefWidth="252.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label fx:id="floeDetailsLabel" layoutX="25.0" layoutY="32.0" text="Flow Details">
+                     <font>
+                        <Font size="22.0" />
+                     </font>
+                  </Label>
+                  <GridPane fx:id="flowDetailGridPane" layoutX="2.0" layoutY="78.0" prefHeight="306.0" prefWidth="280.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="249.0" minWidth="10.0" prefWidth="79.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="249.0" minWidth="10.0" prefWidth="201.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints maxHeight="77.0" minHeight="0.0" prefHeight="29.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="200.0" minHeight="10.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="186.0" minHeight="10.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Label prefHeight="21.0" prefWidth="87.0" text="Flow Name" />
+                        <Label text="Description" GridPane.rowIndex="1" />
+                        <Label text="Steps" GridPane.rowIndex="2" />
+                        <Label fx:id="flowNameLabel" GridPane.columnIndex="1" />
+                        <ScrollPane vbarPolicy="NEVER" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <content>
+                              <Label fx:id="floeDescriptionLabel" />
+                           </content>
+                        </ScrollPane>
+                        <ScrollPane GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           <content>
+                              <Label fx:id="floeStepsLabel" />
+                           </content>
+                        </ScrollPane>
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" />
+                     </padding>
+                  </GridPane>
+                  <Separator layoutX="296.0" layoutY="7.0" orientation="VERTICAL" prefHeight="319.0" prefWidth="17.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="296.0" AnchorPane.topAnchor="7.0" />
+               </children>
+            </AnchorPane>
+         </left>
+         <bottom>
+            <AnchorPane minHeight="30.0" prefHeight="105.0" prefWidth="300.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Pane fx:id="continuationPane" layoutX="14.0" layoutY="185.0" prefHeight="90.0" prefWidth="283.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0">
+                     <children>
+                        <Separator fx:id="continuationDetailsSeperator" layoutY="-1.0" prefHeight="4.0" prefWidth="283.0" />
+                        <Label fx:id="continuationLabel" text="Continuation" />
+                        <ImageView fx:id="continuationButtonImage" fitHeight="63.0" fitWidth="50.0" layoutX="170.0" layoutY="21.0" onMouseClicked="#continueFlow" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@continueIcon.png" />
+                           </image>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </ImageView>
+                        <ChoiceBox fx:id="continuationChoiceBox" layoutY="30.0" prefWidth="150.0" />
+                     </children>
+                  </Pane>
+               </children>
+            </AnchorPane>
+         </bottom>
+      </BorderPane>
+   </content>
+</ScrollPane>

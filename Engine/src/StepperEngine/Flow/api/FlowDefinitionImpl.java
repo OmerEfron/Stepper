@@ -278,6 +278,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
         }
         else{
             target.addInputToMap(customMapping.getTargetData(), customMapping.getSourceStep(), customMapping.getSourceData());
+            source.addOutputToMap(customMapping.getSourceData(),customMapping.getTargetStep(),customMapping.getTargetData());
         }
     }
 
@@ -335,8 +336,12 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
         for(int i=0;i<step.getIndex();i++){
             StepUsageDecleration currStep = steps.get(i);
             stepFreeInputs.stream().filter(input-> currStep.getStepDefinition().getOutputs().contains(input))
-                    .forEach((input) -> step.addInputToMap(input.getName(), currStep.getStepFinalName(), input.getName()));
+                    .forEach((input) -> {
+                        step.addInputToMap(input.getName(), currStep.getStepFinalName(), input.getName());
+                        currStep.addOutputToMap(input.getAliasName(),step.getStepFinalName(),input.getName());});
+
         }
+
     }
 
 

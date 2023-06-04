@@ -3,11 +3,10 @@ package StepperEngine.Flow.api;
 import StepperEngine.Step.api.StepDefinition;
 import javafx.util.Pair;
 
+import java.util.List;
 import java.util.Map;
 
 public interface StepUsageDecleration {
-
-
 
     StepDefinition getStepDefinition();
     String getStepFinalName();
@@ -17,6 +16,8 @@ public interface StepUsageDecleration {
     Integer getIndex();
 
     void addInputToMap(String dataName, String stepRefName, String dataNameInStepRef);
+    void addOutputToMap(String dataName, String stepRefName, String dataNameInStepRef);
+    Map<String, List<Pair<String, String>>> getOutputDataMap();
 
     Map<String, Pair<String, String>> getDataMap();
 
