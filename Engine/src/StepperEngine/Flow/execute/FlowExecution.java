@@ -1,5 +1,6 @@
 package StepperEngine.Flow.execute;
 
+import StepperEngine.DataDefinitions.Enumeration.ZipEnumerator;
 import StepperEngine.Flow.api.FlowDefinition;
 import StepperEngine.Flow.execute.StepData.StepExecuteData;
 import StepperEngine.Step.api.DataDefinitionsDeclaration;
@@ -129,6 +130,7 @@ public class FlowExecution {
     public boolean isCanBeExecuted() {
         return canBeExecuted;
     }
+
 
     public Map<String, Object> getFreeInputsValue() {
         return freeInputsValue;
