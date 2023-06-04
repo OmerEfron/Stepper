@@ -66,6 +66,7 @@ public class FlowExecutor {
         stepExecutionContext.addFormalOutput(currFlow);
         currFlow.setStepsData(stepExecutionContext.getStepsData());
         currFlow.setHasExecuted(true);
+        currFlow.setAllData(stepExecutionContext.getAllData());
     }
 
     private static StepStatus invokeStep(StepExecutionContext stepExecutionContext, StepUsageDecleration step) {

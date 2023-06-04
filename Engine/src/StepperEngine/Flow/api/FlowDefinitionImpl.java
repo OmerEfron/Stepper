@@ -1,10 +1,9 @@
 package StepperEngine.Flow.api;
 
+import StepperEngine.DataDefinitions.Enumeration.ZipEnumerator;
+import StepperEngine.DataDefinitions.Enumeration.ZipperEnumeration;
 import StepperEngine.Flow.FlowBuildExceptions.FlowBuildException;
-import StepperEngine.StepperReader.XMLReadClasses.CustomMapping;
-import StepperEngine.StepperReader.XMLReadClasses.Flow;
-import StepperEngine.StepperReader.XMLReadClasses.FlowLevelAlias;
-import StepperEngine.StepperReader.XMLReadClasses.StepInFlow;
+import StepperEngine.StepperReader.XMLReadClasses.*;
 import StepperEngine.Step.StepBuilder;
 import StepperEngine.Step.StepDefinitionRegistry;
 import StepperEngine.Step.api.DataDefinitionsDeclaration;
@@ -20,19 +19,21 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
     private final Flow flow;
 
     private Boolean valid;
+    private Boolean hasContinuation;
 
     private Boolean isReadOnly = true;
 
     //   <output name, <data definition, the step that related to him>
     Map<String , Pair<DataDefinitionsDeclaration,String>> allOuputs=new HashMap<>();
     Map<String , Pair<DataDefinitionsDeclaration,String>> formalOuputs =new HashMap<>();
-
+    Map<String,Pair<DataDefinitionsDeclaration,Object>> initialInputs=new HashMap<>();
+    Map<String,DataDefinitionsDeclaration> allDataDefinitions=new HashMap<>();
     private Set<DataDefinitionsDeclaration> freeInputs;
 
     private final List<StepUsageDecleration> steps = new ArrayList<>();
 
     private final List<String> problems = new ArrayList<>();
-
+    private Map<String,String> continuationMapping=new HashMap<>();
 
     public FlowDefinitionImpl(Flow flow) throws FlowBuildException {
         freeInputs = new HashSet<>();
@@ -44,8 +45,32 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
         }
         valid = true;
         determinateIfFlowIsReadOnly();
-
+        hasContinuation= flow.getContinuations()==null ;
    }
+
+    @Override
+    public List<Continuation> getContinuation() {
+        return flow.getContinuations();
+    }
+
+    @Override
+    public void isOutputsExist(List<ContinuationMapping> continuationMappings)throws FlowBuildException {
+        for(ContinuationMapping continuationMapping:continuationMappings){
+            if(!allOuputs.containsKey(continuationMapping.getSourceData()))
+                throw new FlowBuildException("The output "+ continuationMapping.getSourceData()+" doesn't exist",
+                        this.getName());
+        }
+
+    }
+
+    @Override
+    public void isInputsExist(List<ContinuationMapping> continuationMappings) throws FlowBuildException{
+        for(ContinuationMapping continuationMapping:continuationMappings){
+            if(!allOuputs.containsKey(continuationMapping.getTargetData()))
+                throw new FlowBuildException("The output "+ continuationMapping.getTargetData()+" doesn't exist",
+                        this.getName());
+        }
+    }
 
     private void determinateIfFlowIsReadOnly() {
         for(StepUsageDecleration step:steps){
@@ -127,9 +152,56 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
         if(!problems.isEmpty()){
             return problems;
         }
+        initialInputs();
+        if(!problems.isEmpty()){
+            return problems;
+        }
         valid = true;
         return problems;
     }
+
+
+    /***
+     * adding and checking the initial values
+     */
+    private void initialInputs() {
+        for (DataDefinitionsDeclaration dd:freeInputs)
+        {
+            for(InitialInputValue initialInputValue:flow.getInitialInputValues()){
+                if(dd.getAliasName().equals(initialInputValue.getInputName())){
+                    addInitialInput(dd, initialInputValue);
+                    break;
+                }
+            }
+            if (!problems.isEmpty())
+                return;
+        }
+    }
+
+    private void addInitialInput(DataDefinitionsDeclaration dd, InitialInputValue initialInputValue) {
+        Object value;
+        try {
+            if (dd.dataDefinition().getType().isAssignableFrom(Integer.class)) {
+                value = Integer.parseInt(initialInputValue.getInitialValue());
+            } else if (dd.dataDefinition().getType().isAssignableFrom(Double.class)) {
+                value = Double.parseDouble(initialInputValue.getInitialValue());
+            } else if (dd.dataDefinition().getType().isAssignableFrom(ZipperEnumeration.class)) {
+                value = ZipEnumerator.valueOf(initialInputValue.getInitialValue());
+            } else {
+                value = initialInputValue.getInitialValue();
+            }
+            initialInputs.put(initialInputValue.getInputName(),new Pair<>(dd,value));
+        }catch (NumberFormatException n)
+        {
+            problems.add("The initial input for "+ initialInputValue.getInputName()+ " , not the valid type!"
+            +"\n need to enter "+ dd.dataDefinition().getType().getSimpleName());
+        }
+        catch (IllegalArgumentException e){
+            problems.add("The initial input for "+ initialInputValue.getInputName()+ " , not the valid type!"
+            +"\nThe value : " + initialInputValue.getInitialValue()+", need to be ZIP/UNZIP!");
+        }
+    }
+
 
     @Override
     public void autoMapping() {
@@ -147,6 +219,11 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
                     .forEach(this::customMap);
 
         }
+    }
+
+    @Override
+    public int getContinuationNumber() {
+        return flow.getContinuations().size();
     }
 
     /**
@@ -329,7 +406,10 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
     }
 
 
-
+    @Override
+    public boolean hasContinuation() {
+        return hasContinuation;
+    }
 
     private void autoMap(StepUsageDecleration step) {
         Set<DataDefinitionsDeclaration> stepFreeInputs = getStepFreeInputs(step);
@@ -477,5 +557,46 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
     @Override
     public Set<DataDefinitionsDeclaration> getFreeInputs() {
         return freeInputs;
+    }
+    @Override
+    public Map<String, Pair<DataDefinitionsDeclaration, Object>> getInitialInputs() {
+        return initialInputs;
+    }
+
+    private void updateAllDataDefinition(){
+        for(StepUsageDecleration step:steps){
+            for(DataDefinitionsDeclaration dd:step.getStepDefinition().getOutputs())
+            {
+                allDataDefinitions.put(dd.getAliasName(),dd);
+            }
+            for(DataDefinitionsDeclaration dd:step.getStepDefinition().getInputs())
+            {
+                allDataDefinitions.put(dd.getAliasName(),dd);
+            }
+        }
+    }
+    @Override
+    public Map<String, DataDefinitionsDeclaration> getAllDataDefinitions() {
+        return allDataDefinitions;
+    }
+
+    @Override
+    public DataDefinitionsDeclaration getFreeInputByName(String sourceData) {
+        for(DataDefinitionsDeclaration dd:freeInputs)
+        {
+            if(dd.getAliasName().equals(sourceData))
+                return dd;
+        }
+        return null;
+    }
+
+    @Override
+    public void addContinuationMapping(String source, String target) {
+        continuationMapping.put(source,target);
+    }
+
+    @Override
+    public Map<String, String> getContinuationMapping() {
+        return continuationMapping;
     }
 }

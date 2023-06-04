@@ -1,4 +1,4 @@
-package JavaFx;
+package StepperEngine.DTO;
 
 import StepperEngine.DTO.FlowDetails.FlowDetails;
 import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionsCollector;

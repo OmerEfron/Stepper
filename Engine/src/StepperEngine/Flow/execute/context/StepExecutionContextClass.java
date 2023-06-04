@@ -44,7 +44,6 @@ public class StepExecutionContextClass implements StepExecutionContext {
         }
     }
 
-
     private void updateDataTypes(FlowExecution flowExecution) {
         FlowDefinition flow= flowExecution.getFlowDefinition();
         for (StepUsageDecleration currStep : flow.getSteps()) {
@@ -55,6 +54,11 @@ public class StepExecutionContextClass implements StepExecutionContext {
                 dataTypes.put(dd.getAliasName(), dd.dataDefinition());
             }
         }
+    }
+
+    @Override
+    public Map<String, Object> getAllData() {
+        return dataValues;
     }
 
     /***
