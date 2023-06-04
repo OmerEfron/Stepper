@@ -5,7 +5,9 @@ import StepperEngine.DTO.FlowDetails.FlowDetailsImpl;
 import StepperEngine.Flow.FlowBuildExceptions.FlowBuildException;
 import StepperEngine.Flow.api.FlowDefinitionImpl;
 import StepperEngine.Flow.api.FlowDefinition;
+import StepperEngine.Flow.execute.ExecutionNotReadyException;
 import StepperEngine.Flow.execute.FlowExecution;
+import StepperEngine.Flow.execute.FlowStatus;
 import StepperEngine.Flow.execute.runner.FlowExecutor;
 import StepperEngine.DTO.FlowExecutionData.api.FlowExecutionData;
 import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
@@ -31,12 +33,13 @@ public class Stepper implements Serializable {
 
     private Map<Integer, String> flowsByNumber = new LinkedHashMap<>();
 
-    private Map<String, FlowExecution> executionsMap = new HashMap<>();
+    private final Map<String, FlowExecution> executionsMap = new HashMap<>();
+    private final Map<String, List<FlowExecution>> executionsPerFlow = new HashMap<>();
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(6);
 
 
-    public Stepper(){
+    public Stepper() {
 
     }
 
@@ -54,9 +57,9 @@ public class Stepper implements Serializable {
                     }
                 });
         flows = newFlows;
-        flows.forEach(flow-> newFlowsMap.put(flow.getName(), flow));
+        flows.forEach(flow -> newFlowsMap.put(flow.getName(), flow));
         flowsMap = newFlowsMap;
-        flowsByNumber  = IntStream.range(0, flows.size())
+        flowsByNumber = IntStream.range(0, flows.size())
                 .boxed()
                 .collect(Collectors.toMap(i -> i + 1, i -> flows.get(i).getName()));
         flowNames = flows.stream()
@@ -65,7 +68,7 @@ public class Stepper implements Serializable {
 
     }
 
-    public boolean isFlowExist(String name){
+    public boolean isFlowExist(String name) {
         return flowNames.contains(name);
     }
 
@@ -73,7 +76,7 @@ public class Stepper implements Serializable {
         return flowNames;
     }
 
-    public Integer getNumOfFlows(){
+    public Integer getNumOfFlows() {
         return flows.size();
     }
 
@@ -81,32 +84,28 @@ public class Stepper implements Serializable {
         return flowsByNumber;
     }
 
-    public String flowNameByNumber(Integer i){
-        return flows.get(i - 1).getName();
-    }
 
     private void checkForDuplicateOutputs(TheStepper stepper) throws FlowBuildException {
         String duplicateOutput;
-        for(Flow flow: stepper.getFlows().getFlows()){
-            if((duplicateOutput = checkForDuplicatesOutputsInFlow(flow)) != null)
-                throw new FlowBuildException("Duplicate output names: "+duplicateOutput, flow.getName());
+        for (Flow flow : stepper.getFlows().getFlows()) {
+            if ((duplicateOutput = checkForDuplicatesOutputsInFlow(flow)) != null)
+                throw new FlowBuildException("Duplicate output names: " + duplicateOutput, flow.getName());
         }
     }
 
-    public String checkForDuplicatesOutputsInFlow(Flow flow){
+    public String checkForDuplicatesOutputsInFlow(Flow flow) {
         Set<String> uniqueOutputs = new HashSet<>();
-        for(String output: flow.getFlowOutput().split(",")){
-            if(!uniqueOutputs.add(output))
+        for (String output : flow.getFlowOutput().split(",")) {
+            if (!uniqueOutputs.add(output))
                 return output;
         }
         return null;
     }
 
 
-
     private static void checkForDuplicateNames(TheStepper stepper) throws FlowBuildException {
         String duplicate;
-        if((duplicate = findDuplicateFlowName(stepper)) != null){
+        if ((duplicate = findDuplicateFlowName(stepper)) != null) {
             throw new FlowBuildException("Duplicate flow error. " + duplicate + " is already exist", duplicate);
         }
     }
@@ -122,64 +121,117 @@ public class Stepper implements Serializable {
     }
 
 
-    public FlowExecution getFlowExecution(int flowNumber){
-        FlowExecution flowExecution=new FlowExecution(flows.get(flowNumber-1) );
+    public FlowExecution getFlowExecution(int flowNumber) {
+        FlowExecution flowExecution = new FlowExecution(flows.get(flowNumber - 1));
         return flowExecution;
     }
 
-    public FlowExecution getFlowExecution(String flowName){
-        if(!isFlowExist(flowName)){
+    public FlowExecution getFlowExecution(String flowName) {
+        if (!isFlowExist(flowName)) {
             return null;
         }
         return new FlowExecution(flowsMap.get(flowName));
     }
 
-    public FlowExecution buildFlowExecution(String flowName){
+    public FlowExecution buildFlowExecution(String flowName) {
         return new FlowExecution(flowsMap.get(flowName));
     }
 
-    public void ExecuteFlow(FlowExecution flowExecution){
-        FlowExecutor flowExecutor=new FlowExecutor();
+    public void executeFlow(String uuid) throws ExecutionNotReadyException {
+        FlowExecutor flowExecutor = new FlowExecutor();
+        FlowExecution flowExecution = executionsMap.get(uuid);
+        if (flowExecution.isCanBeExecuted()) {
+            executorService.submit(() -> {
+                flowExecutor.executeFlow(flowExecution);
+                synchronized (this) {
+                    executionsPerFlow.computeIfAbsent(
+                            flowExecution.getFlowDefinition().getName(),
+                            k -> new ArrayList<>()
+                    ).add(flowExecution);
+                }
+            });
+        } else
+            throw new ExecutionNotReadyException("flow is not ready to be executed. check for not provided" +
+                    " free inputs", uuid);
+    }
+
+    public void ExecuteFlow(FlowExecution flowExecution) {
+        FlowExecutor flowExecutor = new FlowExecutor();
         executorService.submit(() -> {
             flowExecutor.executeFlow(flowExecution);
-            synchronized (this){
+            synchronized (this) {
                 executionsMap.put(flowExecution.getFlowDefinition().getName(), flowExecution);
             }
         });
 
     }
-    public FlowExecutionData ExecuteFlow2(FlowExecution flowExecution){
-        FlowExecutor flowExecutor=new FlowExecutor();
+
+    public FlowExecutionData ExecuteFlow2(FlowExecution flowExecution) {
+        FlowExecutor flowExecutor = new FlowExecutor();
         flowExecutor.executeFlow(flowExecution);
         executionsMap.put(flowExecution.getFlowDefinition().getName(), flowExecution);
         return new FlowExecutionDataImpl(flowExecution);
     }
-    public FlowDetails showFlowByName(String flowName){
-        Optional<FlowDefinition> flowByName = flows.stream()
-                .filter(flow->flow.getName().equals(flowName))
-                .findFirst();
-        return flowByName.map(FlowDetailsImpl::new).orElse(null);
-    }
-    public FlowDetails showFlowByNumber(int flowNumber){
 
-        return new FlowDetailsImpl(flows.get(flowNumber-1));
-    }
 
-    public List<FlowDetails> getFlowsDetails(){
+    public List<FlowDetails> getFlowsDetails() {
         return flows.stream().map(FlowDetailsImpl::new).collect(Collectors.toList());
     }
 
-    public FlowDetails buildShowFlow(String flowName){
+    public FlowDetails buildShowFlow(String flowName) {
         return new FlowDetailsImpl(flowsMap.get(flowName));
     }
-    public String getNamesOfFlowsToPrint(){
+
+    public String getNamesOfFlowsToPrint() {
         return IntStream.range(0, flows.size())
                 .mapToObj(i -> (i + 1) + "." + flows.get(i).getName() + (i == flows.size() - 1 ? "" : "\n"))
                 .collect(Collectors.joining());
     }
 
+    public boolean addFreeInputToExecution(String uuid, String dataName, Object value) {
+        FlowExecution flowExecution = executionsMap.get(uuid);
+        if (flowExecution != null) {
+            return flowExecution.addFreeInput(dataName, value);
+        }
+        return false;
+    }
 
-    public boolean isFlowExsitByNumber(int flowNumber) {
-        return flows.size() > flowNumber-1 && flowNumber >0;
+    public String createNewExecution(String flowName) {
+        String uuid;
+        if (flowsMap.get(flowName) != null) {
+            FlowExecution flowExecution = new FlowExecution(flowsMap.get(flowName));
+            uuid = flowExecution.getUUID();
+            executionsMap.put(flowExecution.getUUID(), flowExecution);
+        } else {
+            uuid = null;
+        }
+        return uuid;
+    }
+
+    public boolean getExecutionReadyToBeExecuteStatus(String uuid) {
+        FlowExecution flowExecution = executionsMap.get(uuid);
+        if (uuid != null) {
+            return flowExecution.isCanBeExecuted();
+        } else
+            return false;
+    }
+
+    public FlowExecution getFlowExecutionByUuid(String uuid){
+        synchronized (this) {
+            return executionsMap.get(uuid);
+        }
+    }
+
+    public boolean getExecutionStatus(String uuid) {
+        FlowExecution flowExecution = getFlowExecutionByUuid(uuid);
+        if (flowExecution != null) {
+            return flowExecution.hasExecuted();
+        }
+        return false;
+    }
+
+    public double getExecutionPartialStatus(String uuid) {
+        FlowExecution flowExecution = getFlowExecutionByUuid(uuid);
+        return (double) (flowExecution.getNumOfStepsExecuted() / flowExecution.getNumOfSteps());
     }
 }

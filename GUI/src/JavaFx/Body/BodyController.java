@@ -42,9 +42,8 @@ public class BodyController {
         return mainController.getFlowExecution(flowName);
     }
 
-    public void goToExecuteFlowTab(FlowDetails Flow) {
-        flowExecutionController.setFlowToExecute(Flow);
-        flowExecutionController.setExecutionInfo();
+    public void goToExecuteFlowTab(FlowDetails flow) {
+        flowExecutionController.setFlowToExecute(flow);
         bodyComponent.getSelectionModel().select(flowExecutionTab);
     }
 

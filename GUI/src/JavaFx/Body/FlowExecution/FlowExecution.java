@@ -2,303 +2,263 @@ package JavaFx.Body.FlowExecution;
 
 import JavaFx.Body.BodyController;
 import StepperEngine.DTO.FlowDetails.FlowDetails;
+import StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails.Input;
+import StepperEngine.DTO.FlowDetails.StepDetails.StepDetails;
 import StepperEngine.DTO.FlowExecutionData.api.FlowExecutionData;
-import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
-import StepperEngine.DTO.FlowExecutionData.impl.IOData;
-import StepperEngine.Flow.execute.StepData.StepExecuteData;
-import StepperEngine.Flow.execute.StepData.StepIOData;
+import StepperEngine.Flow.execute.ExecutionNotReadyException;
+import StepperEngine.Stepper;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableListBase;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.Cursor;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.Pane;
 
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class FlowExecution {
 
     @FXML
-    private BorderPane flowExecutionBorderPane;
+    private AnchorPane flowExecutionAnchorPane;
 
     @FXML
-    private HBox flowExecutionTopHbox;
+    private GridPane executionDetailsGridPane;
 
     @FXML
-    private VBox FlowExecutionFreeInputsVbox;
-
-
-    @FXML
-    private TableView<FreeInputsTableRow> FlowExecutionFreeInputsTable;
+    private ListView<?> formalOutputsListView;
 
     @FXML
-    private TableColumn<FreeInputsTableRow, String> freeInputsNameCol;
+    private ListView<?> stepsInfoListView;
 
     @FXML
-    private TableColumn<FreeInputsTableRow, String> freeInputsTypeCol;
+    private Label executionUuidLabel;
 
     @FXML
-    private TableColumn<FreeInputsTableRow, String> freeInputsNecessityCol;
+    private Label executionTimestampLabel;
 
     @FXML
-    private TableColumn<FreeInputsTableRow, String> freeInputsValueCol;
+    private Label executionResultLabel;
 
     @FXML
-    private VBox FlowExecuteExecutionVbox;
+    private Separator executionDetailsDataSeperator;
 
     @FXML
-    private Button FlowExecutionButton;
+    private Separator StepOutputSeperator;
 
     @FXML
-    private HBox FlowExecutionExecuteHbox;
+    private Label stepNameDisplayNameLabel;
 
     @FXML
-    private Label FlowExecutionProgressLabel;
+    private Label outputNameDisplayNameLabel;
 
     @FXML
-    private ProgressBar FlowExecutionProgressBar;
+    private TableView<FreeInputsTableRow> flowExecutionFreeInputTable;
 
     @FXML
-    private BorderPane FlowExectuionflowDetailsBorderPane;
+    private TableColumn<FreeInputsTableRow, String> nameCol;
 
     @FXML
-    private GridPane FlowExecutionFlowDetailsGridPane;
+    private TableColumn<FreeInputsTableRow, String> typeCol;
 
     @FXML
-    private Label FlowExecutionFlowNameLabel;
+    private TableColumn<FreeInputsTableRow, String> necessityCol;
 
     @FXML
-    private Label FlowExecutionFlowDescriptionLabel;
+    private TableColumn<FreeInputsTableRow, String> valueCol;
 
     @FXML
-    private Label FlowExecutionFlowStepsLabel;
+    private ImageView flowExecutionButtonImage;
 
     @FXML
-    private Label flowDetailsActualName;
+    private ProgressBar executionProgressBar;
 
     @FXML
-    private Label flowDetailsActualDescription;
+    private Label floeDetailsLabel;
 
     @FXML
-    private Label flowDetailsActualSteps;
+    private GridPane flowDetailGridPane;
 
     @FXML
-    private Label FlowExecutionFlowDetailsLabel;
+    private Label flowNameLabel;
 
     @FXML
-    private BorderPane ContinuationBorderPane;
+    private Label floeDescriptionLabel;
 
     @FXML
-    private HBox continuationHbox;
+    private Label floeStepsLabel;
 
     @FXML
-    private TableView<?> continuationTable;
+    private Pane continuationPane;
 
     @FXML
-    private HBox continueHbox;
-
-    @FXML
-    private Button continueButton;
+    private Separator continuationDetailsSeperator;
 
     @FXML
     private Label continuationLabel;
 
     @FXML
-    private BorderPane ExecutionDetailsBorderPane;
+    private ImageView continuationButtonImage;
 
     @FXML
-    private GridPane ExecutionDetailsGridPane;
+    private ChoiceBox<?> continuationChoiceBox;
 
-    @FXML
-    private Label ExecutionUuidLabel;
-
-    @FXML
-    private Label ExecutionTimestampLabel;
-
-    @FXML
-    private Label ExecutionFinalResultLabel;
-
-    @FXML
-    private Label ExecutionStepsLabel;
-
-    @FXML
-    private Label executionActualUuid;
-
-    @FXML
-    private Label executionActualTimestamp;
-
-    @FXML
-    private Label executionActualFormalOutputs;
-
-    @FXML
-    private Label executionActualSteps;
-
-    @FXML
-    private ListView<String> executionFormalOutputsListView;
-
-    @FXML
-    private Label ExecutionDetailsLabel;
     private BodyController bodyController;
-    private FlowDetails currFlowToExecute;
-    private FlowExecutionData lastExecutionData;
-    private StepperEngine.Flow.execute.FlowExecution flowExecution;
+    private FlowDetails flowDetails;
+    private FlowExecutionData flowExecutionData;
+    private String lastFlowRunningUuid;
+    private String currFlowExecutionUuid;
 
-    private final BooleanProperty canBeExecutedProperty = new SimpleBooleanProperty(false);
+    @FXML
+    void continueFlow(MouseEvent event) {
 
-    private boolean hasExecuted;
+    }
+    @FXML
+    void executeFlow(MouseEvent event) {
+        try {
+            bodyController.getStepper().executeFlow(currFlowExecutionUuid);
+        } catch (ExecutionNotReadyException e) {
+            throw new RuntimeException(e);
+        }
+        new Thread(this::executeFlowTask).start();
+        lastFlowRunningUuid = currFlowExecutionUuid;
+    }
 
 
+    void executeFlowTask(){
+        String uuid = lastFlowRunningUuid;
+        Stepper stepper = bodyController.getStepper();
+        while(!stepper.getExecutionStatus(uuid)){
+            Platform.runLater(() ->executionProgressBar.setProgress(stepper.getExecutionPartialStatus(uuid)));
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        Platform.runLater(this::setExecutionDetails);
+    }
+
+    void setExecutionDetails(){
+
+    }
 
     @FXML
     void initialize(){
-        setInputTableCellValueFactory();
-        FlowExecutionButton.disableProperty().bind(canBeExecutedProperty.not());
-        setTableListeners();
+        initButtons();
+        initFreeInputTable();
+
     }
 
-
-
-    private void setTableListeners() {
-        FlowExecutionFreeInputsTable.editingCellProperty().addListener((obs, oldVal, newVal) -> isAllMandatoryFreeInputsFilled());
+    private void initButtons() {
+        initExecuteButton();
+        initContinuationButton();
     }
 
-    void isAllMandatoryFreeInputsFilled(){
-        canBeExecutedProperty.setValue(FlowExecutionFreeInputsTable.getItems().stream()
-                .filter(input -> input.getNecessity().equals("MANDATORY"))
-                .noneMatch(row -> Objects.equals(row.getValue(), "")) &&  !hasExecuted);
+    private void initContinuationButton() {
+        continuationButtonImage.opacityProperty().set(0.2);
+        continuationButtonImage.cursorProperty().set(Cursor.DISAPPEAR);
     }
 
-    public void setInputTableCellValueFactory() {
-        freeInputsNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
-        freeInputsTypeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
-        freeInputsNecessityCol.setCellValueFactory(new PropertyValueFactory<>("necessity"));
-        freeInputsValueCol.setCellValueFactory(new PropertyValueFactory<>("value"));
-        freeInputsValueCol.setCellFactory(TextFieldTableCell.forTableColumn());
-        freeInputsValueCol.setOnEditCommit(event -> {
-            TablePosition<FreeInputsTableRow, String> position = event.getTablePosition();
-            String editedValue = event.getNewValue();
-            Object newVal = convertValue(editedValue, event.getRowValue().getType());
-            flowExecution.addFreeInput(event.getRowValue().getName(), newVal);
-            FreeInputsTableRow row = position.getTableView().getItems().get(position.getRow());
-            row.setValue(editedValue);
-        });
+    private void initExecuteButton() {
+        flowExecutionButtonImage.opacityProperty().set(0.2);
+        flowExecutionButtonImage.cursorProperty().set(Cursor.DISAPPEAR);
     }
 
-    Object convertValue(String val, String type){
-        try {
-            if (type.equals("Number")) {
-                return Integer.parseInt(val);
-            } else if (type.equals("Double")) {
-                return Double.parseDouble(val);
-            } else {
-                return val;
-            }
-        }catch (NumberFormatException e){
-            return "";
-        }
+    void makeExecutionButtonEnabled(){
+        flowExecutionButtonImage.opacityProperty().set(1);
+        flowExecutionButtonImage.cursorProperty().set(Cursor.HAND);
     }
-
 
     public void setMainController(BodyController bodyController) {
         this.bodyController = bodyController;
     }
 
-    @FXML
-    void continueToFlow(ActionEvent event) {
-
-    }
-
-    @FXML
-    void executeFlow(ActionEvent event) {
-        Thread thread = new Thread(this::executeFlowTask);
-        thread.start();
-    }
-
-    void executeFlowTask(){
-        bodyController.getStepper().ExecuteFlow(flowExecution);
-        Platform.runLater(this::checkExecutionStatusTask);
-    }
-
-    public void checkExecutionStatusTask(){
-        while(!flowExecution.hasExecuted()){
-            System.out.println("still running");
-            double progress = (double)flowExecution.getNumOfStepsExecuted() / flowExecution.getNumOfSteps();
-            FlowExecutionProgressBar.setProgress(progress);
-        }
-        System.out.println("done running!");
-        hasExecuted = true;
-        lastExecutionData = new FlowExecutionDataImpl(flowExecution);
-        executionActualUuid.textProperty().setValue(lastExecutionData.getUniqueExecutionId());
-        executionActualTimestamp.textProperty().setValue(lastExecutionData.getExecutionTime());
-        updateFormalOutputs();
-        updateSteps();
-    }
-
-    public void setFlowToExecute(FlowDetails flowDetails) {
-        hasExecuted = false;
-        currFlowToExecute = flowDetails;
-        flowExecution = bodyController.getFlowExecution(currFlowToExecute.getFlowName()).orElse(null);
-    }
-
-
-
-    public void updateFormalOutputs(){
-        if(flowExecution.hasExecuted()){
-            executionFormalOutputsListView.setItems(FXCollections.observableList(lastExecutionData.getFormalOutputs().stream()
-                    .map(IOData::getName)
-                    .collect(Collectors.toList())));
-        }
-    }
-
-    public void updateSteps(){
-        String steps = "";
-        for(int i = 0; i < flowExecution.getNumOfSteps(); i++){
-            StepExecuteData step = lastExecutionData.getStepExecuteDataList().get(i);
-            String stepPresentation = String.format("%d. step %s started at ____, finished at _____, total time %s milliseconds, final status %s\n",
-                    i + 1,step.getFinalName(), step.getTotalTime().toMillis(), step.getStepStatus());
-            steps = steps.concat(stepPresentation);
-        }
-        executionActualSteps.textProperty().setValue(steps);
-    }
-
-
-
-    public void setExecutionInfo(){
-        setFlowDetails();
+    public void setFlowToExecute(FlowDetails flow){
+        flowDetails = flow;
+        currFlowExecutionUuid = bodyController.getStepper().createNewExecution(flow.getFlowName());
         setFreeInputTable();
+        setFlowDetails();
     }
 
-    private void setFreeInputTable() {
-        ObservableList<FreeInputsTableRow> inputObservableList = FXCollections.observableArrayList();
-        currFlowToExecute.getFreeInputs().forEach(input -> inputObservableList.add(new FreeInputsTableRow(input.getDataName(),
-                input.getTypeName(), input.getNecessity())));
-        FlowExecutionFreeInputsTable.setItems(inputObservableList);
+    public void setFlowDetails(){
+        flowNameLabel.textProperty().set(flowDetails.getFlowName());
+        floeDescriptionLabel.textProperty().set(flowDetails.getFlowDescription());
+        String steps = "";
+        for(String step:flowDetails.getStepsNames()){
+            steps = steps.concat(step + "\n");
+        }
+        floeStepsLabel.textProperty().set(steps);
+    }
 
+    public void initFreeInputTable(){
+        nameCol.setCellValueFactory(new PropertyValueFactory<FreeInputsTableRow, String>("name"));
+        typeCol.setCellValueFactory(new PropertyValueFactory<FreeInputsTableRow, String>("type"));
+        necessityCol.setCellValueFactory(new PropertyValueFactory<FreeInputsTableRow, String>("necessity"));
+        valueCol.setCellValueFactory(new PropertyValueFactory<FreeInputsTableRow, String>("value"));
+        valueCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        valueCol.setOnEditCommit(event -> {
+            if (!addNewValue(event)) {
+                event.getTableView().refresh();
+            } else {
+                event.getRowValue().setValue(event.getNewValue());
+            }
+            if(bodyController.getStepper().getExecutionReadyToBeExecuteStatus(currFlowExecutionUuid))
+                makeExecutionButtonEnabled();
+        });
+    }
+
+    public void setFreeInputTable(){
+        ObservableList<FreeInputsTableRow> data = FXCollections.observableArrayList(
+                flowDetails.getFreeInputs().stream()
+                        .map(input -> new FreeInputsTableRow(input.getDataName(), input.getTypeName(), input.getNecessity()))
+                        .collect(Collectors.toList())
+        );
+        flowExecutionFreeInputTable.setItems(data);
+    }
+
+    private boolean addNewValue(TableColumn.CellEditEvent<FreeInputsTableRow, String> event) {
+        try {
+            boolean result = bodyController.getStepper().addFreeInputToExecution(currFlowExecutionUuid, event.getRowValue().getName(),
+                    convertValue(event.getNewValue(), event.getRowValue().getType()));
+            if(result) {
+                System.out.println("worked!");
+            }
+            else {
+                System.out.println("not worked");
+            }
+            return result;
+        }catch (NumberFormatException e){
+            System.out.println("invalid input!");
+            return false;
+        }
+    }
+
+    public Object convertValue(String value, String type){
+        if (type.equals("Number")) {
+            return Integer.parseInt(value);
+        } else if (type.equals("Double")) {
+            return Double.parseDouble(value);
+        } else {
+            return value;
+        }
     }
 
 
-    private void setFlowDetails() {
-        flowDetailsActualName.textProperty().setValue(currFlowToExecute.getFlowName());
-        flowDetailsActualDescription.textProperty().setValue(currFlowToExecute.getFlowDescription());
-        StringBuilder stepsBuilder = new StringBuilder();
-        currFlowToExecute.getStepsNames().forEach(stepName -> stepsBuilder.append(stepName).append("\n"));
-        String steps = stepsBuilder.toString();
-        flowDetailsActualSteps.textProperty().setValue(steps);
-    }
+
 
 }

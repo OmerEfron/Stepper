@@ -62,7 +62,6 @@ public class FlowExecutor {
      */
     private static void finishExecution(FlowExecution currFlow, StepExecutionContext stepExecutionContext, FlowStatus flowStatus, Instant start) {
         currFlow.setTotalTime(Duration.between(start, Instant.now()));
-        currFlow.createUUID();
         currFlow.setFlowStatus(flowStatus);
         stepExecutionContext.addFormalOutput(currFlow);
         currFlow.setStepsData(stepExecutionContext.getStepsData());
