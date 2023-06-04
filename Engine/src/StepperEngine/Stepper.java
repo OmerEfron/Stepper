@@ -101,9 +101,9 @@ public class Stepper implements Serializable {
         else
         {
             try {
-                flowsMap.get(flow.getName()).isOutputsExist(continuation.getContinuationMappings());
-                flowsMap.get(continuation.getTargetFlow()).isInputsExist(continuation.getContinuationMappings());
                 for(ContinuationMapping continuationMapping:continuation.getContinuationMappings()){
+                    flowsMap.get(flow.getName()).isDDExist(continuationMapping);
+                    flowsMap.get(continuation.getTargetFlow()).isInputExist(continuationMapping);
                     if(!flow.getAllDataDefinitions().get(continuationMapping.getSourceData()).dataDefinition().getType()
                             .equals(flowsMap.get(continuation.getTargetFlow()).getFreeInputByName(continuationMapping.getTargetData()).dataDefinition().getType())){
                         throw new FlowBuildException(flow.getName(),"Can't create continuation mapping between: "
@@ -124,8 +124,8 @@ public class Stepper implements Serializable {
         return flowNames.contains(name);
     }
 
-    public List<String> getContinuationList (FlowExecution flowExecution){
-        return continuationMap.get(flowExecution.getFlowDefinition().getName());
+    public List<String> getContinuationList (String flowName){
+        return continuationMap.get(flowName);
     }
     public FlowExecution applyContinuation(FlowExecution pastFlow,String continuationFlow) {
         FlowExecution flowExecution=new FlowExecution(flowsMap.get(continuationFlow));

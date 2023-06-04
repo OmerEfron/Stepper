@@ -16,7 +16,7 @@ public class FlowDefinitionTable {
         stepsNumber=flow.getSteps().size();
         freeInputsNumber=flow.getFreeInputs().size();
         description=flow.getFlowDescription();
-        continuationsNumber=5;
+        continuationsNumber=flow.getContinuationNumber();
     }
 
     public String getDescription() {

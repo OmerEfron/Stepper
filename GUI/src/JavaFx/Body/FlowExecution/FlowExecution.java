@@ -5,8 +5,11 @@ import StepperEngine.DTO.FlowDetails.FlowDetails;
 import StepperEngine.DTO.FlowExecutionData.api.FlowExecutionData;
 import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
 import StepperEngine.DTO.FlowExecutionData.impl.IOData;
+import StepperEngine.DataDefinitions.Enumeration.ZipEnumerator;
+import StepperEngine.DataDefinitions.impl.StepperZipperEnumeration;
 import StepperEngine.Flow.execute.StepData.StepExecuteData;
 import StepperEngine.Flow.execute.StepData.StepIOData;
+import StepperEngine.Step.api.DataDefinitionsDeclaration;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -205,7 +208,10 @@ public class FlowExecution {
                 return Integer.parseInt(val);
             } else if (type.equals("Double")) {
                 return Double.parseDouble(val);
-            } else {
+            }else if (type.equals("Enumerator")){
+               return ZipEnumerator.valueOf(val);
+            }
+            else {
                 return val;
             }
         }catch (NumberFormatException e){
