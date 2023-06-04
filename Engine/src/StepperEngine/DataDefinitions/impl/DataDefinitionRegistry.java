@@ -20,7 +20,8 @@ public enum DataDefinitionRegistry implements DataDefinition {
     MAPPING(new StepperMapping()),
     NUMBER_MAPPING(new StepperNumberMapping()),
     RELATION(new SteeperRelation()),
-    RELATION_STRING(new StepperRelationString());
+    RELATION_STRING(new StepperRelationString()),
+    ZIPPER_ENUMERATION(new StepperZipperEnumeration());
 
     DataDefinitionRegistry(DataDefinition dataDefinitionInterface){
         this.dataDefinitionInterface=dataDefinitionInterface;

@@ -13,7 +13,9 @@ public enum StepDefinitionRegistry implements Serializable {
     FILES_CONTENT_EXTRACTOR(new FilesContentExtractor()),
     FILE_DUMPER(new FileDumper()),
     PROPERTIES_EXPORTER(new PropertiesExporter()),
-    CSV_EXPORTER(new CSVExporter())
+    CSV_EXPORTER(new CSVExporter()),
+    ZIPPER(new Zipper()),
+    COMMAND_LINE(new CommandLine())
     ;
 
     private final StepDefinition stepDefinition;

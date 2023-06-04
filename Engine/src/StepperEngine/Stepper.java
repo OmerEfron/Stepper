@@ -11,6 +11,8 @@ import StepperEngine.Flow.execute.FlowStatus;
 import StepperEngine.Flow.execute.runner.FlowExecutor;
 import StepperEngine.DTO.FlowExecutionData.api.FlowExecutionData;
 import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
+import StepperEngine.StepperReader.XMLReadClasses.Continuation;
+import StepperEngine.StepperReader.XMLReadClasses.ContinuationMapping;
 import StepperEngine.StepperReader.XMLReadClasses.Flow;
 import StepperEngine.StepperReader.XMLReadClasses.TheStepper;
 
@@ -32,6 +34,8 @@ public class Stepper implements Serializable {
     private Map<String, FlowDefinition> flowsMap = new HashMap<>();
 
     private Map<Integer, String> flowsByNumber = new LinkedHashMap<>();
+
+    private Map<String,List<String>> continuationMap=new HashMap<>();
 
     private final Map<String, FlowExecution> executionsMap = new HashMap<>();
     private final Map<String, List<FlowExecution>> executionsPerFlow = new HashMap<>();
@@ -66,13 +70,73 @@ public class Stepper implements Serializable {
                 .map(FlowDefinition::getName)
                 .collect(Collectors.toList());
 
+        try {
+            checkContinuation();
+        } catch (FlowBuildException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /***
+     * The function checks that the continuity setting is correct(steps names ,inputs names,outputs names)
+     * @throws FlowBuildException
+     */
+    private void checkContinuation() throws FlowBuildException{
+        for (FlowDefinition flow:flows){
+            if (flow.hasContinuation())
+            {
+                for(Continuation continuation:flow.getContinuation()) {
+                    try {
+                        checkIfContinuationValid(flow, continuation);
+                        if(!continuationMap.containsKey(flow.getName()))
+                            continuationMap.put(flow.getName(),new ArrayList<>());
+                        continuationMap.get(flow.getName()).add(continuation.getTargetFlow());
+                    }catch (FlowBuildException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+    }
+
+    private void checkIfContinuationValid(FlowDefinition flow, Continuation continuation) throws FlowBuildException {
+        if (!flowsMap.containsKey(continuation.getTargetFlow()))
+            throw new FlowBuildException("The flow " + continuation.getTargetFlow() + " doesn't exist", flow.getName());
+        else
+        {
+            try {
+                flowsMap.get(flow.getName()).isOutputsExist(continuation.getContinuationMappings());
+                flowsMap.get(continuation.getTargetFlow()).isInputsExist(continuation.getContinuationMappings());
+                for(ContinuationMapping continuationMapping:continuation.getContinuationMappings()){
+                    if(!flow.getAllDataDefinitions().get(continuationMapping.getSourceData()).dataDefinition().getType()
+                            .equals(flowsMap.get(continuation.getTargetFlow()).getFreeInputByName(continuationMapping.getTargetData()).dataDefinition().getType())){
+                        throw new FlowBuildException(flow.getName(),"Can't create continuation mapping between: "
+                        + continuationMapping.getSourceData()+" and "+continuationMapping.getTargetData()+".\n" +
+                                "Are not the same type!");
+                    }
+                    else {
+                        flowsMap.get(continuation.getTargetFlow()).addContinuationMapping(continuationMapping.getSourceData(),continuationMapping.getTargetData());
+                    }
+                }
+            }catch (FlowBuildException e) {
+                throw e;
+            }
+        }
     }
 
     public boolean isFlowExist(String name) {
         return flowNames.contains(name);
     }
 
-    public List<String> getFlowNames() {
+    public List<String> getContinuationList (FlowExecution flowExecution){
+        return continuationMap.get(flowExecution.getFlowDefinition().getName());
+    }
+    public FlowExecution applyContinuation(FlowExecution pastFlow,String continuationFlow) {
+        FlowExecution flowExecution=new FlowExecution(flowsMap.get(continuationFlow));
+        flowExecution.applyContinuation(pastFlow);
+        return flowExecution;
+    }
+        public List<String> getFlowNames() {
         return flowNames;
     }
 
@@ -120,12 +184,6 @@ public class Stepper implements Serializable {
         return null;
     }
 
-
-    public FlowExecution getFlowExecution(int flowNumber) {
-        FlowExecution flowExecution = new FlowExecution(flows.get(flowNumber - 1));
-        return flowExecution;
-    }
-
     public FlowExecution getFlowExecution(String flowName) {
         if (!isFlowExist(flowName)) {
             return null;
@@ -133,9 +191,7 @@ public class Stepper implements Serializable {
         return new FlowExecution(flowsMap.get(flowName));
     }
 
-    public FlowExecution buildFlowExecution(String flowName) {
-        return new FlowExecution(flowsMap.get(flowName));
-    }
+
 
     public void executeFlow(String uuid) throws ExecutionNotReadyException {
         FlowExecutor flowExecutor = new FlowExecutor();

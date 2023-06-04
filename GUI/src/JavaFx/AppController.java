@@ -2,6 +2,7 @@ package JavaFx;
 
 import JavaFx.Body.BodyController;
 import JavaFx.Header.HeaderController;
+import StepperEngine.DTO.StepperDTO;
 import StepperEngine.Flow.FlowBuildExceptions.FlowBuildException;
 import StepperEngine.Flow.execute.FlowExecution;
 import StepperEngine.Stepper;
@@ -30,7 +31,7 @@ public class AppController {
 
         headerComponentController.setMainController(this);
         bodyComponentController.setMainController(this);
-        loadFile("C:\\Users\\Gil\\Desktop\\StepperNewNew\\ex1.xml");
+        loadFile("C:\\Users\\roni2\\IdeaProjects\\StepperNew\\ex2.xml");
     }
     public boolean loadFile(String filePath) {
         try {

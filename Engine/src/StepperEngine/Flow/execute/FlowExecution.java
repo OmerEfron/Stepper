@@ -28,7 +28,7 @@ public class FlowExecution {
     private String uuidAsString;
     private final Map<String, Object> formalOutputs = new HashMap<>();
     private List<StepExecuteData> stepsData = new LinkedList<>();
-
+    private Map<String,Object> allData=new HashMap<>();
     private final Set<DataDefinitionsDeclaration> freeInputs;
     private final Set<DataDefinitionsDeclaration> outputs;
 
@@ -47,6 +47,10 @@ public class FlowExecution {
         numOfSteps = flowDefinition.getSteps().size();
         canBeExecuted = freeInputs.size() == 0;
         createUUID();
+    }
+
+    public void setAllData(Map<String, Object> allData) {
+        this.allData = allData;
     }
 
     public void setStepsData(List<StepExecuteData> stepsData) {
@@ -174,5 +178,16 @@ public class FlowExecution {
 
     public int getNumOfSteps() {
         return numOfSteps;
+    }
+
+    public void applyContinuation(FlowExecution pastFlow){
+        for(DataDefinitionsDeclaration dd:freeInputs){
+            if (pastFlow.allData.containsKey(dd.getAliasName())){
+                freeInputsValue.put(dd.getAliasName(),pastFlow.allData.get(dd.getAliasName()));
+            }
+        }
+        for(String source:flowDefinition.getContinuationMapping().keySet()){
+            freeInputsValue.put(flowDefinition.getContinuationMapping().get(source),pastFlow.allData.get(source));
+        }
     }
 }

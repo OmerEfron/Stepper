@@ -1,6 +1,9 @@
 package StepperEngine.Flow.api;
 
+import StepperEngine.Flow.FlowBuildExceptions.FlowBuildException;
 import StepperEngine.Step.api.DataDefinitionsDeclaration;
+import StepperEngine.StepperReader.XMLReadClasses.Continuation;
+import StepperEngine.StepperReader.XMLReadClasses.ContinuationMapping;
 import javafx.util.Pair;
 
 import java.util.List;
@@ -8,9 +11,13 @@ import java.util.Map;
 import java.util.Set;
 
 public interface FlowDefinition {
+    Map<String, DataDefinitionsDeclaration> getAllDataDefinitions();
 
+    boolean hasContinuation();
+    List<Continuation> getContinuation();
     String getName();
     String getDescription();
+    int getContinuationNumber();
     List<StepUsageDecleration> getSteps();
     String outputStrings();
     List<String> isFlowValid();
@@ -24,5 +31,11 @@ public interface FlowDefinition {
     Map<String, Pair<DataDefinitionsDeclaration, String>> getFormalOuputs();
 
     Set<DataDefinitionsDeclaration> getFreeInputs();
+    void isOutputsExist(List<ContinuationMapping> continuationMappings) throws FlowBuildException;
+    void isInputsExist(List<ContinuationMapping> continuationMappings)throws FlowBuildException;
+   Map<String, Pair<DataDefinitionsDeclaration, Object>> getInitialInputs();
 
+    DataDefinitionsDeclaration getFreeInputByName(String sourceData);
+    void addContinuationMapping(String source,String target);
+    Map<String,String> getContinuationMapping();
 }
