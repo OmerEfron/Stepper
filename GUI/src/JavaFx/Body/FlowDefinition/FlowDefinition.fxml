@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane fitToHeight="true" fitToWidth="true" minHeight="569.0" minWidth="1113.0" prefHeight="597.0" prefWidth="1150.0" stylesheets="@FlowDefinition.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFx.Body.FlowDefinition.FlowDefinition">
+<ScrollPane fitToHeight="true" fitToWidth="true" minHeight="569.0" minWidth="1113.0" prefHeight="597.0" prefWidth="1150.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFx.Body.FlowDefinition.FlowDefinition">
    <content>
       <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="567.0" prefWidth="1131.0">
          <center>
@@ -23,7 +23,7 @@
                <bottom>
                   <VBox alignment="BOTTOM_RIGHT" minHeight="36.0" minWidth="591.0" BorderPane.alignment="CENTER">
                      <children>
-                        <Button id="dark" fx:id="executeFlow" alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#executeFlow" stylesheets="@FlowDefinition.css" text="Execute Flow" />
+                        <Button id="dark" fx:id="executeFlow" alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#executeFlow" text="Execute Flow" />
                      </children>
                      <padding>
                         <Insets bottom="5.0" right="5.0" />
@@ -126,7 +126,7 @@
                                     <Font size="16.0" />
                                  </font>
                               </Label>
-                              <Button fx:id="readOnlyButton" maxHeight="24.0" minHeight="24.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="30.0" styleClass="v-button" stylesheets="@FlowDefinition.css" />
+                              <Button fx:id="readOnlyButton" maxHeight="24.0" minHeight="24.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="30.0" styleClass="v-button" />
                            </children>
                         </HBox>
                         <Separator prefWidth="200.0" />
