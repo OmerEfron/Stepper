@@ -15,6 +15,7 @@ public class DataDefinitionDeclarationImpl implements DataDefinitionsDeclaration
     DataNecessity dataNecessity;
     String alias;
     DataDefinition dataDefinition;
+
     public DataDefinitionDeclarationImpl(String name, String userString, DataNecessity dataNecessity, DataDefinition dataDefinition){
         this.name=name;
         this.userString=userString;
