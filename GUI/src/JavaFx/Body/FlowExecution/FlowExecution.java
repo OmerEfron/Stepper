@@ -5,7 +5,10 @@ import StepperEngine.DTO.FlowDetails.FlowDetails;
 import StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails.Input;
 import StepperEngine.DTO.FlowDetails.StepDetails.StepDetails;
 import StepperEngine.DTO.FlowExecutionData.api.FlowExecutionData;
+import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
+import StepperEngine.DTO.FlowExecutionData.impl.IOData;
 import StepperEngine.Flow.execute.ExecutionNotReadyException;
+import StepperEngine.Flow.execute.StepData.StepExecuteData;
 import StepperEngine.Stepper;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -40,10 +43,10 @@ public class FlowExecution {
     private GridPane executionDetailsGridPane;
 
     @FXML
-    private ListView<?> formalOutputsListView;
+    private ListView<String> formalOutputsListView;
 
     @FXML
-    private ListView<?> stepsInfoListView;
+    private ListView<String> stepsInfoListView;
 
     @FXML
     private Label executionUuidLabel;
@@ -154,7 +157,20 @@ public class FlowExecution {
     }
 
     void setExecutionDetails(){
+        flowExecutionData = new FlowExecutionDataImpl(bodyController.getStepper().getFlowExecutionByUuid(lastFlowRunningUuid));
+        executionUuidLabel.textProperty().set(flowExecutionData.getUniqueExecutionId());
+        executionTimestampLabel.textProperty().set(flowExecutionData.getExecutionTime() + " milliseconds");
+        executionResultLabel.textProperty().set(flowExecutionData.getFlowExecutionFinalResult());
+        setFormalOutputsAndStepsListView();
+    }
 
+    private void setFormalOutputsAndStepsListView() {
+        stepsInfoListView.setItems(FXCollections.observableArrayList(flowExecutionData.getStepExecuteDataList().stream()
+                .map(StepExecuteData::getFinalName)
+                .collect(Collectors.toList())));
+        formalOutputsListView.setItems(FXCollections.observableArrayList(flowExecutionData.getFormalOutputs().stream()
+                .map(IOData::getName)
+                .collect(Collectors.toList())));
     }
 
     @FXML

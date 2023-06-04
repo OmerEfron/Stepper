@@ -120,12 +120,6 @@ public class Stepper implements Serializable {
         return null;
     }
 
-
-    public FlowExecution getFlowExecution(int flowNumber) {
-        FlowExecution flowExecution = new FlowExecution(flows.get(flowNumber - 1));
-        return flowExecution;
-    }
-
     public FlowExecution getFlowExecution(String flowName) {
         if (!isFlowExist(flowName)) {
             return null;
@@ -133,9 +127,7 @@ public class Stepper implements Serializable {
         return new FlowExecution(flowsMap.get(flowName));
     }
 
-    public FlowExecution buildFlowExecution(String flowName) {
-        return new FlowExecution(flowsMap.get(flowName));
-    }
+
 
     public void executeFlow(String uuid) throws ExecutionNotReadyException {
         FlowExecutor flowExecutor = new FlowExecutor();
