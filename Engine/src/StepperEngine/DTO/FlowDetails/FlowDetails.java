@@ -18,7 +18,7 @@ public interface FlowDetails {
     String isFlowReadOnlyString();
 
     List<StepDetails> getSteps();
-
+    List<String> getContinuationNames();
     List<Input> getFreeInputs();
     int getContinuationNumber();
     List<Output> getOutputs();

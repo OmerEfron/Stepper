@@ -2,6 +2,7 @@ package StepperEngine.Flow.api;
 
 import StepperEngine.DataDefinitions.Enumeration.ZipEnumerator;
 import StepperEngine.Flow.FlowBuildExceptions.FlowBuildException;
+import StepperEngine.Step.api.StepDefinition;
 import StepperEngine.StepperReader.XMLReadClasses.*;
 import StepperEngine.Step.StepBuilder;
 import StepperEngine.Step.StepDefinitionRegistry;
@@ -136,6 +137,11 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
 
         autoMapping();
 
+        initialInputs();
+        if(!problems.isEmpty()){
+            return problems;
+        }
+
         setFreeInputs();
         if(!problems.isEmpty()){
             return problems;
@@ -151,10 +157,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
         if(!problems.isEmpty()){
             return problems;
         }
-        initialInputs();
-        if(!problems.isEmpty()){
-            return problems;
-        }
+
 
         valid = true;
         return problems;
@@ -165,6 +168,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
      * adding and checking the initial values
      */
     private void initialInputs() {
+        setAllInputs();
         boolean isInitialInputExist=false;
         for(InitialInputValue initialInputValue:flow.getInitialInputValues()){
         {
@@ -199,8 +203,9 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
                 value = initialInputValue.getInitialValue();
             }
             initialInputs.put(initialInputValue.getInputName(),new Pair<>(dd,value));
-            freeInputs.remove(dd);
-            allFreeInputs.remove(dd);
+            steps.forEach(step -> step.getStepDefinition().getInputs().stream()
+                    .filter(dd::equals)
+                    .forEach(dataDefinition -> dataDefinition.setInitial(true)));
         }catch (NumberFormatException n)
         {
             problems.add("The initial input for "+ initialInputValue.getInputName()+ " , not the valid type!"
@@ -263,11 +268,10 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
                 .flatMap(step -> getStepFreeInputs(step).stream())
                 .collect(Collectors.toSet());
         for(DataDefinitionsDeclaration dd: freeInputs){
-            if(!dd.dataDefinition().isUserFriendly() && dd.necessity() == DataNecessity.MANDATORY){
+            if(!dd.dataDefinition().isUserFriendly() && dd.necessity() == DataNecessity.MANDATORY && !dd.isInitial()){
                 problems.add("Mandatory input \""+ dd.userString() + "\" is not accessible");
             }
         }
-        setAllInputs();
         setAllFreeInputs();
     }
 
@@ -280,7 +284,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
     private void setAllFreeInputs(){
         allFreeInputs=steps.stream()
                 .flatMap(step -> getStepFreeInputs(step).stream().map(dd -> new AbstractMap.SimpleEntry<>(dd, step.getStepFinalName())))
-                .filter(entry -> entry.getKey().dataDefinition().isUserFriendly())
+                .filter(entry -> entry.getKey().dataDefinition().isUserFriendly() && !entry.getKey().isInitial())
                 .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
     }
     public Set<DataDefinitionsDeclaration> getFreeInputsFromUser(){return freeInputs;}
@@ -376,14 +380,18 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
         }
         else if(!isDataPartOfStepInPuts(customMapping, target)){
             problems.add("cant find data in target step " + target.getStepFinalName() + ", data name " + customMapping.getTargetData());
-        }
-        else{
+        } else if (isInitialInput(customMapping.getTargetData())){
+            problems.add("cant create custom map to " + customMapping.getTargetData() + ", it is initial input");
+        } else{
             target.addInputToMap(customMapping.getTargetData(), customMapping.getSourceStep(), customMapping.getSourceData());
             source.addOutputToMap(customMapping.getSourceData(),customMapping.getTargetStep(),customMapping.getTargetData());
         }
     }
 
-
+    private boolean isInitialInput(String input) {
+       return flow.getInitialInputValues().stream()
+                .anyMatch(initialInputValue -> initialInputValue.getInputName().equals(input));
+    }
 
 
     /**

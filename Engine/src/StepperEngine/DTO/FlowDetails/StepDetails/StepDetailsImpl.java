@@ -49,6 +49,8 @@ public class StepDetailsImpl implements StepDetails{
         for(DataDefinitionsDeclaration input : step.getStepDefinition().getInputs()){
             stepRelatedData= step.getDataMap().containsKey(input.getName()) ?
                     step.getDataMap().get(input.getName()) : new Pair<>("Free Input","Free Input");
+            if(input.isInitial())
+                stepRelatedData=new Pair<>("Initial input","Initial input");
             inputs.add(new Input(input.getAliasName(),input.dataDefinition().getName(), String.valueOf(input.necessity()),
                     stepRelatedData));
         }

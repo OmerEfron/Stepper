@@ -15,6 +15,7 @@ public class DataDefinitionDeclarationImpl implements DataDefinitionsDeclaration
     DataNecessity dataNecessity;
     String alias;
     DataDefinition dataDefinition;
+    boolean isInitial=false;
 
     public DataDefinitionDeclarationImpl(String name, String userString, DataNecessity dataNecessity, DataDefinition dataDefinition){
         this.name=name;
@@ -22,6 +23,15 @@ public class DataDefinitionDeclarationImpl implements DataDefinitionsDeclaration
         this.dataNecessity=dataNecessity;
         this.dataDefinition=dataDefinition;
         this.alias=name;
+    }
+
+    @Override
+    public boolean isInitial() {
+        return isInitial;
+    }
+    @Override
+    public void setInitial(boolean initial) {
+        isInitial = initial;
     }
 
     @Override
