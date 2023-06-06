@@ -24,4 +24,6 @@ public interface FlowExecutionData  {
     Set<IOData> getOutputs();
 
     Set<IOData> getFormalOutputs();
+
+    StepExecuteData getStepData(String stepName);
 }

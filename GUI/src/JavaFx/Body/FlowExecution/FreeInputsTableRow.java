@@ -1,16 +1,26 @@
 package JavaFx.Body.FlowExecution;
 
+import StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails.Input;
+import StepperEngine.DataDefinitions.Enumeration.ZipEnumerator;
+import javafx.collections.FXCollections;
+import javafx.scene.control.ComboBox;
+
+import java.util.EnumSet;
+import java.util.stream.Collectors;
+
 public class FreeInputsTableRow {
     private String name;
     private String type;
     private String necessity;
     private String value;
 
-    public FreeInputsTableRow(String name, String type, String necessity) {
-        this.name = name;
-        this.type = type;
-        this.necessity = necessity;
-        value = "";
+
+    public FreeInputsTableRow(Input input, String value) {
+        this.name = input.getDataName();
+        this.type = input.getTypeName();
+        this.necessity = input.getNecessity();
+        this.value = value;
+
     }
 
     public void setValue(String value) {
@@ -32,4 +42,5 @@ public class FreeInputsTableRow {
     public String getValue() {
         return value;
     }
+
 }

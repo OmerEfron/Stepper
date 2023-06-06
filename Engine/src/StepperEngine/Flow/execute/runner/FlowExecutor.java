@@ -25,32 +25,43 @@ public class FlowExecutor {
         StepExecutionContext stepExecutionContext = new StepExecutionContextClass(currFlow);
         FlowStatus flowStatus = FlowStatus.SUCCESS;
         Instant start = updateTime(currFlow);
-        /*
-        execute each step in order .
-         */
         for (StepUsageDecleration step : currFlow.getFlowDefinition().getSteps()) {
-            stepExecutionContext.updateCustomMap(step);
-            stepExecutionContext.addStepData(step);
-            Instant stepStart = Instant.now();
-            StepStatus stepStatus = invokeStep(stepExecutionContext, step);
-            Instant stepEnd = Instant.now();
-            //setStepTotalTime(stepExecutionContext, step, stepStart, stepEnd);
-            if (stepStatus == StepStatus.FAIL) {// if the step failed all the flow his failed and we need to stop.
-                if(step.skipIfFail()){
-                    flowStatus=FlowStatus.WARNING;
-                }
-                else {
-                    flowStatus = FlowStatus.FAIL;
-                    break;
-                }
-            }
-            else if (stepStatus == StepStatus.WARNING) {
-                flowStatus = FlowStatus.WARNING;
-            }
+            flowStatus = executeStep(currFlow, stepExecutionContext, flowStatus, step);
+            if (flowStatus == null) break;
             currFlow.setNumOfStepsExecuted(currFlow.getNumOfStepsExecuted() + 1);
         }
-
         finishExecution(currFlow, stepExecutionContext, flowStatus, start);
+    }
+
+    private static FlowStatus executeStep(FlowExecution currFlow, StepExecutionContext stepExecutionContext, FlowStatus flowStatus, StepUsageDecleration step) {
+        startStep(stepExecutionContext, step);
+        StepStatus stepStatus = invokeStep(stepExecutionContext, step);
+        stepExecutionContext.setEndStep(step.getStepFinalName());
+        flowStatus = endStep(flowStatus, step, stepStatus);
+        if (flowStatus == null) return null;
+        return flowStatus;
+    }
+
+    private static FlowStatus endStep(FlowStatus flowStatus, StepUsageDecleration step, StepStatus stepStatus) {
+        if (stepStatus == StepStatus.FAIL) {// if the step failed all the flow his failed and we need to stop.
+            if(step.skipIfFail()){
+                flowStatus =FlowStatus.WARNING;
+            }
+            else {
+                flowStatus = FlowStatus.FAIL;
+                return null;
+            }
+        }
+        else if (stepStatus == StepStatus.WARNING) {
+            flowStatus = FlowStatus.WARNING;
+        }
+        return flowStatus;
+    }
+
+    private static void startStep(StepExecutionContext stepExecutionContext, StepUsageDecleration step) {
+        stepExecutionContext.updateCustomMap(step);
+        stepExecutionContext.addStepData(step);
+        stepExecutionContext.setStartStep(step.getStepFinalName());
     }
 
     /***

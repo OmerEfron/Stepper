@@ -22,6 +22,9 @@ public interface StepExecutionContext {
     void setTotalTime(String stepName,Duration totalTime);
     void addStepData(StepUsageDecleration step);
 
+    void setStartStep(String stepName);
+    void setEndStep(String stepName);
+
     StepStatus getStepStatus(String stepName);
     List<StepExecuteData>getStepsData();
 }

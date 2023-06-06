@@ -290,4 +290,5 @@ public class Stepper implements Serializable {
         FlowExecution flowExecution = getFlowExecutionByUuid(uuid);
         return (double) (flowExecution.getNumOfStepsExecuted() / flowExecution.getNumOfSteps());
     }
+
 }

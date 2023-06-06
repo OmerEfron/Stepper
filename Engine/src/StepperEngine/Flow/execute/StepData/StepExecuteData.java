@@ -6,6 +6,7 @@ import javafx.util.Pair;
 
 import java.io.Serializable;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
@@ -20,6 +21,8 @@ public class StepExecuteData implements Serializable {
     private StepStatus stepStatus;
     private List<Pair<String, String>> logs=new LinkedList<>();
     private final Integer id;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
 
 
@@ -27,7 +30,13 @@ public class StepExecuteData implements Serializable {
         this.finalName =step.getStepFinalName();
         this.name=step.getStepDefinition().getName();
         this.id=step.getIndex();
+
     }
+
+    public void setStartTime() {
+        this.startTime = LocalDateTime.now();
+    }
+
     public Integer getId() {
         return id;
     }
@@ -71,6 +80,22 @@ public class StepExecuteData implements Serializable {
         this.logs.add(new Pair<>(log,formattedTime));
     }
 
+    public void setEndTime() {
+        this.endTime = LocalDateTime.now();
+    }
 
+    public String getName() {
+        return name;
+    }
 
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalDateTime getEndTime() throws IllegalAccessException{
+        if(endTime!=null){
+            return endTime;
+        }
+        throw new IllegalAccessException("step has not ended");
+    }
 }

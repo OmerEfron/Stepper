@@ -152,4 +152,14 @@ public class StepExecutionContextClass implements StepExecutionContext {
     public List<StepExecuteData> getStepsData() {
         return new ArrayList<>(stepExecuteDataMap.values().stream().sorted(Comparator.comparingInt(StepExecuteData::getId)).collect(Collectors.toList()));
     }
+
+    @Override
+    public void setStartStep(String stepName) {
+        stepExecuteDataMap.get(stepName).setStartTime();
+    }
+
+    @Override
+    public void setEndStep(String stepName) {
+        stepExecuteDataMap.get(stepName).setEndTime();
+    }
 }

@@ -7,10 +7,7 @@ import StepperEngine.DTO.FlowDetails.StepDetails.StepDetailsImpl;
 import StepperEngine.Flow.api.FlowDefinition;
 import StepperEngine.Step.api.DataDefinitionsDeclaration;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -92,6 +89,7 @@ public class FlowDetailsImpl implements FlowDetails {
                     entry.getValue()
             ));
         }
+        freeInputs.sort(Comparator.comparing(Input::getNecessity));
     }
 
     @Override

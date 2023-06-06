@@ -7,34 +7,48 @@ import StepperEngine.DTO.FlowDetails.StepDetails.StepDetails;
 import StepperEngine.DTO.FlowExecutionData.api.FlowExecutionData;
 import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
 import StepperEngine.DTO.FlowExecutionData.impl.IOData;
+import StepperEngine.DataDefinitions.Enumeration.ZipEnumerator;
 import StepperEngine.Flow.execute.ExecutionNotReadyException;
 import StepperEngine.Flow.execute.StepData.StepExecuteData;
+import StepperEngine.Step.api.DataNecessity;
 import StepperEngine.Stepper;
+import javafx.animation.Animation;
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Cursor;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.Node;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.util.Callback;
+import javafx.util.Duration;
+import javafx.util.Pair;
 
+import java.io.File;
+import java.util.EnumSet;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class FlowExecution {
+
+    private static final int INPUT_NAME_COLUMN = 0;
+    private static final int INPUT_MANDATORY_COLUMN = 1;
+    private static final int INPUT_DATA_DISPLAY_COLUMN = 2;
+
 
     @FXML
     private AnchorPane flowExecutionAnchorPane;
@@ -67,22 +81,19 @@ public class FlowExecution {
     private Label stepNameDisplayNameLabel;
 
     @FXML
+    private GridPane freeInputsGridPane;
+    @FXML
+    private ScrollPane freeInputsScrollPane;
+    @FXML
+    private TableView<FreeInputsTableRow> freeInputsTableView;
+    @FXML
+    private TableColumn<FreeInputsTableRow, String> freeInputNameCol;
+
+    @FXML
+    private TableColumn<FreeInputsTableRow, String> freeInputValueCol;
+    @FXML
     private Label outputNameDisplayNameLabel;
 
-    @FXML
-    private TableView<FreeInputsTableRow> flowExecutionFreeInputTable;
-
-    @FXML
-    private TableColumn<FreeInputsTableRow, String> nameCol;
-
-    @FXML
-    private TableColumn<FreeInputsTableRow, String> typeCol;
-
-    @FXML
-    private TableColumn<FreeInputsTableRow, String> necessityCol;
-
-    @FXML
-    private TableColumn<FreeInputsTableRow, String> valueCol;
 
     @FXML
     private ImageView flowExecutionButtonImage;
@@ -120,9 +131,25 @@ public class FlowExecution {
     @FXML
     private ChoiceBox<?> continuationChoiceBox;
 
+    @FXML
+    private Label stepNameTitleLabel;
+    @FXML
+    private GridPane stepDetailsGridPane;
+
+    @FXML
+    private AnchorPane outputPresentationAnchorPane;
+    @FXML
+    private Label stepLogsLabel;
+
+    @FXML
+    private Label stepResutLabel;
+
+    @FXML
+    private Label stepTimeLabel;
     private BodyController bodyController;
     private FlowDetails flowDetails;
     private FlowExecutionData flowExecutionData;
+
     private String lastFlowRunningUuid;
     private String currFlowExecutionUuid;
 
@@ -146,6 +173,7 @@ public class FlowExecution {
         String uuid = lastFlowRunningUuid;
         Stepper stepper = bodyController.getStepper();
         while(!stepper.getExecutionStatus(uuid)){
+            System.out.println("still running..");
             Platform.runLater(() ->executionProgressBar.setProgress(stepper.getExecutionPartialStatus(uuid)));
             try {
                 Thread.sleep(3000);
@@ -153,15 +181,34 @@ public class FlowExecution {
                 throw new RuntimeException(e);
             }
         }
+        System.out.println("finished running!");
         Platform.runLater(this::setExecutionDetails);
     }
 
     void setExecutionDetails(){
+        executionProgressBar.setProgress(1);
         flowExecutionData = new FlowExecutionDataImpl(bodyController.getStepper().getFlowExecutionByUuid(lastFlowRunningUuid));
         executionUuidLabel.textProperty().set(flowExecutionData.getUniqueExecutionId());
         executionTimestampLabel.textProperty().set(flowExecutionData.getExecutionTime() + " milliseconds");
         executionResultLabel.textProperty().set(flowExecutionData.getFlowExecutionFinalResult());
         setFormalOutputsAndStepsListView();
+        setStepDetails(flowExecutionData.getStepExecuteDataList().get(0).getName());
+    }
+
+    private void setStepDetails(String stepName)  {
+        StepExecuteData stepExecuteData = flowExecutionData.getStepData(stepName);
+        stepResutLabel.textProperty().setValue(stepExecuteData.getStepStatus().toString());
+        try {
+            stepTimeLabel.textProperty().setValue(String.format("started at %s\nended at %s\ntotal time %s",
+                    stepExecuteData.getStartTime(), stepExecuteData.getEndTime(), stepExecuteData.getTotalTime()));
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        String logsLabel = "";
+        for(Pair<String, String> log: stepExecuteData.getLogs()){
+            logsLabel = logsLabel.concat(log.getKey() + " - " + log.getValue());
+        }
+        stepLogsLabel.textProperty().setValue(logsLabel);
     }
 
     private void setFormalOutputsAndStepsListView() {
@@ -176,8 +223,15 @@ public class FlowExecution {
     @FXML
     void initialize(){
         initButtons();
-        initFreeInputTable();
+        freeInputNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        freeInputValueCol.setCellValueFactory(new PropertyValueFactory<>("value"));
+        addFreeInputsFirstRow();
+    }
 
+    private void addFreeInputsFirstRow() {
+        freeInputsGridPane.add(new Label("Name"), INPUT_NAME_COLUMN, 0);
+        freeInputsGridPane.add(new Label("Is madantory?"), INPUT_MANDATORY_COLUMN, 0);
+        freeInputsGridPane.add(new Label(), INPUT_DATA_DISPLAY_COLUMN, 0);
     }
 
     private void initButtons() {
@@ -205,10 +259,11 @@ public class FlowExecution {
     }
 
     public void setFlowToExecute(FlowDetails flow){
+        cleanUpScreen();
         flowDetails = flow;
         currFlowExecutionUuid = bodyController.getStepper().createNewExecution(flow.getFlowName());
-        setFreeInputTable();
         setFlowDetails();
+        setFreeInputsDisplay();
     }
 
     public void setFlowDetails(){
@@ -221,45 +276,111 @@ public class FlowExecution {
         floeStepsLabel.textProperty().set(steps);
     }
 
-    public void initFreeInputTable(){
-        nameCol.setCellValueFactory(new PropertyValueFactory<FreeInputsTableRow, String>("name"));
-        typeCol.setCellValueFactory(new PropertyValueFactory<FreeInputsTableRow, String>("type"));
-        necessityCol.setCellValueFactory(new PropertyValueFactory<FreeInputsTableRow, String>("necessity"));
-        valueCol.setCellValueFactory(new PropertyValueFactory<FreeInputsTableRow, String>("value"));
-        valueCol.setCellFactory(TextFieldTableCell.forTableColumn());
-        valueCol.setOnEditCommit(event -> {
-            if (!addNewValue(event)) {
-                event.getTableView().refresh();
-            } else {
-                event.getRowValue().setValue(event.getNewValue());
+    public void setFreeInputsDisplay(){
+        for(int i = 0; i < flowDetails.getFreeInputs().size(); i++){
+            setInputRowData(flowDetails.getFreeInputs().get(i), i + 1);
+            freeInputsScrollPane.setVvalue(freeInputsScrollPane.getVmax());
+            freeInputsTableView.getItems().add(new FreeInputsTableRow(flowDetails.getFreeInputs().get(i), "not provided"));
+        }
+    }
+
+    public void setInputRowData(Input input, int row){
+        freeInputsGridPane.add(new Label(input.getDataName()), INPUT_NAME_COLUMN, row);
+        freeInputsGridPane.add(new Label(
+                DataNecessity.valueOf(input.getNecessity()).equals(DataNecessity.MANDATORY)? "Yes":"NO"),
+                INPUT_MANDATORY_COLUMN,
+                row);
+        freeInputsGridPane.add(getInputDataDisplayer(input), INPUT_DATA_DISPLAY_COLUMN, row);
+        freeInputsGridPane.getRowConstraints().get(freeInputsGridPane.getRowConstraints().size() - 1).setPrefHeight(Region.USE_COMPUTED_SIZE);
+    }
+
+    public Node getInputDataDisplayer(Input input){
+        String typeName = input.getTypeName();
+        if(typeName.equals("Enumerator")){
+            return getEnumeratorChoiceBox(input);
+        }
+        else if(typeName.equals("FilePath")){
+            return getFileChooserButton(input);
+        }
+        else{
+            return getTextFieldChooser(input);
+        }
+    }
+
+    private ChoiceBox<String> getEnumeratorChoiceBox(Input input) {
+        ChoiceBox<String> choiceBox = new ChoiceBox<>(FXCollections.observableArrayList(EnumSet.allOf(ZipEnumerator.class).stream()
+                .map(Enum::toString)
+                .collect(Collectors.toList())));
+        choiceBox.setOnAction(event -> {
+            if(choiceBox.getValue() != null){
+                boolean isAdded = addNewValue(input, choiceBox.getValue());
+                if(!isAdded){
+                    choiceBox.setValue(null);
+                }
+                else {
+                    addInputToTable(input.getDataName(), choiceBox.getValue());
+                }
             }
-            if(bodyController.getStepper().getExecutionReadyToBeExecuteStatus(currFlowExecutionUuid))
-                makeExecutionButtonEnabled();
         });
+        return choiceBox;
     }
 
-    public void setFreeInputTable(){
-        ObservableList<FreeInputsTableRow> data = FXCollections.observableArrayList(
-                flowDetails.getFreeInputs().stream()
-                        .map(input -> new FreeInputsTableRow(input.getDataName(), input.getTypeName(), input.getNecessity()))
-                        .collect(Collectors.toList())
-        );
-        flowExecutionFreeInputTable.setItems(data);
-    }
-
-    private boolean addNewValue(TableColumn.CellEditEvent<FreeInputsTableRow, String> event) {
-        try {
-            boolean result = bodyController.getStepper().addFreeInputToExecution(currFlowExecutionUuid, event.getRowValue().getName(),
-                    convertValue(event.getNewValue(), event.getRowValue().getType()));
-            if(result) {
-                System.out.println("worked!");
+    public HBox getFileChooserButton(Input input){
+        HBox hBox = new HBox();
+        ImageView fileChooserButton = new ImageView();
+        hBox.getChildren().add(fileChooserButton);
+        fileChooserButton.setImage(new Image("src/folder-management.png"));
+        fileChooserButton.setFitHeight(Region.USE_COMPUTED_SIZE);
+        fileChooserButton.setFitWidth(Region.USE_COMPUTED_SIZE);
+        fileChooserButton.setOnMouseClicked(event -> {
+            FileChooser fileChooser = new FileChooser();
+            File fileChoose = fileChooser.showOpenDialog(fileChooserButton.getScene().getWindow());
+            if(addNewValue(input, fileChoose.getAbsolutePath())){
+                addInputToTable(input.getDataName(), fileChoose.getName());
             }
-            else {
-                System.out.println("not worked");
+        });
+        return hBox;
+    }
+    public HBox getTextFieldChooser(Input input){
+        HBox hBox = new HBox();
+        TextField textField = new TextField();
+        Button addButton = new Button("+");
+        Label invalidInputLabel = new Label();
+        invalidInputLabel.setTextFill(Color.RED);
+        invalidInputLabel.setPadding(new Insets(0, 0, 0, 10));
+        hBox.getChildren().add(textField);
+        hBox.getChildren().add(addButton);
+        hBox.getChildren().add(invalidInputLabel);
+        addButton.setOnAction(event -> {
+            if(!addNewValue(input, textField.getText())){
+                invalidInputLabel.textProperty().setValue("invalid input");
+                FadeTransition fadeTransition = new FadeTransition(Duration.seconds(1), invalidInputLabel);
+                fadeTransition.setFromValue(1.0);
+                fadeTransition.setToValue(0.0);
+                fadeTransition.setCycleCount(5);
+                fadeTransition.play();
+            }
+            else{
+                invalidInputLabel.textProperty().setValue("");
+                addInputToTable(input.getDataName(), textField.getText());
+            }
+        });
+        return hBox;
+    }
+
+
+
+
+
+    private boolean addNewValue(Input input, String value) {
+        try {
+            boolean result = bodyController.getStepper().addFreeInputToExecution(currFlowExecutionUuid, input.getDataName(),
+                    convertValue(value, input.getTypeName()));
+            if(result && bodyController.getStepper().getExecutionReadyToBeExecuteStatus(currFlowExecutionUuid)){
+                makeExecutionButtonEnabled();
             }
             return result;
         }catch (NumberFormatException e){
-            System.out.println("invalid input!");
             return false;
         }
     }
@@ -274,7 +395,22 @@ public class FlowExecution {
         }
     }
 
+    public void addInputToTable(String name, String newVal){
+        ObservableList<FreeInputsTableRow> freeInputsTableRows = freeInputsTableView.getItems();
+        for(int i=0; i<freeInputsTableRows.size(); i++){
+            if(freeInputsTableRows.get(i).getName().equals(name)){
+                freeInputsTableRows.get(i).setValue(newVal);
+                freeInputsTableView.getItems().set(i, freeInputsTableRows.get(i));
+                return;
+            }
+        }
+    }
 
+    public void cleanUpScreen(){
+        freeInputsTableView.getItems().remove(0, freeInputsTableView.getItems().size());
+        freeInputsGridPane.getChildren().clear();
+        addFreeInputsFirstRow();
+    }
 
 
 }
