@@ -1,7 +1,6 @@
 package JavaFx.Body.FlowExecution;
 
 
-import DataPresenter.api.StringDataPresenter;
 import JavaFx.Body.BodyController;
 import StepperEngine.DTO.FlowDetails.FlowDetails;
 import StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails.Input;
@@ -21,7 +20,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -196,7 +194,7 @@ public class FlowExecution {
         executionResultLabel.textProperty().set(flowExecutionData.getFlowExecutionFinalResult());
         setFormalOutputsAndStepsListView();
         setStepDetails(flowExecutionData.getStepExecuteDataList().get(0).getName());
-        outputPresentationAnchorPane.getChildren().add(new StringDataPresenter(flowExecutionData.getOutputsMap().get("RESULT"), 50, 50 ).getPresenter());
+        bodyController.updateFlowHistory();
     }
 
     private void setStepDetails(String stepName)  {

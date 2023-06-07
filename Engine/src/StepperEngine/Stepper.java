@@ -39,7 +39,7 @@ public class Stepper implements Serializable {
 
     private final Map<String, FlowExecution> executionsMap = new HashMap<>();
     private final Map<String, List<FlowExecution>> executionsPerFlow = new HashMap<>();
-
+    private List<FlowExecutionDataImpl> flowExecutionDataList=new ArrayList<>();
     private final ExecutorService executorService = Executors.newFixedThreadPool(6);
 
 
@@ -204,6 +204,7 @@ public class Stepper implements Serializable {
                             flowExecution.getFlowDefinition().getName(),
                             k -> new ArrayList<>()
                     ).add(flowExecution);
+                    flowExecutionDataList.add(new FlowExecutionDataImpl(flowExecution));
                 }
             });
         } else
@@ -291,4 +292,7 @@ public class Stepper implements Serializable {
         return (double) (flowExecution.getNumOfStepsExecuted() / flowExecution.getNumOfSteps());
     }
 
+    public List<FlowExecutionDataImpl> getFlowExecutionDataList() {
+        return flowExecutionDataList;
+    }
 }

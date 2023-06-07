@@ -30,6 +30,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
     private Map<String,DataDefinitionsDeclaration> allDataDefinitions=new HashMap<>();
     private Set<DataDefinitionsDeclaration> freeInputs;
     private Set<DataDefinitionsDeclaration> allInputs;
+    //Map from free input to steps names that related to him
     private Map<DataDefinitionsDeclaration, List<String>> allFreeInputs=new HashMap<>();
 
     private final List<StepUsageDecleration> steps = new ArrayList<>();
