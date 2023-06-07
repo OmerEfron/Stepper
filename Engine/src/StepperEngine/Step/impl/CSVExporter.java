@@ -33,7 +33,7 @@ public class CSVExporter extends StepDefinitionAbstract {
         String result=relation.relationToCSV();//Converts the relation to CSV string
         context.addLog(stepName,"About to process "+relation.numOfRows().toString()+" lines of data");
 
-        context.storeValue(nameToAlias.get("RESULT"),result);
+        context.storeValue(nameToAlias.get("RESULT"),result );
         if(relation.numOfRows()==0){
             context.addLog(stepName,"There are no rows in the relation.");
             context.setStepStatus(stepName,StepStatus.WARNING);

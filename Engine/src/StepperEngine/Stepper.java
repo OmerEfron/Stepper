@@ -39,8 +39,9 @@ public class Stepper implements Serializable {
 
     private final Map<String, FlowExecution> executionsMap = new HashMap<>();
     private final Map<String, List<FlowExecution>> executionsPerFlow = new HashMap<>();
+
+    private ExecutorService executorService;
     private List<FlowExecutionDataImpl> flowExecutionDataList=new ArrayList<>();
-    private final ExecutorService executorService = Executors.newFixedThreadPool(6);
 
 
     public Stepper() {
@@ -52,6 +53,7 @@ public class Stepper implements Serializable {
         Map<String, FlowDefinition> newFlowsMap = new HashMap<>();
         checkForDuplicateNames(stepper);
         checkForDuplicateOutputs(stepper);
+        ExecutorService executorService = Executors.newFixedThreadPool(stepper.getThreadPool());
         stepper.getFlows().getFlows().stream()
                 .forEach(flow -> {
                     try {
@@ -60,6 +62,7 @@ public class Stepper implements Serializable {
                         throw new RuntimeException(e);
                     }
                 });
+        this.executorService = executorService;
         flows = newFlows;
         flows.forEach(flow -> newFlowsMap.put(flow.getName(), flow));
         flowsMap = newFlowsMap;
@@ -195,32 +198,25 @@ public class Stepper implements Serializable {
 
     public void executeFlow(String uuid) throws ExecutionNotReadyException {
         FlowExecutor flowExecutor = new FlowExecutor();
-        FlowExecution flowExecution = executionsMap.get(uuid);
-        if (flowExecution.isCanBeExecuted()) {
-            executorService.submit(() -> {
-                flowExecutor.executeFlow(flowExecution);
-                synchronized (this) {
-                    executionsPerFlow.computeIfAbsent(
-                            flowExecution.getFlowDefinition().getName(),
-                            k -> new ArrayList<>()
-                    ).add(flowExecution);
+        synchronized (this) {
+            FlowExecution flowExecution = executionsMap.get(uuid);
+            if (flowExecution.isCanBeExecuted()) {
+                executorService.submit(() -> {
+                    exectionTask(flowExecutor, flowExecution);
                     flowExecutionDataList.add(new FlowExecutionDataImpl(flowExecution));
-                }
-            });
-        } else
-            throw new ExecutionNotReadyException("flow is not ready to be executed. check for not provided" +
-                    " free inputs", uuid);
+                });
+            } else
+                throw new ExecutionNotReadyException("flow is not ready to be executed. check for not provided" +
+                        " free inputs", uuid);
+        }
     }
 
-    public void ExecuteFlow(FlowExecution flowExecution) {
-        FlowExecutor flowExecutor = new FlowExecutor();
-        executorService.submit(() -> {
-            flowExecutor.executeFlow(flowExecution);
-            synchronized (this) {
-                executionsMap.put(flowExecution.getFlowDefinition().getName(), flowExecution);
-            }
-        });
-
+    private void exectionTask(FlowExecutor flowExecutor, FlowExecution flowExecution) {
+        flowExecutor.executeFlow(flowExecution);
+        executionsPerFlow.computeIfAbsent(
+                flowExecution.getFlowDefinition().getName(),
+                k -> new ArrayList<>()
+        ).add(flowExecution);
     }
 
     public FlowExecutionData ExecuteFlow2(FlowExecution flowExecution) {
@@ -288,8 +284,10 @@ public class Stepper implements Serializable {
     }
 
     public double getExecutionPartialStatus(String uuid) {
-        FlowExecution flowExecution = getFlowExecutionByUuid(uuid);
-        return (double) (flowExecution.getNumOfStepsExecuted() / flowExecution.getNumOfSteps());
+        synchronized (this) {
+            FlowExecution flowExecution = getFlowExecutionByUuid(uuid);
+            return (double) (flowExecution.getNumOfStepsExecuted() / flowExecution.getNumOfSteps());
+        }
     }
 
     public List<FlowExecutionDataImpl> getFlowExecutionDataList() {

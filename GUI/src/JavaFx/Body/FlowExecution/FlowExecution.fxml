@@ -28,38 +28,37 @@
                         <Label fx:id="stepNameTitleLabel" layoutX="14.0" layoutY="28.0" text="No step to display" />
                         <Separator fx:id="StepOutputSeperator" layoutX="14.0" layoutY="358.0" maxHeight="-Infinity" prefHeight="22.0" prefWidth="807.0" AnchorPane.bottomAnchor="247.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="15.0" />
                         <Label fx:id="outputNameDisplayNameLabel" layoutX="14.0" layoutY="380.0" text="No output to display" />
-                  <GridPane fx:id="stepDetailsGridPane" layoutX="14.0" layoutY="74.0" prefHeight="267.0" prefWidth="388.0">
+                  <GridPane fx:id="stepDetailsGridPane" layoutX="14.0" layoutY="74.0" prefHeight="267.0" prefWidth="368.0">
                     <columnConstraints>
                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="161.0" minWidth="10.0" prefWidth="70.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="458.0" minWidth="10.0" prefWidth="318.0" />
+                        <ColumnConstraints hgrow="ALWAYS" maxWidth="458.0" minWidth="10.0" prefWidth="318.0" />
                     </columnConstraints>
                     <rowConstraints>
-                      <RowConstraints maxHeight="84.0" minHeight="0.0" prefHeight="28.0" vgrow="SOMETIMES" />
-                      <RowConstraints maxHeight="178.0" minHeight="10.0" prefHeight="35.0" vgrow="ALWAYS" />
-                      <RowConstraints maxHeight="223.0" minHeight="10.0" prefHeight="52.0" vgrow="SOMETIMES" />
-                        <RowConstraints maxHeight="223.0" minHeight="10.0" prefHeight="77.0" vgrow="SOMETIMES" />
-                        <RowConstraints maxHeight="223.0" minHeight="10.0" prefHeight="94.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="84.0" minHeight="0.0" prefHeight="34.0" vgrow="ALWAYS" />
+                      <RowConstraints maxHeight="178.0" minHeight="10.0" prefHeight="79.0" vgrow="ALWAYS" />
+                        <RowConstraints maxHeight="223.0" minHeight="10.0" prefHeight="150.0" vgrow="ALWAYS" />
                     </rowConstraints>
                      <children>
                         <Label text="result" />
                         <Label text="time" GridPane.rowIndex="1" />
-                        <Label text="inputs" GridPane.rowIndex="2" />
-                        <Label text="outputs" GridPane.rowIndex="3" />
-                        <Label text="logs" GridPane.rowIndex="4" />
+                        <Label text="logs" GridPane.rowIndex="2" />
                         <Label fx:id="stepResutLabel" GridPane.columnIndex="1" />
-                        <ScrollPane GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <ScrollPane prefHeight="79.0" prefWidth="331.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                            <content>
                               <Label fx:id="stepTimeLabel" />
                            </content>
                         </ScrollPane>
-                        <ScrollPane GridPane.columnIndex="1" GridPane.rowIndex="4">
+                        <ScrollPane GridPane.columnIndex="1" GridPane.rowIndex="2">
                            <content>
                               <Label fx:id="stepLogsLabel" />
                            </content>
                         </ScrollPane>
                      </children>
                   </GridPane>
-                  <AnchorPane fx:id="outputPresentationAnchorPane" layoutX="27.0" layoutY="411.0" prefHeight="200.0" prefWidth="778.0" />
+                  <AnchorPane fx:id="outputPresentationAnchorPane" layoutX="27.0" layoutY="411.0" prefHeight="200.0" prefWidth="770.0" />
+                  <AnchorPane fx:id="stepIODataDisplayAnchorPane" layoutX="411.0" layoutY="149.0" prefHeight="209.0" prefWidth="374.0" />
+                  <ListView fx:id="stepInputListView" layoutX="436.0" layoutY="10.0" prefHeight="124.0" prefWidth="129.0" />
+                  <ListView fx:id="stepOutputListView" layoutX="617.0" layoutY="10.0" prefHeight="124.0" prefWidth="129.0" />
                     </children>
                 </AnchorPane>
             </center>
@@ -101,8 +100,9 @@
                         </Label>
                         <TableView fx:id="freeInputsTableView" layoutX="8.0" layoutY="50.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="145.0" prefWidth="351.0" AnchorPane.leftAnchor="8.0">
                           <columns>
-                            <TableColumn fx:id="freeInputNameCol" prefWidth="121.0" text="Name" />
-                            <TableColumn fx:id="freeInputValueCol" prefWidth="229.0" text="Value" />
+                            <TableColumn fx:id="freeInputNameCol" prefWidth="121.00003051757812" text="Name" />
+                            <TableColumn fx:id="freeInputApiNameCol" prefWidth="111.0" text="API Name" />
+                              <TableColumn fx:id="freeInputValueCol" prefWidth="117.0" text="Value" />
                           </columns>
                         </TableView>
                      </children>

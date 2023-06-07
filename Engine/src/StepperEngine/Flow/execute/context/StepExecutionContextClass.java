@@ -1,11 +1,9 @@
 package StepperEngine.Flow.execute.context;
 
-import StepperEngine.DataDefinitions.api.DataDefinition;
 import StepperEngine.Flow.api.FlowDefinition;
 import StepperEngine.Flow.api.StepUsageDecleration;
 import StepperEngine.Flow.execute.FlowExecution;
 import StepperEngine.Flow.execute.StepData.StepExecuteData;
-import StepperEngine.Step.api.DataDefinitionDeclarationImpl;
 import StepperEngine.Step.api.DataDefinitionsDeclaration;
 import StepperEngine.Step.api.StepStatus;
 
@@ -164,4 +162,10 @@ public class StepExecutionContextClass implements StepExecutionContext {
     public void setEndStep(String stepName) {
         stepExecuteDataMap.get(stepName).setEndTime();
     }
+    @Override
+    public void addDataToStepData(String stepName, String dataName){
+        stepExecuteDataMap.get(stepName).addStepData(dataName, dataValues.get(dataName));
+    }
+
+
 }

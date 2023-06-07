@@ -2,7 +2,6 @@ package StepperEngine.Flow.api;
 
 import StepperEngine.DataDefinitions.Enumeration.ZipEnumerator;
 import StepperEngine.Flow.FlowBuildExceptions.FlowBuildException;
-import StepperEngine.Step.api.StepDefinition;
 import StepperEngine.StepperReader.XMLReadClasses.*;
 import StepperEngine.Step.StepBuilder;
 import StepperEngine.Step.StepDefinitionRegistry;
@@ -12,6 +11,7 @@ import javafx.util.Pair;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class FlowDefinitionImpl implements FlowDefinition, Serializable {
@@ -30,8 +30,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
     private Map<String,DataDefinitionsDeclaration> allDataDefinitions=new HashMap<>();
     private Set<DataDefinitionsDeclaration> freeInputs;
     private Set<DataDefinitionsDeclaration> allInputs;
-    //Map from free input to steps names that related to him
-    private Map<DataDefinitionsDeclaration, List<String>> allFreeInputs=new HashMap<>();
+    private Map<DataDefinitionsDeclaration, List<String>> dataToRelatedSteps =new HashMap<>();
 
     private final List<StepUsageDecleration> steps = new ArrayList<>();
 
@@ -50,6 +49,18 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
         determinateIfFlowIsReadOnly();
         hasContinuation= flow.getContinuations()==null ;
    }
+
+    public Map<DataDefinitionsDeclaration, List<String>> getDataToRelatedSteps() {
+        return dataToRelatedSteps;
+    }
+
+    @Override
+    public List<String> getFreeInputStepsRelated(String dataName) {
+        Optional<DataDefinitionsDeclaration> data = dataToRelatedSteps.keySet().stream()
+                .filter(dataDefinitionsDeclaration -> dataDefinitionsDeclaration.getAliasName().equals(dataName))
+                .findFirst();
+        return data.map(dataDefinitionsDeclaration -> dataToRelatedSteps.get(dataDefinitionsDeclaration)).orElse(null);
+    }
 
     @Override
     public List<Continuation> getContinuation() {
@@ -265,9 +276,11 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
      * if a mandatory input that is not a user-friendly one is found, adds it to the problems list.
      */
     private void setFreeInputs() {
-        freeInputs = steps.stream()
+        freeInputs = new HashSet<>(steps.stream()
                 .flatMap(step -> getStepFreeInputs(step).stream())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toMap(DataDefinitionsDeclaration::getName,
+                        Function.identity(), (a, b) -> a))
+                .values());
         for(DataDefinitionsDeclaration dd: freeInputs){
             if(!dd.dataDefinition().isUserFriendly() && dd.necessity() == DataNecessity.MANDATORY && !dd.isInitial()){
                 problems.add("Mandatory input \""+ dd.userString() + "\" is not accessible");
@@ -282,11 +295,21 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
                 .collect(Collectors.toSet());
     }
 
+//    private void setAllFreeInputs(){
+//        dataToRelatedSteps =steps.stream()
+//                .flatMap(step -> getStepFreeInputs(step).stream().map(dd -> new AbstractMap.SimpleEntry<>(dd, step.getStepFinalName())))
+//                .filter(entry -> entry.getKey().dataDefinition().isUserFriendly() && !entry.getKey().isInitial())
+//                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+//    }
+
     private void setAllFreeInputs(){
-        allFreeInputs=steps.stream()
-                .flatMap(step -> getStepFreeInputs(step).stream().map(dd -> new AbstractMap.SimpleEntry<>(dd, step.getStepFinalName())))
-                .filter(entry -> entry.getKey().dataDefinition().isUserFriendly() && !entry.getKey().isInitial())
-                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+        for(DataDefinitionsDeclaration dd : freeInputs){
+            for(StepUsageDecleration step: steps){
+                if(getStepFreeInputs(step).contains(dd)){
+                    dataToRelatedSteps.computeIfAbsent(dd, key -> new ArrayList<>()).add(step.getStepFinalName());
+                }
+            }
+        }
     }
     public Set<DataDefinitionsDeclaration> getFreeInputsFromUser(){return freeInputs;}
 
@@ -546,7 +569,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
      * @return all free inputs fo th flow
      */
     public Map<DataDefinitionsDeclaration, List<String>> getFreeInputsWithOptional() {
-        return allFreeInputs;
+        return dataToRelatedSteps;
     }
 
     /**

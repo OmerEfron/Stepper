@@ -112,6 +112,9 @@ public class FlowExecution {
     }
 
     public boolean addFreeInput(String dataName, Object value) {
+        if(hasExecuted){
+            return false;
+        }
         Optional<DataDefinitionsDeclaration> optionalData = flowDefinition.getFreeInputs().stream().filter(input -> input.getAliasName().equals(dataName)).findFirst();
         if(optionalData.isPresent()){
             if(optionalData.get().dataDefinition().getType().isAssignableFrom(value.getClass())){

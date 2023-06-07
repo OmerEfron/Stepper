@@ -41,7 +41,7 @@ public class CommandLine extends StepDefinitionAbstract {
             while ((line = reader.readLine()) != null) {
                 output.append(line).append("\n");
             }
-            context.storeValue(nameToAlias.get("RESULT"),output.toString());
+            context.storeValue(nameToAlias.get("RESULT"),output.toString() );
             context.setInvokeSummery(stepName,"The command was executed successfully");
         } catch (IOException e) {
             context.setInvokeSummery(stepName,"The command failed");

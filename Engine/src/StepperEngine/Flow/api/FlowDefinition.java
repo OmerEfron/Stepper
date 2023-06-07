@@ -41,4 +41,6 @@ public interface FlowDefinition {
 
     DataDefinitionsDeclaration getDDByName(String data);
 
+    List<String> getFreeInputStepsRelated(String dataName);
+
 }

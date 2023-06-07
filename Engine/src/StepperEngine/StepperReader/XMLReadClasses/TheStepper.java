@@ -23,4 +23,8 @@ public class TheStepper implements Serializable {
     public void setFlows(Flows flows) {
         this.flows = flows;
     }
+
+    public int getThreadPool() {
+        return threadPool;
+    }
 }
