@@ -4,7 +4,7 @@ public enum ZipEnumerator {
     ZIP("ZIP"),
     UNZIP("UNZIP");
 
-    private String stringValue;
+    private final String stringValue;
     ZipEnumerator(String stringValue) {
         this.stringValue = stringValue;
     }

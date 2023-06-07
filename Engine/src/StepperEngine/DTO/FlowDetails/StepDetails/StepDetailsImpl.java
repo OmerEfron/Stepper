@@ -9,9 +9,7 @@ import javafx.util.Pair;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * holds a step details from a certain flow.
@@ -52,7 +50,7 @@ public class StepDetailsImpl implements StepDetails{
             if(input.isInitial())
                 stepRelatedData=new Pair<>("Initial input","Initial input");
             inputs.add(new Input(input.getAliasName(),input.dataDefinition().getName(), String.valueOf(input.necessity()),
-                    stepRelatedData));
+                    stepRelatedData, input.userString()));
         }
     }
 

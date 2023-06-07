@@ -7,7 +7,7 @@
         <fx:include fx:id="headerComponent" source="../../JavaFx/Header/Header.fxml" />
     </top>
    <center>
-      <fx:include fx:id="bodyComponent" source="../Body/body.fxml" />
+      <fx:include fx:id="bodyComponent" source="../Body/Body.fxml" />
    </center>
  
 </BorderPane>

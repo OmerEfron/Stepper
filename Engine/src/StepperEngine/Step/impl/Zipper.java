@@ -22,7 +22,7 @@ public class Zipper extends StepDefinitionAbstract {
 
     public Zipper(){
         super("Zipper",false);
-        addInput(new DataDefinitionDeclarationImpl("SOURCE","Source", DataNecessity.MANDATORY, DataDefinitionRegistry.FILE_PATH));
+        addInput(new DataDefinitionDeclarationImpl("SOURCE","Source", DataNecessity.MANDATORY, DataDefinitionRegistry.FOLDER_PATH));
         addInput(new DataDefinitionDeclarationImpl("OPERATION","Operation type", DataNecessity.MANDATORY, DataDefinitionRegistry.ZIPPER_ENUMERATION));
         addOutput(new DataDefinitionDeclarationImpl("RESULT", "Zip operation result", DataNecessity.NA, DataDefinitionRegistry.STRING));
     }

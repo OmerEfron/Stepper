@@ -1,9 +1,11 @@
 package JavaFx.Body.FlowExecution;
 
+
+import DataPresenter.api.StringDataPresenter;
 import JavaFx.Body.BodyController;
 import StepperEngine.DTO.FlowDetails.FlowDetails;
 import StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails.Input;
-import StepperEngine.DTO.FlowDetails.StepDetails.StepDetails;
+
 import StepperEngine.DTO.FlowExecutionData.api.FlowExecutionData;
 import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
 import StepperEngine.DTO.FlowExecutionData.impl.IOData;
@@ -12,35 +14,36 @@ import StepperEngine.Flow.execute.ExecutionNotReadyException;
 import StepperEngine.Flow.execute.StepData.StepExecuteData;
 import StepperEngine.Step.api.DataNecessity;
 import StepperEngine.Stepper;
-import javafx.animation.Animation;
+
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.ComboBoxTableCell;
+
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javafx.util.Callback;
+
 import javafx.util.Duration;
 import javafx.util.Pair;
 
 import java.io.File;
 import java.util.EnumSet;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class FlowExecution {
@@ -193,6 +196,7 @@ public class FlowExecution {
         executionResultLabel.textProperty().set(flowExecutionData.getFlowExecutionFinalResult());
         setFormalOutputsAndStepsListView();
         setStepDetails(flowExecutionData.getStepExecuteDataList().get(0).getName());
+        outputPresentationAnchorPane.getChildren().add(new StringDataPresenter(flowExecutionData.getOutputsMap().get("RESULT"), 50, 50 ).getPresenter());
     }
 
     private void setStepDetails(String stepName)  {
@@ -299,7 +303,7 @@ public class FlowExecution {
         if(typeName.equals("Enumerator")){
             return getEnumeratorChoiceBox(input);
         }
-        else if(typeName.equals("FilePath")){
+        else if(typeName.equals("File path") || typeName.equals("Folder path")){
             return getFileChooserButton(input);
         }
         else{
@@ -318,27 +322,40 @@ public class FlowExecution {
                     choiceBox.setValue(null);
                 }
                 else {
-                    addInputToTable(input.getDataName(), choiceBox.getValue());
+                    addInputToTable(input, choiceBox.getValue());
                 }
             }
         });
         return choiceBox;
     }
 
+
+
     public HBox getFileChooserButton(Input input){
         HBox hBox = new HBox();
         ImageView fileChooserButton = new ImageView();
         hBox.getChildren().add(fileChooserButton);
-        fileChooserButton.setImage(new Image("src/folder-management.png"));
-        fileChooserButton.setFitHeight(Region.USE_COMPUTED_SIZE);
-        fileChooserButton.setFitWidth(Region.USE_COMPUTED_SIZE);
-        fileChooserButton.setOnMouseClicked(event -> {
+        EventHandler<MouseEvent> directoryHandler = event -> {
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            File folderChoose = directoryChooser.showDialog(fileChooserButton.getScene().getWindow());
+            if(folderChoose != null)
+                if(addNewValue(input, folderChoose.getAbsolutePath())){
+                    addInputToTable(input, folderChoose.getName());
+                }
+        };
+        EventHandler<MouseEvent> fileHandler = event -> {
             FileChooser fileChooser = new FileChooser();
             File fileChoose = fileChooser.showOpenDialog(fileChooserButton.getScene().getWindow());
-            if(addNewValue(input, fileChoose.getAbsolutePath())){
-                addInputToTable(input.getDataName(), fileChoose.getName());
+            if(fileChoose!=null){
+                if(addNewValue(input, fileChoose.getAbsolutePath())){
+                    addInputToTable(input, fileChoose.getName());
+                }
             }
-        });
+        };
+        fileChooserButton.setImage(new Image(getClass().getResourceAsStream("folder-management.png")));
+        fileChooserButton.setFitHeight(30);
+        fileChooserButton.setFitWidth(30);
+        fileChooserButton.setOnMouseClicked(input.getTypeName().equals("File path") ? fileHandler:directoryHandler);
         return hBox;
     }
     public HBox getTextFieldChooser(Input input){
@@ -351,7 +368,7 @@ public class FlowExecution {
         hBox.getChildren().add(textField);
         hBox.getChildren().add(addButton);
         hBox.getChildren().add(invalidInputLabel);
-        addButton.setOnAction(event -> {
+        EventHandler<ActionEvent> eventHandler = event -> {
             if(!addNewValue(input, textField.getText())){
                 invalidInputLabel.textProperty().setValue("invalid input");
                 FadeTransition fadeTransition = new FadeTransition(Duration.seconds(1), invalidInputLabel);
@@ -362,9 +379,11 @@ public class FlowExecution {
             }
             else{
                 invalidInputLabel.textProperty().setValue("");
-                addInputToTable(input.getDataName(), textField.getText());
+                addInputToTable(input, textField.getText());
             }
-        });
+        };
+        addButton.setOnAction(eventHandler);
+        textField.setOnAction(eventHandler);
         return hBox;
     }
 
@@ -395,10 +414,10 @@ public class FlowExecution {
         }
     }
 
-    public void addInputToTable(String name, String newVal){
+    public void addInputToTable(Input input, String newVal){
         ObservableList<FreeInputsTableRow> freeInputsTableRows = freeInputsTableView.getItems();
         for(int i=0; i<freeInputsTableRows.size(); i++){
-            if(freeInputsTableRows.get(i).getName().equals(name)){
+            if(freeInputsTableRows.get(i).getName().equals(input.getUserString())){
                 freeInputsTableRows.get(i).setValue(newVal);
                 freeInputsTableView.getItems().set(i, freeInputsTableRows.get(i));
                 return;

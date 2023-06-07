@@ -94,7 +94,8 @@ public class FlowDetailsImpl implements FlowDetails {
                     data.getAliasName(),
                     data.dataDefinition().getName(),
                     String.valueOf(data.necessity()),
-                    entry.getValue()
+                    entry.getValue(),
+                    data.userString()
             ));
         }
         freeInputs.sort(Comparator.comparing(Input::getNecessity));

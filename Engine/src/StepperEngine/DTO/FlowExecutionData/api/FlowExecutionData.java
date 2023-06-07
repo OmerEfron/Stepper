@@ -4,6 +4,7 @@ import StepperEngine.DTO.FlowExecutionData.impl.IOData;
 import StepperEngine.Flow.execute.StepData.StepExecuteData;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface FlowExecutionData  {
@@ -22,6 +23,9 @@ public interface FlowExecutionData  {
     Set<IOData> getFreeInputs();
 
     Set<IOData> getOutputs();
+
+    Map<String, IOData> getOutputsMap();
+    Map<String, IOData> getFreeInputsMap();
 
     Set<IOData> getFormalOutputs();
 

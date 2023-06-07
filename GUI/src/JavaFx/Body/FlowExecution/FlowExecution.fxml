@@ -52,7 +52,11 @@
                               <Label fx:id="stepTimeLabel" />
                            </content>
                         </ScrollPane>
-                        <Label fx:id="stepLogsLabel" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <ScrollPane GridPane.columnIndex="1" GridPane.rowIndex="4">
+                           <content>
+                              <Label fx:id="stepLogsLabel" />
+                           </content>
+                        </ScrollPane>
                      </children>
                   </GridPane>
                   <AnchorPane fx:id="outputPresentationAnchorPane" layoutX="27.0" layoutY="411.0" prefHeight="200.0" prefWidth="778.0" />
