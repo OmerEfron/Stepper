@@ -11,6 +11,7 @@ import javafx.util.Pair;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class FlowDefinitionImpl implements FlowDefinition, Serializable {
@@ -275,9 +276,11 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
      * if a mandatory input that is not a user-friendly one is found, adds it to the problems list.
      */
     private void setFreeInputs() {
-        freeInputs = steps.stream()
+        freeInputs = new HashSet<>(steps.stream()
                 .flatMap(step -> getStepFreeInputs(step).stream())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toMap(DataDefinitionsDeclaration::getName,
+                        Function.identity(), (a, b) -> a))
+                .values());
         for(DataDefinitionsDeclaration dd: freeInputs){
             if(!dd.dataDefinition().isUserFriendly() && dd.necessity() == DataNecessity.MANDATORY && !dd.isInitial()){
                 problems.add("Mandatory input \""+ dd.userString() + "\" is not accessible");
@@ -292,11 +295,21 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
                 .collect(Collectors.toSet());
     }
 
+//    private void setAllFreeInputs(){
+//        dataToRelatedSteps =steps.stream()
+//                .flatMap(step -> getStepFreeInputs(step).stream().map(dd -> new AbstractMap.SimpleEntry<>(dd, step.getStepFinalName())))
+//                .filter(entry -> entry.getKey().dataDefinition().isUserFriendly() && !entry.getKey().isInitial())
+//                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+//    }
+
     private void setAllFreeInputs(){
-        dataToRelatedSteps =steps.stream()
-                .flatMap(step -> getStepFreeInputs(step).stream().map(dd -> new AbstractMap.SimpleEntry<>(dd, step.getStepFinalName())))
-                .filter(entry -> entry.getKey().dataDefinition().isUserFriendly() && !entry.getKey().isInitial())
-                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+        for(DataDefinitionsDeclaration dd : freeInputs){
+            for(StepUsageDecleration step: steps){
+                if(getStepFreeInputs(step).contains(dd)){
+                    dataToRelatedSteps.computeIfAbsent(dd, key -> new ArrayList<>()).add(step.getStepFinalName());
+                }
+            }
+        }
     }
     public Set<DataDefinitionsDeclaration> getFreeInputsFromUser(){return freeInputs;}
 

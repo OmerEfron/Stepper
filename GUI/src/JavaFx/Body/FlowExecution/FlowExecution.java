@@ -102,6 +102,9 @@ public class FlowExecution {
 
     @FXML
     private TableColumn<FreeInputsTableRow, String> freeInputValueCol;
+
+    @FXML
+    private TableColumn<FreeInputsTableRow, String> freeInputApiNameCol;
     @FXML
     private Label outputNameDisplayNameLabel;
 
@@ -140,7 +143,7 @@ public class FlowExecution {
     private ImageView continuationButtonImage;
 
     @FXML
-    private ChoiceBox<?> continuationChoiceBox;
+    private ChoiceBox<String> continuationChoiceBox;
 
     @FXML
     private Label stepNameTitleLabel;
@@ -159,6 +162,8 @@ public class FlowExecution {
 
     @FXML
     private Label stepTimeLabel;
+
+
     private BodyController bodyController;
     private FlowDetails flowDetails;
     private FlowExecutionData flowExecutionData;
@@ -171,6 +176,7 @@ public class FlowExecution {
         initButtons();
         freeInputNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         freeInputValueCol.setCellValueFactory(new PropertyValueFactory<>("value"));
+        //freeInputApiNameCol.setCellValueFactory((new PropertyValueFactory<>("apiName")));
         addFreeInputsFirstRow();
     }
     @FXML
@@ -205,7 +211,7 @@ public class FlowExecution {
                 }
             }
         }
-        Platform.runLater(this::setExecutionDetails);
+        Platform.runLater(this::setContinuation);
     }
 
     void setExecutionDetails(){
@@ -217,6 +223,7 @@ public class FlowExecution {
         setFormalOutputsAndStepsListView();
 
     }
+
 
     private void setStepDetails(String stepName)  {
         StepExecuteData stepExecuteData = flowExecutionData.getStepData(stepName);
@@ -303,7 +310,7 @@ public class FlowExecution {
     }
 
     public void setInputRowData(Input input, int row){
-        freeInputsGridPane.add(new Label(input.getDataName()), INPUT_NAME_COLUMN, row);
+        freeInputsGridPane.add(new Label(input.getUserString()), INPUT_NAME_COLUMN, row);
         freeInputsGridPane.add(new Label(
                 DataNecessity.valueOf(input.getNecessity()).equals(DataNecessity.MANDATORY)? "Yes":"NO"),
                 INPUT_MANDATORY_COLUMN,
@@ -431,7 +438,7 @@ public class FlowExecution {
     public void addInputToTable(Input input, String newVal){
         ObservableList<FreeInputsTableRow> freeInputsTableRows = freeInputsTableView.getItems();
         for(int i=0; i<freeInputsTableRows.size(); i++){
-            if(freeInputsTableRows.get(i).getName().equals(input.getUserString())){
+            if(freeInputsTableRows.get(i).getApiName().equals(input.getDataName())){
                 freeInputsTableRows.get(i).setValue(newVal);
                 freeInputsTableView.getItems().set(i, freeInputsTableRows.get(i));
                 return;
@@ -447,6 +454,10 @@ public class FlowExecution {
 
     public void setStepInputListView(StepExecuteData step){
         stepInputListView.setItems(FXCollections.observableArrayList(step.getDataMap().keySet()));
+    }
+
+    public void setContinuation(){
+        continuationChoiceBox.setItems(FXCollections.observableArrayList(flowDetails.getContinuationNames()));
     }
 
 

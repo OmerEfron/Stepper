@@ -56,7 +56,9 @@
                      </children>
                   </GridPane>
                   <AnchorPane fx:id="outputPresentationAnchorPane" layoutX="27.0" layoutY="411.0" prefHeight="200.0" prefWidth="770.0" />
-                  <AnchorPane fx:id="stepIODataDisplayAnchorPain" layoutX="495.0" layoutY="75.0" prefHeight="289.0" prefWidth="336.0" />
+                  <AnchorPane fx:id="stepIODataDisplayAnchorPane" layoutX="411.0" layoutY="149.0" prefHeight="209.0" prefWidth="374.0" />
+                  <ListView fx:id="stepInputListView" layoutX="436.0" layoutY="10.0" prefHeight="124.0" prefWidth="129.0" />
+                  <ListView fx:id="stepOutputListView" layoutX="617.0" layoutY="10.0" prefHeight="124.0" prefWidth="129.0" />
                     </children>
                 </AnchorPane>
             </center>
@@ -98,8 +100,9 @@
                         </Label>
                         <TableView fx:id="freeInputsTableView" layoutX="8.0" layoutY="50.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="145.0" prefWidth="351.0" AnchorPane.leftAnchor="8.0">
                           <columns>
-                            <TableColumn fx:id="freeInputNameCol" prefWidth="121.0" text="Name" />
-                            <TableColumn fx:id="freeInputValueCol" prefWidth="229.0" text="Value" />
+                            <TableColumn fx:id="freeInputNameCol" prefWidth="121.00003051757812" text="Name" />
+                            <TableColumn fx:id="freeInputApiNameCol" prefWidth="111.0" text="API Name" />
+                              <TableColumn fx:id="freeInputValueCol" prefWidth="117.0" text="Value" />
                           </columns>
                         </TableView>
                      </children>
