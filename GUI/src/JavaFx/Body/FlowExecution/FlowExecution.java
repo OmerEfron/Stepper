@@ -6,12 +6,14 @@ import JavaFx.Body.BodyController;
 import StepperEngine.DTO.FlowDetails.FlowDetails;
 import StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails.Input;
 
+import StepperEngine.DTO.FlowDetails.StepDetails.StepDetails;
 import StepperEngine.DTO.FlowExecutionData.api.FlowExecutionData;
 import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
 import StepperEngine.DTO.FlowExecutionData.impl.IOData;
 import StepperEngine.DataDefinitions.Enumeration.ZipEnumerator;
 import StepperEngine.Flow.execute.ExecutionNotReadyException;
 import StepperEngine.Flow.execute.StepData.StepExecuteData;
+import StepperEngine.Flow.execute.StepData.StepIOData;
 import StepperEngine.Step.api.DataNecessity;
 import StepperEngine.Stepper;
 
@@ -58,6 +60,12 @@ public class FlowExecution {
 
     @FXML
     private GridPane executionDetailsGridPane;
+
+    @FXML
+    private ListView<String> stepInputListView;
+
+    @FXML
+    private ListView<String> stepOutputListView;
 
     @FXML
     private ListView<String> formalOutputsListView;
@@ -146,6 +154,8 @@ public class FlowExecution {
 
     @FXML
     private Label stepResutLabel;
+    @FXML
+    private AnchorPane stepIODataDisplayAnchorPane;
 
     @FXML
     private Label stepTimeLabel;
@@ -156,6 +166,13 @@ public class FlowExecution {
     private String lastFlowRunningUuid;
     private String currFlowExecutionUuid;
 
+    @FXML
+    void initialize(){
+        initButtons();
+        freeInputNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        freeInputValueCol.setCellValueFactory(new PropertyValueFactory<>("value"));
+        addFreeInputsFirstRow();
+    }
     @FXML
     void continueFlow(MouseEvent event) {
 
@@ -195,8 +212,7 @@ public class FlowExecution {
         executionTimestampLabel.textProperty().set(flowExecutionData.getExecutionTime() + " milliseconds");
         executionResultLabel.textProperty().set(flowExecutionData.getFlowExecutionFinalResult());
         setFormalOutputsAndStepsListView();
-        setStepDetails(flowExecutionData.getStepExecuteDataList().get(0).getName());
-        outputPresentationAnchorPane.getChildren().add(new StringDataPresenter(flowExecutionData.getOutputsMap().get("RESULT"), 50, 50 ).getPresenter());
+
     }
 
     private void setStepDetails(String stepName)  {
@@ -213,6 +229,7 @@ public class FlowExecution {
             logsLabel = logsLabel.concat(log.getKey() + " - " + log.getValue());
         }
         stepLogsLabel.textProperty().setValue(logsLabel);
+        setStepInputListView(stepExecuteData);
     }
 
     private void setFormalOutputsAndStepsListView() {
@@ -224,13 +241,7 @@ public class FlowExecution {
                 .collect(Collectors.toList())));
     }
 
-    @FXML
-    void initialize(){
-        initButtons();
-        freeInputNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
-        freeInputValueCol.setCellValueFactory(new PropertyValueFactory<>("value"));
-        addFreeInputsFirstRow();
-    }
+
 
     private void addFreeInputsFirstRow() {
         freeInputsGridPane.add(new Label("Name"), INPUT_NAME_COLUMN, 0);
@@ -429,6 +440,10 @@ public class FlowExecution {
         freeInputsTableView.getItems().remove(0, freeInputsTableView.getItems().size());
         freeInputsGridPane.getChildren().clear();
         addFreeInputsFirstRow();
+    }
+
+    public void setStepInputListView(StepExecuteData step){
+        stepInputListView.setItems(FXCollections.observableArrayList(step.getDataMap().keySet()));
     }
 
 

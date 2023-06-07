@@ -9,8 +9,10 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class StepExecuteData implements Serializable {
 
@@ -24,13 +26,19 @@ public class StepExecuteData implements Serializable {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
+    Map<String, Object> dataMap = new HashMap<>();
+
+
 
 
     public StepExecuteData(StepUsageDecleration step) {
         this.finalName =step.getStepFinalName();
         this.name=step.getStepDefinition().getName();
         this.id=step.getIndex();
+    }
 
+    public Map<String, Object> getDataMap() {
+        return dataMap;
     }
 
     public void setStartTime() {
@@ -97,5 +105,9 @@ public class StepExecuteData implements Serializable {
             return endTime;
         }
         throw new IllegalAccessException("step has not ended");
+    }
+
+    public void addStepData(String dataName, Object value){
+        dataMap.put(dataName, value);
     }
 }

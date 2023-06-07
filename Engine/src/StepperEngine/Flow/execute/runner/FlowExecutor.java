@@ -37,9 +37,16 @@ public class FlowExecutor {
         startStep(stepExecutionContext, step);
         StepStatus stepStatus = invokeStep(stepExecutionContext, step);
         stepExecutionContext.setEndStep(step.getStepFinalName());
+        addDataToStep(stepExecutionContext, step);
         flowStatus = endStep(flowStatus, step, stepStatus);
         if (flowStatus == null) return null;
         return flowStatus;
+    }
+
+    private static void addDataToStep(StepExecutionContext stepExecutionContext, StepUsageDecleration step) {
+        for(String dataName: step.getDataMap().keySet()){
+            stepExecutionContext.addDataToStepData(step.getStepFinalName(), dataName);
+        }
     }
 
     private static FlowStatus endStep(FlowStatus flowStatus, StepUsageDecleration step, StepStatus stepStatus) {

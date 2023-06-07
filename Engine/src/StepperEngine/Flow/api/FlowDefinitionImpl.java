@@ -2,7 +2,6 @@ package StepperEngine.Flow.api;
 
 import StepperEngine.DataDefinitions.Enumeration.ZipEnumerator;
 import StepperEngine.Flow.FlowBuildExceptions.FlowBuildException;
-import StepperEngine.Step.api.StepDefinition;
 import StepperEngine.StepperReader.XMLReadClasses.*;
 import StepperEngine.Step.StepBuilder;
 import StepperEngine.Step.StepDefinitionRegistry;
@@ -30,7 +29,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
     private Map<String,DataDefinitionsDeclaration> allDataDefinitions=new HashMap<>();
     private Set<DataDefinitionsDeclaration> freeInputs;
     private Set<DataDefinitionsDeclaration> allInputs;
-    private Map<DataDefinitionsDeclaration, List<String>> allFreeInputs=new HashMap<>();
+    private Map<DataDefinitionsDeclaration, List<String>> dataToRelatedSteps =new HashMap<>();
 
     private final List<StepUsageDecleration> steps = new ArrayList<>();
 
@@ -49,6 +48,18 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
         determinateIfFlowIsReadOnly();
         hasContinuation= flow.getContinuations()==null ;
    }
+
+    public Map<DataDefinitionsDeclaration, List<String>> getDataToRelatedSteps() {
+        return dataToRelatedSteps;
+    }
+
+    @Override
+    public List<String> getFreeInputStepsRelated(String dataName) {
+        Optional<DataDefinitionsDeclaration> data = dataToRelatedSteps.keySet().stream()
+                .filter(dataDefinitionsDeclaration -> dataDefinitionsDeclaration.getAliasName().equals(dataName))
+                .findFirst();
+        return data.map(dataDefinitionsDeclaration -> dataToRelatedSteps.get(dataDefinitionsDeclaration)).orElse(null);
+    }
 
     @Override
     public List<Continuation> getContinuation() {
@@ -282,7 +293,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
     }
 
     private void setAllFreeInputs(){
-        allFreeInputs=steps.stream()
+        dataToRelatedSteps =steps.stream()
                 .flatMap(step -> getStepFreeInputs(step).stream().map(dd -> new AbstractMap.SimpleEntry<>(dd, step.getStepFinalName())))
                 .filter(entry -> entry.getKey().dataDefinition().isUserFriendly() && !entry.getKey().isInitial())
                 .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
@@ -545,7 +556,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
      * @return all free inputs fo th flow
      */
     public Map<DataDefinitionsDeclaration, List<String>> getFreeInputsWithOptional() {
-        return allFreeInputs;
+        return dataToRelatedSteps;
     }
 
     /**
