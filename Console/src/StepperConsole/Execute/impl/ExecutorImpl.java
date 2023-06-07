@@ -6,6 +6,7 @@ import StepperConsole.Execute.Flow.impl.ConsoleFlowExecutorImpl;
 import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
 import StepperConsole.Execute.Flow.impl.FlowExecutionStatus;
 import StepperConsole.Execute.api.Executor;
+import StepperEngine.Flow.execute.ExecutionNotReadyException;
 import StepperEngine.Flow.execute.FlowExecution;
 import StepperEngine.Stepper;
 import StepperConsole.Scanner.InputFromUser;
@@ -36,7 +37,11 @@ public class ExecutorImpl implements Executor {
         FlowExecution flowExecution=stepper.getFlowExecution(flowName);
         ConsoleFlowExecutor flowExecutor=new ConsoleFlowExecutorImpl(flowExecution, inputFromUser);
         if(flowExecutor.startExecuteFlow()== FlowExecutionStatus.START) {
-            FlowExecutionData flowExecutionData = stepper.ExecuteFlow2(flowExecution);
+            try {
+                stepper.executeFlow(flowExecution.getUUID());
+            } catch (ExecutionNotReadyException e) {
+                throw new RuntimeException(e);
+            }
         }
         return FlowExecutionDataImpl.newInstance(flowExecution);
     }

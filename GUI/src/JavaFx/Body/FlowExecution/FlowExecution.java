@@ -179,29 +179,32 @@ public class FlowExecution {
     }
     @FXML
     void executeFlow(MouseEvent event) {
-        try {
-            bodyController.getStepper().executeFlow(currFlowExecutionUuid);
-        } catch (ExecutionNotReadyException e) {
-            throw new RuntimeException(e);
+        executionProgressBar.setProgress(0);
+        if(flowExecutionButtonImage.opacityProperty().get() == 1) {
+            try {
+                bodyController.getStepper().executeFlow(currFlowExecutionUuid);
+                initExecuteButton();
+                new Thread(this::executeFlowTask).start();
+                lastFlowRunningUuid = currFlowExecutionUuid;
+            } catch (ExecutionNotReadyException e) {
+                throw new RuntimeException(e.getMessage());
+            }
         }
-        new Thread(this::executeFlowTask).start();
-        lastFlowRunningUuid = currFlowExecutionUuid;
     }
 
 
-    void executeFlowTask(){
-        String uuid = lastFlowRunningUuid;
-        Stepper stepper = bodyController.getStepper();
-        while(!stepper.getExecutionStatus(uuid)){
-            System.out.println("still running..");
-            Platform.runLater(() ->executionProgressBar.setProgress(stepper.getExecutionPartialStatus(uuid)));
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+    void executeFlowTask() {
+        synchronized (this) {
+            Stepper stepper = bodyController.getStepper();
+            while (!stepper.getExecutionStatus(lastFlowRunningUuid)) {
+                Platform.runLater(() -> executionProgressBar.setProgress(stepper.getExecutionPartialStatus(lastFlowRunningUuid)));
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
-        System.out.println("finished running!");
         Platform.runLater(this::setExecutionDetails);
     }
 
