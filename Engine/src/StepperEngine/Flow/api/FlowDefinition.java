@@ -31,11 +31,14 @@ public interface FlowDefinition {
     Map<String, Pair<DataDefinitionsDeclaration, String>> getFormalOuputs();
 
     Set<DataDefinitionsDeclaration> getFreeInputs();
-    void isOutputsExist(List<ContinuationMapping> continuationMappings) throws FlowBuildException;
-    void isInputsExist(List<ContinuationMapping> continuationMappings)throws FlowBuildException;
+    void isDDExist(ContinuationMapping continuationMapping) throws FlowBuildException;
+    void isInputExist(ContinuationMapping continuationMapping)throws FlowBuildException;
    Map<String, Pair<DataDefinitionsDeclaration, Object>> getInitialInputs();
 
     DataDefinitionsDeclaration getFreeInputByName(String sourceData);
     void addContinuationMapping(String source,String target);
     Map<String,String> getContinuationMapping();
+
+    DataDefinitionsDeclaration getDDByName(String data);
+
 }

@@ -1,5 +1,6 @@
 package StepperEngine.Flow.execute;
 
+import StepperEngine.DataDefinitions.Enumeration.ZipEnumerator;
 import StepperEngine.Flow.api.FlowDefinition;
 import StepperEngine.Flow.execute.StepData.StepExecuteData;
 import StepperEngine.Step.api.DataDefinitionsDeclaration;
@@ -116,19 +117,31 @@ public class FlowExecution {
         Optional<DataDefinitionsDeclaration> optionalData = flowDefinition.getFreeInputs().stream().filter(input -> input.getAliasName().equals(dataName)).findFirst();
         if(optionalData.isPresent()){
             if(optionalData.get().dataDefinition().getType().isAssignableFrom(value.getClass())){
-                freeInputsValue.put(dataName, value);
-                canBeExecuted = freeInputs.stream()
-                        .filter(data -> data.necessity().equals(DataNecessity.MANDATORY))
-                        .allMatch(data -> freeInputsValue.containsKey(data.getAliasName()));
-                return true;
+                return addValueToFreeInputs(dataName, value);
+            }
+            else if(optionalData.get().dataDefinition().getName().equals("Enumerator")){
+                if(EnumSet.allOf(ZipEnumerator.class).stream()
+                        .map(ZipEnumerator::getStringValue)
+                        .anyMatch(zipType-> zipType.equals(value))){
+                    return addValueToFreeInputs(dataName, ZipEnumerator.fromString(value.toString()));
+                }
             }
         }
         return false;
     }
 
+    private boolean addValueToFreeInputs(String dataName, Object value) {
+        freeInputsValue.put(dataName, value);
+        canBeExecuted = freeInputs.stream()
+                .filter(data -> data.necessity().equals(DataNecessity.MANDATORY))
+                .allMatch(data -> freeInputsValue.containsKey(data.getAliasName()));
+        return true;
+    }
+
     public boolean isCanBeExecuted() {
         return canBeExecuted;
     }
+
 
     public Map<String, Object> getFreeInputsValue() {
         return freeInputsValue;

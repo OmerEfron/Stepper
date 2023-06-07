@@ -31,7 +31,7 @@ public class AppController {
 
         headerComponentController.setMainController(this);
         bodyComponentController.setMainController(this);
-        loadFile("C:\\Users\\roni2\\IdeaProjects\\StepperNew\\ex2.xml");
+        loadFile("ex2.xml");
     }
     public boolean loadFile(String filePath) {
         try {

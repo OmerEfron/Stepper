@@ -24,8 +24,12 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
     private final Long executionDuration;
     private final List<StepExecuteData> stepExecuteDataList;
 
+    private final Map<String, StepExecuteData> stepExecuteDataMap;
+
     private final Set<IOData> freeInputs = new HashSet<>();
     private final Set<IOData> outputs = new HashSet<>();
+    private final Map<String, IOData> freeInputsMap =new HashMap<>();
+    private final Map<String, IOData> outputsMap = new HashMap<>();
 
     private final Set<IOData> formalOutputs;
 
@@ -36,6 +40,8 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
         executionDuration = flowExecution.getTotalTime().toMillis();
         executionResult = FlowStatus.getAsString(flowExecution.getFlowExecutionResult());
         stepExecuteDataList = flowExecution.getStepsData();
+        stepExecuteDataMap = stepExecuteDataList.stream()
+                        .collect(Collectors.toMap(StepExecuteData::getFinalName, data->data));
         setFreeInputs(flowExecution);
         setOutputs(flowExecution);
         formalOutputs = getFormalOutputs(flowExecution);
@@ -54,6 +60,16 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
         } else {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public Map<String, IOData> getOutputsMap() {
+        return outputsMap;
+    }
+
+    @Override
+    public Map<String, IOData> getFreeInputsMap() {
+        return freeInputsMap;
     }
 
     /**
@@ -96,7 +112,10 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
                             content,
                             String.valueOf(data.necessity()));
                 })
-                .forEach(freeInputs::add);
+                .forEach(input -> {
+                    freeInputs.add(input);
+                    freeInputsMap.put(input.getName(), input);
+                });
     }
 
     /**
@@ -122,7 +141,10 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
                             data.dataDefinition().getName(),
                             content, String.valueOf(data.necessity()));
                 })
-                .forEach(outputs::add);
+                .forEach(output -> {
+                    outputs.add(output);
+                    outputsMap.put(output.getName(), output);
+                });
     }
 
     @Override
@@ -163,6 +185,11 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
     @Override
     public Set<IOData> getFormalOutputs() {
         return formalOutputs;
+    }
+
+    @Override
+    public StepExecuteData getStepData(String stepName) {
+        return stepExecuteDataMap.get(stepName);
     }
 }
 
