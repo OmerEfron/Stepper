@@ -41,6 +41,7 @@ public class BodyController {
     public void initialize(){
         flowDefinitionController.setMainController(this);
         flowExecutionController.setMainController(this);
+
         flowHistoryController.setMainController(this);
         bodyComponent.getSelectionModel().selectedItemProperty().addListener((observable, oldTab, newTab) -> {
             if (newTab != null && newTab == flowHistoryTab) {

@@ -311,7 +311,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
             }
         }
     }
-    public Set<DataDefinitionsDeclaration> getFreeInputsFromUser(){return freeInputs;}
+
 
     /**
      * applying step aliasing for each step, if needed.
