@@ -112,9 +112,9 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
                             false,
                             data.getAliasName(),
                             data.userString(),
-                            data.dataDefinition().getName(),
+                            data.dataDefinition().getType().getSimpleName(),
                             content,
-                            String.valueOf(data.necessity()));
+                            String.valueOf(data.necessity()),value);
                 })
                 .forEach(input -> {
                     freeInputs.add(input);
@@ -142,8 +142,9 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
                             true,
                             data.getAliasName(),
                             data.userString(),
-                            data.dataDefinition().getName(),
-                            content, String.valueOf(data.necessity()));
+                            data.dataDefinition().getType().getSimpleName(),
+                            content, String.valueOf(data.necessity()),
+                            value);
                 })
                 .forEach(output -> {
                     outputs.add(output);

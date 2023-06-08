@@ -5,4 +5,5 @@ public interface RelationInterface {
     public Integer numOfRows();
     public String createPropertiesExporter(Integer totalProperties);
     public boolean isEmpty();
+
 }

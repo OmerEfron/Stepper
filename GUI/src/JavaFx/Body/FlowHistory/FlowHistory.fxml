@@ -67,11 +67,15 @@
          <center>
             <BorderPane prefHeight="454.0" prefWidth="1029.0" BorderPane.alignment="CENTER">
                <center>
-                  <VBox fx:id="MainExecutionDataVbox" prefHeight="481.0" prefWidth="305.0" spacing="5.0">
-                     <padding>
-                        <Insets left="5.0" />
-                     </padding>
-                  </VBox>
+                  <ScrollPane fitToHeight="true" fitToWidth="true">
+                     <content>
+                        <VBox fx:id="MainExecutionDataVbox" alignment="TOP_CENTER" prefHeight="481.0" prefWidth="305.0" spacing="5.0">
+                           <padding>
+                              <Insets left="5.0" />
+                           </padding>
+                        </VBox>
+                     </content>
+                  </ScrollPane>
                </center>
                <top>
                   <VBox alignment="CENTER" spacing="3.0" BorderPane.alignment="CENTER">

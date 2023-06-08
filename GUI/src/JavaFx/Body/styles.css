@@ -1,0 +1,23 @@
+.framed-vbox {
+    -fx-background-color: lightgray;
+    -fx-padding: 10px;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+}
+
+.label-flowName{
+    -fx-text-fill: linear-gradient(#151515, #6e6d6d);
+    -fx-background-color: null;
+    -fx-underline: true;
+    -fx-alignment: center;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+.label-userString{
+    -fx-text-fill: linear-gradient(#151515, #6e6d6d);
+    -fx-background-color: null;
+    -fx-underline: true;
+    -fx-alignment: center;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}

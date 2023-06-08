@@ -6,7 +6,7 @@ public class StringListDataDef extends DataDefList<String>{
     public StringListDataDef(List<String> list) {
         this.list=list;
     }
-
+    public List<String> getStringList(){return list;}
     @Override
     public String toString() {
         String res="";

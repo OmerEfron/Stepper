@@ -13,16 +13,23 @@ public class IOData implements Serializable {
     private final String content;
     private final String necessity;
     private final String userString;
+    private final Object value;
 
-    public IOData(boolean isOutput, String name, String userString, String type, String content, String necessity) {
+
+
+    public IOData(boolean isOutput, String name, String userString, String type, String content, String necessity, Object value) {
         this.isOutput = isOutput;
         this.name = name;
         this.userString = userString;
         this.type = type;
         this.content = content;
         this.necessity = necessity;
+        this.value=value;
     }
 
+    public <T> T getDataValue (Class<T> exceptedDataType) {
+        return exceptedDataType.cast(value);
+    }
     public boolean isOutput() {
         return isOutput;
     }

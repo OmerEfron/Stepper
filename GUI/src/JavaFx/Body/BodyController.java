@@ -1,24 +1,30 @@
 package JavaFx.Body;
 
+import DataPresenter.DataPresentation;
+import DataPresenter.DataPresentationImpl;
 import JavaFx.AppController;
 
+import JavaFx.Body.ExecutionData.ExecutionData;
+import JavaFx.Body.ExecutionData.FlowExecutionDataImpUI;
 import JavaFx.Body.FlowDefinition.FlowDefinition;
 
 import JavaFx.Body.FlowExecution.FlowExecution;
 import JavaFx.Body.FlowHistory.FlowHistory;
 import StepperEngine.DTO.FlowDetails.FlowDetails;
+import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
 import StepperEngine.Stepper;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 
-import javax.swing.event.ChangeListener;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class BodyController {
-    private AppController mainController;
+
     @FXML private TabPane bodyComponent;
     @FXML private Tab flowDefinitionTab;
     @FXML private FlowDefinition flowDefinitionController;
@@ -28,7 +34,8 @@ public class BodyController {
     @FXML private FlowHistory flowHistoryController;
     @FXML private Tab UntitledTab;
 
-
+    private Map<String, ExecutionData> executionDataMap=new HashMap<>();
+    private AppController mainController;
 
     @FXML
     public void initialize(){
@@ -66,4 +73,11 @@ public class BodyController {
     public void updateFlowHistory() {
         flowHistoryController.setFlowsExecutionTable();
     }
+
+    public ExecutionData getFlowExecutionData(FlowExecutionDataImpl flow){
+        if(!executionDataMap.containsKey(flow.getUniqueExecutionId()))
+            executionDataMap.put(flow.getUniqueExecutionId(),new FlowExecutionDataImpUI(flow));
+        return executionDataMap.get(flow.getUniqueExecutionId());
+    }
+
 }
