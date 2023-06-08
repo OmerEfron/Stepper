@@ -1,0 +1,8 @@
+.label{
+    -fx-text-fill: linear-gradient(#151515, #6e6d6d);
+    -fx-background-color: null;
+    -fx-alignment: center;
+    -fx-font-family: "Gill Sans", sans-serif;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}

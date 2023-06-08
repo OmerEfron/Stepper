@@ -23,9 +23,8 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
     private final String executionResult;
     private final Long executionDuration;
     private final List<StepExecuteData> stepExecuteDataList;
-
     private final Map<String, StepExecuteData> stepExecuteDataMap;
-
+    private String formattedStartTime;
     private final Set<IOData> freeInputs = new HashSet<>();
     private final Set<IOData> outputs = new HashSet<>();
     private final Map<String, IOData> freeInputsMap =new HashMap<>();
@@ -45,6 +44,11 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
         setFreeInputs(flowExecution);
         setOutputs(flowExecution);
         formalOutputs = getFormalOutputs(flowExecution);
+        formattedStartTime=flowExecution.getFormattedStartTime();
+    }
+
+    public String getFormattedStartTime() {
+        return formattedStartTime;
     }
 
     /**
@@ -190,6 +194,10 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
     @Override
     public StepExecuteData getStepData(String stepName) {
         return stepExecuteDataMap.get(stepName);
+    }
+
+    public String getExecutionResult() {
+        return executionResult;
     }
 }
 

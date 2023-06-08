@@ -22,9 +22,7 @@ public class FlowExecution {
     private Duration totalTime;
     private FlowStatus flowStatus;
     private String formattedStartTime;
-
     private boolean hasExecuted = false;
-
     private final Map<String, Object> freeInputsValue = new HashMap<>();
     private String uuidAsString;
     private final Map<String, Object> formalOutputs = new HashMap<>();

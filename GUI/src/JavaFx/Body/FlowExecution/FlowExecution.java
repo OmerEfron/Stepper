@@ -225,7 +225,7 @@ public class FlowExecution {
         executionTimestampLabel.textProperty().set(flowExecutionData.getExecutionTime() + " milliseconds");
         executionResultLabel.textProperty().set(flowExecutionData.getFlowExecutionFinalResult());
         setFormalOutputsAndStepsListView();
-
+        bodyController.updateFlowHistory();
     }
 
 

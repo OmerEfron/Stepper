@@ -10,10 +10,8 @@ public class IOData implements Serializable {
     private final boolean isOutput;
     private final String name;
     private final String type;
-
     private final String content;
     private final String necessity;
-
     private final String userString;
 
     public IOData(boolean isOutput, String name, String userString, String type, String content, String necessity) {

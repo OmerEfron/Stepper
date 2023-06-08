@@ -41,6 +41,7 @@ public class Stepper implements Serializable {
     private final Map<String, List<FlowExecution>> executionsPerFlow = new HashMap<>();
 
     private ExecutorService executorService;
+    private List<FlowExecutionDataImpl> flowExecutionDataList=new ArrayList<>();
 
 
     public Stepper() {
@@ -202,6 +203,7 @@ public class Stepper implements Serializable {
             if (flowExecution.isCanBeExecuted()) {
                 executorService.submit(() -> {
                     exectionTask(flowExecutor, flowExecution);
+                    flowExecutionDataList.add(new FlowExecutionDataImpl(flowExecution));
                 });
             } else
                 throw new ExecutionNotReadyException("flow is not ready to be executed. check for not provided" +
@@ -288,4 +290,7 @@ public class Stepper implements Serializable {
         }
     }
 
+    public List<FlowExecutionDataImpl> getFlowExecutionDataList() {
+        return flowExecutionDataList;
+    }
 }
