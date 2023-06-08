@@ -185,9 +185,9 @@ public class FlowExecution {
     }
     @FXML
     void executeFlow(MouseEvent event) {
-        executionProgressBar.setProgress(0);
         if(flowExecutionButtonImage.opacityProperty().get() == 1) {
             try {
+                executionProgressBar.setProgress(0);
                 bodyController.getStepper().executeFlow(currFlowExecutionUuid);
                 initExecuteButton();
                 new Thread(this::executeFlowTask).start();
@@ -211,7 +211,11 @@ public class FlowExecution {
                 }
             }
         }
-        Platform.runLater(this::setContinuation);
+
+        Platform.runLater(() ->{
+            executionProgressBar.setProgress(1);
+            setContinuation();
+        });
     }
 
     void setExecutionDetails(){

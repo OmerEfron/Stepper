@@ -29,6 +29,7 @@ public class BodyController {
     public void initialize(){
         flowDefinitionController.setMainController(this);
         flowExecutionController.setMainController(this);
+
     }
     public void setMainController(AppController mainController) {
         this.mainController = mainController;

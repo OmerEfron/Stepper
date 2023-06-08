@@ -10,7 +10,7 @@ import StepperEngine.Step.api.StepStatus;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FlowExecutionStatsDefinitionImpl implements FlowExecutionStatsDefinition {
+public class FlowExecutionStatsImpl implements FlowExecutionStatsDefinition {
 
     private final String flowName;
 
@@ -23,7 +23,7 @@ public class FlowExecutionStatsDefinitionImpl implements FlowExecutionStatsDefin
      * builds a statistic information based on the current data in flowExecutionCollector
      * @param flowExecutionsCollector holds all the flow's history of executions
      */
-    public FlowExecutionStatsDefinitionImpl(FlowExecutionsCollector flowExecutionsCollector){
+    public FlowExecutionStatsImpl(FlowExecutionsCollector flowExecutionsCollector){
 
         flowName = flowExecutionsCollector.getFlowName();
         numOfExecutions = flowExecutionsCollector.getNumOfExecutions();
