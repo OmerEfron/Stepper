@@ -61,5 +61,11 @@ public class RelationOfStringRows extends Relation<List<String>> {
                         .collect(Collectors.joining("\n"));
     }
 
+    public List<String> getColNames(){
+        return colNames;
+    }
+    public List<List<String>> getRows(){
+        return rows;
+    }
 
 }

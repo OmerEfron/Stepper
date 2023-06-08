@@ -1,4 +1,4 @@
-package JavaFx.Body.FlowHistory.ExecutionData;
+package JavaFx.Body.ExecutionData;
 
 import StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails.Input;
 import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
@@ -10,7 +10,5 @@ import javafx.scene.layout.VBox;
 
 public interface ExecutionData {
 
-    HBox setTwoLabels(String name,String value);
-
-    VBox getFreeInputs(FlowExecutionDataImpl flowExecutionData);
+ VBox getFlowVbox();
 }

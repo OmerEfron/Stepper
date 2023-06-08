@@ -1,9 +1,10 @@
 package JavaFx.Body.FlowHistory;
 
+import DataPresenter.DataPresentation;
+import DataPresenter.DataPresentationImpl;
 import JavaFx.Body.BodyController;
-import JavaFx.Body.FlowHistory.ExecutionData.ExecutionData;
-import JavaFx.Body.FlowHistory.ExecutionData.FlowExecutionDataImp;
 import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
+
 import javafx.animation.RotateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -20,9 +21,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -39,10 +38,9 @@ public class FlowHistory {
     @FXML private VBox MainExecutionDataVbox;
     @FXML private TreeView<String> StepsTreeVIew;
 
-    private Map<String,VBox> vBoxMap=new HashMap<>();
+
     private BooleanProperty booleanProperty=new SimpleBooleanProperty();
     private BodyController bodyController;
-    private ExecutionData flowExecutionData=new FlowExecutionDataImp();
 
     public void setMainController(BodyController bodyController) {
         this.bodyController = bodyController;
@@ -140,21 +138,11 @@ public class FlowHistory {
         if(event.getClickCount()==2){
             FlowExecutionDataImpl selectedItem = flowsExecutionTable.getSelectionModel().getSelectedItem();
             MainExecutionDataVbox.getChildren().clear();
-            if(!vBoxMap.containsKey(selectedItem.getUniqueExecutionId()))
-                updateExecutionDataVboxByFlow(selectedItem);
-            MainExecutionDataVbox.getChildren().add(vBoxMap.get(selectedItem.getUniqueExecutionId()));
+            MainExecutionDataVbox.getChildren().add(bodyController.getFlowExecutionData(selectedItem).getFlowVbox());
         }
     }
 
-    private void updateExecutionDataVboxByFlow(FlowExecutionDataImpl selectedItem) {
-        VBox newVbox=new VBox();
-        newVbox.getChildren().add(flowExecutionData.setTwoLabels("Flow Name :", selectedItem.getFlowName()));
-        newVbox.getChildren().add(flowExecutionData.setTwoLabels("UUID :", selectedItem.getUniqueExecutionId()));
-        newVbox.getChildren().add(flowExecutionData.setTwoLabels("Flow execution status :", selectedItem.getExecutionResult()));
-        newVbox.getChildren().add(flowExecutionData.setTwoLabels("Timestamp :", selectedItem.getExecutionTime()));
-        newVbox.getChildren().add(flowExecutionData.getFreeInputs(selectedItem));
-        vBoxMap.put(selectedItem.getUniqueExecutionId(),newVbox);
-    }
+
 
 
 }

@@ -168,9 +168,13 @@ public class FlowExecution {
         return outputs;
     }
 
-
+//
+//    public <T> T getOneOutput(String dataName, Class<T> exceptedDataType) {
+//        return formalOutputs.containsKey(dataName) ? exceptedDataType.cast(formalOutputs.get(dataName)) : null;
+//    }
+    //Changed form up to down because we need all outputs
     public <T> T getOneOutput(String dataName, Class<T> exceptedDataType) {
-        return formalOutputs.containsKey(dataName) ? exceptedDataType.cast(formalOutputs.get(dataName)) : null;
+        return allData.containsKey(dataName) ? exceptedDataType.cast(allData.get(dataName)) : null;
     }
 
     public List<StepExecuteData> getStepsData() {

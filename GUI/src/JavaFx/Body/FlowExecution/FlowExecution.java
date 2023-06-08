@@ -1,19 +1,16 @@
 package JavaFx.Body.FlowExecution;
 
 
-import DataPresenter.api.StringDataPresenter;
 import JavaFx.Body.BodyController;
 import StepperEngine.DTO.FlowDetails.FlowDetails;
 import StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails.Input;
 
-import StepperEngine.DTO.FlowDetails.StepDetails.StepDetails;
 import StepperEngine.DTO.FlowExecutionData.api.FlowExecutionData;
 import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
 import StepperEngine.DTO.FlowExecutionData.impl.IOData;
 import StepperEngine.DataDefinitions.Enumeration.ZipEnumerator;
 import StepperEngine.Flow.execute.ExecutionNotReadyException;
 import StepperEngine.Flow.execute.StepData.StepExecuteData;
-import StepperEngine.Flow.execute.StepData.StepIOData;
 import StepperEngine.Step.api.DataNecessity;
 import StepperEngine.Stepper;
 
@@ -23,7 +20,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -206,6 +202,7 @@ public class FlowExecution {
                 Platform.runLater(() -> executionProgressBar.setProgress(stepper.getExecutionPartialStatus(lastFlowRunningUuid)));
                 try {
                     Thread.sleep(3000);
+                    //setExecutionDetails();
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
