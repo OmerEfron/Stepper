@@ -2,7 +2,7 @@ package StepperConsole;
 
 import StepperEngine.DTO.ExecutionsStatistics.api.FlowExecutionStatsDefinition;
 import StepperEngine.DTO.ExecutionsStatistics.api.StepExecutionStats;
-import StepperEngine.DTO.ExecutionsStatistics.impl.FlowExecutionStatsImpl;
+import StepperEngine.DTO.ExecutionsStatistics.impl.FlowExecutionStatsByCollectorImpl;
 import StepperEngine.DTO.FlowExecutionData.impl.IOData;
 import StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails.Input;
 import StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails.Output;
@@ -505,7 +505,7 @@ public class StepperConsoleDefinitionImpl implements StepperConsoleDefinition{
             printNoExecutionYet(flowExecutionsCollectorMap.get(flowName));
         }
         else {
-            FlowExecutionStatsDefinition flowExecutionStatsDefinition = new FlowExecutionStatsImpl(
+            FlowExecutionStatsDefinition flowExecutionStatsDefinition = new FlowExecutionStatsByCollectorImpl(
                     flowExecutionsCollectorMap.get(flowName));
             printStats(flowExecutionStatsDefinition);
         }

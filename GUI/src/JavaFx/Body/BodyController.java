@@ -6,6 +6,7 @@ import JavaFx.Body.FlowDefinition.FlowDefinition;
 
 import JavaFx.Body.FlowExecution.FlowExecution;
 import JavaFx.Body.FlowHistory.FlowHistory;
+import JavaFx.Body.FlowStats.FlowStats;
 import StepperEngine.DTO.FlowDetails.FlowDetails;
 import StepperEngine.Stepper;
 import javafx.beans.value.ObservableValue;
@@ -26,7 +27,9 @@ public class BodyController {
     @FXML private FlowExecution flowExecutionController;
     @FXML private Tab flowHistoryTab;
     @FXML private FlowHistory flowHistoryController;
-    @FXML private Tab UntitledTab;
+    @FXML private Tab flowStatsTab;
+
+    @FXML private FlowStats flowStatsController;
 
 
 
@@ -34,8 +37,9 @@ public class BodyController {
     public void initialize(){
         flowDefinitionController.setMainController(this);
         flowExecutionController.setMainController(this);
-
         flowHistoryController.setMainController(this);
+        flowStatsController.setMainController(this);
+
         bodyComponent.getSelectionModel().selectedItemProperty().addListener((observable, oldTab, newTab) -> {
             if (newTab != null && newTab == flowHistoryTab) {
                 // Update the TableView with information
@@ -60,11 +64,19 @@ public class BodyController {
         bodyComponent.getSelectionModel().select(flowExecutionTab);
     }
 
+    public void updateStats(String flowName){
+        flowStatsController.updateStats(flowName);
+    }
+
     public Stepper getStepper(){
         return mainController.getStepper();
     }
 
     public void updateFlowHistory() {
         flowHistoryController.setFlowsExecutionTable();
+    }
+
+    public void initStats(List<String> flowNames){
+        flowStatsController.initStats(flowNames);
     }
 }

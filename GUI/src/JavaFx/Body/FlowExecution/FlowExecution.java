@@ -215,12 +215,13 @@ public class FlowExecution {
         Platform.runLater(() ->{
             executionProgressBar.setProgress(1);
             setContinuation();
+            flowExecutionData = new FlowExecutionDataImpl(bodyController.getStepper().getFlowExecutionByUuid(lastFlowRunningUuid));
+            bodyController.updateStats(flowExecutionData.getFlowName());
         });
     }
 
     void setExecutionDetails(){
         executionProgressBar.setProgress(1);
-        flowExecutionData = new FlowExecutionDataImpl(bodyController.getStepper().getFlowExecutionByUuid(lastFlowRunningUuid));
         executionUuidLabel.textProperty().set(flowExecutionData.getUniqueExecutionId());
         executionTimestampLabel.textProperty().set(flowExecutionData.getExecutionTime() + " milliseconds");
         executionResultLabel.textProperty().set(flowExecutionData.getFlowExecutionFinalResult());

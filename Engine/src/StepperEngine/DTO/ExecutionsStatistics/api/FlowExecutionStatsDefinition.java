@@ -11,5 +11,7 @@ public interface FlowExecutionStatsDefinition {
 
     List<StepExecutionStats> getStepExecutionsStats();
 
+    StepExecutionStats getStepExecutionStats(String stepName);
+
 
 }

@@ -27,6 +27,7 @@ public class FlowExecution {
     private String uuidAsString;
     private final Map<String, Object> formalOutputs = new HashMap<>();
     private List<StepExecuteData> stepsData = new LinkedList<>();
+    private final Map<String, StepExecuteData> stepsDataMap = new HashMap<>();
     private Map<String,Object> allData=new HashMap<>();
     private final Set<DataDefinitionsDeclaration> freeInputs;
     private final Set<DataDefinitionsDeclaration> outputs;
@@ -48,17 +49,28 @@ public class FlowExecution {
         createUUID();
     }
 
+    public StepExecuteData getStepExecuteData(String stepName){
+        return stepsDataMap.get(stepName);
+    }
+
+
     public void setAllData(Map<String, Object> allData) {
         this.allData = allData;
     }
 
     public void setStepsData(List<StepExecuteData> stepsData) {
         this.stepsData = stepsData;
+        for(StepExecuteData step:stepsData){
+            stepsDataMap.put(step.getFinalName(), step);
+        }
     }
 
     public void addStepExecuteData(StepExecuteData stepExecuteData) {
         stepsData.add(stepExecuteData);
+        stepsDataMap.put(stepExecuteData.getFinalName(), stepExecuteData);
     }
+
+
 
     public String getFormattedStartTime() {
         return formattedStartTime;

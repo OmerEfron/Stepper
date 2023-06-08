@@ -19,10 +19,9 @@
       <content>
           <fx:include fx:id="flowHistory" source="FlowHistory/FlowHistory.fxml" />
       </content></Tab>
-    <Tab text="Untitled Tab 2">
+    <Tab fx:id="flowStatsTab" text="Flow Stats">
       <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-      </content>
-    </Tab>
+          <fx:include fx:id="flowStats" source="FlowStats/FlowStats.fxml" />
+      </content></Tab>
   </tabs>
 </TabPane>

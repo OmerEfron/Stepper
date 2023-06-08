@@ -1,14 +1,16 @@
 package StepperEngine.DTO.ExecutionsStatistics.impl;
 
-import StepperEngine.DTO.FlowExecutionData.api.FlowExecutionData;
-import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionsCollector;
 import StepperEngine.DTO.ExecutionsStatistics.api.FlowExecutionStatsDefinition;
 import StepperEngine.DTO.ExecutionsStatistics.api.StepExecutionStats;
+import StepperEngine.Flow.api.FlowDefinition;
+import StepperEngine.Flow.api.StepUsageDecleration;
+import StepperEngine.Flow.execute.FlowExecution;
 import StepperEngine.Flow.execute.StepData.StepExecuteData;
-import StepperEngine.Step.api.StepStatus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FlowExecutionStatsImpl implements FlowExecutionStatsDefinition {
 
@@ -19,38 +21,42 @@ public class FlowExecutionStatsImpl implements FlowExecutionStatsDefinition {
 
     private final List<StepExecutionStats> stepExecutionStatisticsList = new ArrayList<>();
 
-    /**
-     * builds a statistic information based on the current data in flowExecutionCollector
-     * @param flowExecutionsCollector holds all the flow's history of executions
-     */
-    public FlowExecutionStatsImpl(FlowExecutionsCollector flowExecutionsCollector){
+    private final Map<String, StepExecutionStats> stepExecutionStatsMap = new HashMap<>();
 
-        flowName = flowExecutionsCollector.getFlowName();
-        numOfExecutions = flowExecutionsCollector.getNumOfExecutions();
+    public FlowExecutionStatsImpl(FlowDefinition flowDefinition, List<FlowExecution> flowExecutions) {
+        this.flowName = flowDefinition.getName();
+        this.numOfExecutions = flowExecutions != null ? flowExecutions.size() : 0;
+        if(numOfExecutions!= 0)
+            this.avgTimeOfExecutions = flowExecutions.stream()
+                .mapToLong(flowExecution -> flowExecution.getTotalTime().toMillis())
+                .sum() / numOfExecutions;
+        else
+            this.avgTimeOfExecutions = 0L;
+        setStepExecutionsStats(flowDefinition, flowExecutions);
+    }
 
-        if(numOfExecutions > 0) {
-            String firstExeName = flowExecutionsCollector.getFlowExecutionByNumber().get(1);
-            List<StepExecuteData> stepExecuteDataList = flowExecutionsCollector.getFlowExecutionData(firstExeName)
-                    .getStepExecuteDataList(); // extract the steps data from the first instance.
-            stepExecuteDataList.stream()
-                    .filter(stepExecuteData -> stepExecuteData.getStepStatus() != StepStatus.NOT_INVOKED)
-                    .forEach(stepExecuteData -> stepExecutionStatisticsList.add(
-                            new StepExecutionStatsImpl(stepExecuteData.getFinalName(), flowExecutionsCollector)));
-            Long totalTime = 0L;
-            for (FlowExecutionData flowExecutionData : flowExecutionsCollector.getFlowExecutionDataMap().values()) {
-                totalTime += flowExecutionData.getFlowExecutionDuration();
+    private void setStepExecutionsStats(FlowDefinition flowDefinition, List<FlowExecution> flowExecutions) {
+        for (StepUsageDecleration step : flowDefinition.getSteps()){
+            String stepName = step.getStepFinalName();
+            int stepNumOfExecutions = 0;
+            long stepTotalTimeOfExecutions = 0;
+            if(flowExecutions != null) {
+                for (FlowExecution flowExecution : flowExecutions) {
+                    StepExecuteData stepExecuteData = flowExecution.getStepExecuteData(stepName);
+                    if (stepExecuteData != null) {
+                        stepNumOfExecutions++;
+                        stepTotalTimeOfExecutions += stepExecuteData.getTotalTime().toMillis();
+                    }
+                }
             }
-            avgTimeOfExecutions = totalTime / numOfExecutions; // to get the average
+            long stepAvgTimeOfExecutions = stepNumOfExecutions > 0 ? stepTotalTimeOfExecutions/stepNumOfExecutions : 0;
+            StepExecutionStatsImpl stepExecutionStats = new StepExecutionStatsImpl(stepName, numOfExecutions, stepAvgTimeOfExecutions);
+            stepExecutionStatisticsList.add(stepExecutionStats);
+            stepExecutionStatsMap.put(stepName, stepExecutionStats);
         }
-        else {
-            avgTimeOfExecutions = 0L;
-        }
+    }
 
-    }
-    @Override
-    public String getFlowName() {
-        return flowName;
-    }
+
 
     @Override
     public Integer getNumOfExecutions() {
@@ -63,7 +69,17 @@ public class FlowExecutionStatsImpl implements FlowExecutionStatsDefinition {
     }
 
     @Override
+    public String getFlowName() {
+        return flowName;
+    }
+
+    @Override
     public List<StepExecutionStats> getStepExecutionsStats() {
         return stepExecutionStatisticsList;
+    }
+
+    @Override
+    public StepExecutionStats getStepExecutionStats(String stepName) {
+        return stepExecutionStatsMap.get(stepName);
     }
 }

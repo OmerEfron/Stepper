@@ -1,7 +1,10 @@
 package StepperEngine;
 
+import StepperEngine.DTO.ExecutionsStatistics.api.FlowExecutionStatsDefinition;
+import StepperEngine.DTO.ExecutionsStatistics.impl.FlowExecutionStatsImpl;
 import StepperEngine.DTO.FlowDetails.FlowDetails;
 import StepperEngine.DTO.FlowDetails.FlowDetailsImpl;
+import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionsCollector;
 import StepperEngine.Flow.FlowBuildExceptions.FlowBuildException;
 import StepperEngine.Flow.api.FlowDefinitionImpl;
 import StepperEngine.Flow.api.FlowDefinition;
@@ -42,6 +45,8 @@ public class Stepper implements Serializable {
 
     private ExecutorService executorService;
     private List<FlowExecutionDataImpl> flowExecutionDataList=new ArrayList<>();
+
+
 
 
     public Stepper() {
@@ -292,5 +297,18 @@ public class Stepper implements Serializable {
 
     public List<FlowExecutionDataImpl> getFlowExecutionDataList() {
         return flowExecutionDataList;
+    }
+
+    public FlowExecutionData getFlowExecutionData(String uuid){
+        FlowExecution flowExecution = executionsMap.get(uuid);
+        if(flowExecution!=null){
+            if(flowExecution.hasExecuted())
+                return new FlowExecutionDataImpl(flowExecution);
+        }
+        return null;
+    }
+
+    public FlowExecutionStatsDefinition getFlowExecutionsStats(String flowName){
+        return new FlowExecutionStatsImpl(flowsMap.get(flowName), executionsPerFlow.get(flowName));
     }
 }

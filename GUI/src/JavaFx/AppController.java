@@ -38,6 +38,7 @@ public class AppController {
             stepperDTO.load(filePath);
             bodyComponentController.setFlowDetailsList(stepperDTO.getFlowsDetailsList());
             stepper = stepperDTO.getStepper();
+            bodyComponentController.initStats(stepper.getFlowNames());
             return true;
         }catch (ReaderException | FlowBuildException | RuntimeException e ) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
