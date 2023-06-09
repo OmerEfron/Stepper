@@ -1,7 +1,5 @@
 package JavaFx.Body;
 
-import DataPresenter.DataPresentation;
-import DataPresenter.DataPresentationImpl;
 import JavaFx.AppController;
 
 import JavaFx.Body.ExecutionData.ExecutionData;
@@ -13,16 +11,15 @@ import JavaFx.Body.FlowHistory.FlowHistory;
 import JavaFx.Body.FlowStats.FlowStats;
 import StepperEngine.DTO.FlowDetails.FlowDetails;
 import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
+import StepperEngine.Step.api.StepStatus;
 import StepperEngine.Stepper;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.ImageView;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class BodyController {
 
@@ -38,7 +35,9 @@ public class BodyController {
     @FXML private FlowStats flowStatsController;
 
     private Map<String, ExecutionData> executionDataMap=new HashMap<>();
+    private Map<String, Map<String,ExecutionData>> executionStepsInFLow=new HashMap<>();
     private AppController mainController;
+
 
     @FXML
     public void initialize(){
@@ -91,6 +90,28 @@ public class BodyController {
         if(!executionDataMap.containsKey(flow.getUniqueExecutionId()))
             executionDataMap.put(flow.getUniqueExecutionId(),new FlowExecutionDataImpUI(flow));
         return executionDataMap.get(flow.getUniqueExecutionId());
+    }
+    public Node getStepExecutionData(FlowExecutionDataImpl flow, String stepName){
+        return executionDataMap.get(flow.getUniqueExecutionId()).getStepVbox(stepName);
+    }
+    public ImageView getExecutionStatusImage(String status){
+        ImageView imageView ;
+
+        switch (StepStatus.valueOf(status)){
+            case WARNING:
+                imageView=new ImageView("JavaFx/Body/resource/warning.png");
+                break;
+            case SUCCESS:
+                imageView=new ImageView("JavaFx/Body/resource/success.png");
+                break;
+            default:
+                imageView=new ImageView("JavaFx/Body/resource/fail.png");
+                break;
+        }
+        imageView.setFitHeight(15);
+        imageView.setFitWidth(15);
+        return imageView;
+
     }
 
 }

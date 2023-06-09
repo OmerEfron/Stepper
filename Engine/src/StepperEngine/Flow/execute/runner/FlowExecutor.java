@@ -5,6 +5,7 @@ import StepperEngine.Flow.execute.FlowExecution;
 import StepperEngine.Flow.execute.FlowStatus;
 import StepperEngine.Flow.execute.context.StepExecutionContext;
 import StepperEngine.Flow.execute.context.StepExecutionContextClass;
+import StepperEngine.Step.api.DataDefinitionsDeclaration;
 import StepperEngine.Step.api.StepStatus;
 
 import java.time.Duration;
@@ -44,9 +45,13 @@ public class FlowExecutor {
     }
 
     private static void addDataToStep(StepExecutionContext stepExecutionContext, StepUsageDecleration step) {
-        for(String dataName: step.getDataMap().keySet()){
-            stepExecutionContext.addDataToStepData(step.getStepFinalName(), dataName);
+        for(DataDefinitionsDeclaration data: step.getStepDefinition().getInputs()){
+            stepExecutionContext.addDataToStepData(step.getStepFinalName(), data.getAliasName(),false);
         }
+        for(DataDefinitionsDeclaration data: step.getStepDefinition().getOutputs()){
+            stepExecutionContext.addDataToStepData(step.getStepFinalName(), data.getAliasName(),true);
+        }
+
     }
 
     private static FlowStatus endStep(FlowStatus flowStatus, StepUsageDecleration step, StepStatus stepStatus) {

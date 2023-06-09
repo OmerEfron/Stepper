@@ -2,11 +2,14 @@ package JavaFx.Body.ExecutionData;
 
 import DataPresenter.DataPresentation;
 import DataPresenter.DataPresentationImpl;
+import JavaFx.Body.ExecutionData.Step.StepExecutionDataImpUI;
 import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
 import StepperEngine.DTO.FlowExecutionData.impl.IOData;
+import StepperEngine.Flow.execute.StepData.StepExecuteData;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
@@ -32,7 +35,7 @@ public class FlowExecutionDataImpUI implements ExecutionData{
     private HBox freeInputs;
     private Map<String,ExecutionData> stepsData=new HashMap<>();
     private DataPresentation dataPresentation=new DataPresentationImpl();
-
+    private Map<String, StepExecutionDataImpUI> stepsMap=new HashMap<>();
     public FlowExecutionDataImpUI(FlowExecutionDataImpl flow) {
         this.flow = flow;
         this.name=setTwoLabels("Flow Name :", flow.getFlowName());
@@ -44,8 +47,22 @@ public class FlowExecutionDataImpUI implements ExecutionData{
         flowVbox.getChildren().addAll(
                 name,UUID,flowExecutionStatus,timeStamp,freeInputs,new Separator(),
                 new Label("All Outputs :"),dataPresentation.getDataPresent(flow.getOutputs()));
+        createStepsMap();
     }
 
+    private void createStepsMap() {
+        flow.getStepExecuteDataList().forEach(
+                this::createStepExecutionData);
+    }
+
+    private void createStepExecutionData(StepExecuteData step) {
+        stepsMap.put(step.getFinalName(),new StepExecutionDataImpUI(step));
+    }
+
+    @Override
+    public Node getStepVbox(String stepName) {
+        return stepsMap.get(stepName).getVbox();
+    }
 
     public HBox setTwoLabels(String name, String value) {
         HBox hBox=new HBox();
@@ -86,12 +103,12 @@ public class FlowExecutionDataImpUI implements ExecutionData{
         tableView.setMaxHeight(200);
         List<IOData> items = tableView.getItems();
         freeInputContent.setPrefWidth(getMaxContentLen(freeInputContent, items)*9.5);
+        freeInputContent.setMaxWidth(200);
         return tableView;
     }
 
     private int getMaxContentLen(TableColumn<IOData, String> freeInputContent, List<IOData> items) {
         int maxLength = 0;
-
         for (IOData item : items) {
             String content = freeInputContent.getCellData(item);
             if (content != null) {
@@ -114,7 +131,7 @@ public class FlowExecutionDataImpUI implements ExecutionData{
     }
 
     @Override
-    public VBox getFlowVbox() {
+    public VBox getVbox() {
         return flowVbox;
     }
 }

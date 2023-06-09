@@ -1,6 +1,8 @@
 package StepperEngine.Flow.execute.StepData;
 
+import StepperEngine.DTO.FlowExecutionData.impl.IOData;
 import StepperEngine.Flow.api.StepUsageDecleration;
+import StepperEngine.Step.api.DataDefinitionsDeclaration;
 import StepperEngine.Step.api.StepStatus;
 import javafx.util.Pair;
 
@@ -9,10 +11,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class StepExecuteData implements Serializable {
 
@@ -24,17 +23,22 @@ public class StepExecuteData implements Serializable {
     private List<Pair<String, String>> logs=new LinkedList<>();
     private final Integer id;
     private LocalDateTime startTime;
+    private String formattedStartTime="step has not started";
     private LocalDateTime endTime;
-
-    Map<String, Object> dataMap = new HashMap<>();
-
-
+    private String formattedEndTime="step has not ended";
+    private Map<String, Object> dataMap = new HashMap<>();
+    private Set<IOData> inputs =new HashSet<>();
+    private Set< IOData> outputs = new HashSet<>();
+    private List<DataDefinitionsDeclaration> inputsDD;
+    private List<DataDefinitionsDeclaration> outputsDD;
 
 
     public StepExecuteData(StepUsageDecleration step) {
         this.finalName =step.getStepFinalName();
         this.name=step.getStepDefinition().getName();
         this.id=step.getIndex();
+        inputsDD =step.getStepDefinition().getInputs();
+        outputsDD =step.getStepDefinition().getOutputs();
     }
 
     public Map<String, Object> getDataMap() {
@@ -43,6 +47,7 @@ public class StepExecuteData implements Serializable {
 
     public void setStartTime() {
         this.startTime = LocalDateTime.now();
+        formattedStartTime= getFormattedTime(startTime);
     }
 
     public Integer getId() {
@@ -90,6 +95,12 @@ public class StepExecuteData implements Serializable {
 
     public void setEndTime() {
         this.endTime = LocalDateTime.now();
+        formattedEndTime= getFormattedTime(endTime);
+    }
+
+    private String getFormattedTime(LocalDateTime time) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return time.format(formatter);
     }
 
     public String getName() {
@@ -107,7 +118,52 @@ public class StepExecuteData implements Serializable {
         throw new IllegalAccessException("step has not ended");
     }
 
-    public void addStepData(String dataName, Object value){
+    public String getFormattedStartTime() {
+        return formattedStartTime;
+    }
+
+    public String getFormattedEndTime() {
+        return formattedEndTime;
+    }
+
+    public void addStepData(String dataName, Object value,boolean isOutput){
         dataMap.put(dataName, value);
+        if(isOutput){
+            updateDataMaps(dataName, value, true, outputsDD, outputs);
+        }else {
+            updateDataMaps(dataName, value, false, inputsDD, inputs);
+        }
+
+    }
+
+    private boolean updateDataMaps(String dataName, Object value,Boolean isOutput, List<DataDefinitionsDeclaration> dataDefinitionsDeclarationList,Set<IOData> ioDataSet) {
+        String content;
+        if (value == null){
+            content = "not provided";
+        }
+        else {
+            content = value.toString();
+        }
+        for(DataDefinitionsDeclaration data:dataDefinitionsDeclarationList){
+            if(data.getAliasName().equals(dataName)){
+                ioDataSet.add(new IOData(isOutput, dataName,data.userString(),
+                        data.dataDefinition().getType().getSimpleName(), content,data.necessity().toString(), value));
+                return true;
+            }
+        }
+        return false;
+    }
+    public void setStepData(Map<String, Object> allData){
+        for(String dataName:allData.keySet()){
+            if(!updateDataMaps(dataName,allData.get(dataName),false,inputsDD,inputs))
+                updateDataMaps(dataName,allData.get(dataName),true,outputsDD,outputs);
+        }
+    }
+    public Set<IOData> getInputs() {
+        return inputs;
+    }
+
+    public Set<IOData> getOutputs() {
+        return outputs;
     }
 }

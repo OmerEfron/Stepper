@@ -45,124 +45,54 @@ import java.util.EnumSet;
 import java.util.stream.Collectors;
 
 public class FlowExecution {
-
     private static final int INPUT_NAME_COLUMN = 0;
     private static final int INPUT_MANDATORY_COLUMN = 1;
     private static final int INPUT_DATA_DISPLAY_COLUMN = 2;
 
-
-    @FXML
-    private AnchorPane flowExecutionAnchorPane;
-
-    @FXML
-    private GridPane executionDetailsGridPane;
-
-    @FXML
-    private ListView<String> stepInputListView;
-
-    @FXML
-    private ListView<String> stepOutputListView;
-
-    @FXML
-    private ListView<String> formalOutputsListView;
-
-    @FXML
-    private ListView<String> stepsInfoListView;
-
-    @FXML
-    private Label executionUuidLabel;
-
-    @FXML
-    private Label executionTimestampLabel;
-
-    @FXML
-    private Label executionResultLabel;
-
-    @FXML
-    private Separator executionDetailsDataSeperator;
-
-    @FXML
-    private Separator StepOutputSeperator;
-
-    @FXML
-    private Label stepNameDisplayNameLabel;
-
-    @FXML
-    private GridPane freeInputsGridPane;
-    @FXML
-    private ScrollPane freeInputsScrollPane;
-    @FXML
-    private TableView<FreeInputsTableRow> freeInputsTableView;
-    @FXML
-    private TableColumn<FreeInputsTableRow, String> freeInputNameCol;
-
-    @FXML
-    private TableColumn<FreeInputsTableRow, String> freeInputValueCol;
-
-    @FXML
-    private TableColumn<FreeInputsTableRow, String> freeInputApiNameCol;
-    @FXML
-    private Label outputNameDisplayNameLabel;
-
-
-    @FXML
-    private ImageView flowExecutionButtonImage;
-
-    @FXML
-    private ProgressBar executionProgressBar;
-
-    @FXML
-    private Label floeDetailsLabel;
-
-    @FXML
-    private GridPane flowDetailGridPane;
-
-    @FXML
-    private Label flowNameLabel;
-
-    @FXML
-    private Label floeDescriptionLabel;
-
-    @FXML
-    private Label floeStepsLabel;
-
-    @FXML
-    private Pane continuationPane;
-
-    @FXML
-    private Separator continuationDetailsSeperator;
-
-    @FXML
-    private Label continuationLabel;
-
-    @FXML
-    private ImageView continuationButtonImage;
-
-    @FXML
-    private ChoiceBox<String> continuationChoiceBox;
-
-    @FXML
-    private Label stepNameTitleLabel;
-    @FXML
-    private GridPane stepDetailsGridPane;
-
-    @FXML
-    private AnchorPane outputPresentationAnchorPane;
-    @FXML
-    private Label stepLogsLabel;
-
-    @FXML
-    private Label stepResutLabel;
-    @FXML
-    private AnchorPane stepIODataDisplayAnchorPane;
-
-    @FXML
-    private Label stepTimeLabel;
+    @FXML private AnchorPane flowExecutionAnchorPane;
+    @FXML private GridPane executionDetailsGridPane;
+    @FXML private ListView<String> stepInputListView;
+    @FXML private ListView<String> stepOutputListView;
+    @FXML private ListView<String> formalOutputsListView;
+    @FXML private ListView<String> stepsInfoListView;
+    @FXML private Label executionUuidLabel;
+    @FXML private Label executionTimestampLabel;
+    @FXML private Label executionResultLabel;
+    @FXML private Separator executionDetailsDataSeperator;
+    @FXML private Separator StepOutputSeperator;
+    @FXML private Label stepNameDisplayNameLabel;
+    @FXML private GridPane freeInputsGridPane;
+    @FXML private ScrollPane freeInputsScrollPane;
+    @FXML private TableView<FreeInputsTableRow> freeInputsTableView;
+    @FXML private TableColumn<FreeInputsTableRow, String> freeInputNameCol;
+    @FXML private TableColumn<FreeInputsTableRow, String> freeInputValueCol;
+    @FXML private TableColumn<FreeInputsTableRow, String> freeInputApiNameCol;
+    @FXML private Label outputNameDisplayNameLabel;
+    @FXML private ImageView flowExecutionButtonImage;
+    @FXML private ProgressBar executionProgressBar;
+    @FXML private Label floeDetailsLabel;
+    @FXML private GridPane flowDetailGridPane;
+    @FXML private Label flowNameLabel;
+    @FXML private Label floeDescriptionLabel;
+    @FXML private Label floeStepsLabel;
+    @FXML private ImageView continuationButtonImage;
+    @FXML private ChoiceBox<String> continuationChoiceBox;
+    @FXML private Label stepNameTitleLabel;
+    @FXML private GridPane stepDetailsGridPane;
+    @FXML private AnchorPane outputPresentationAnchorPane;
+    @FXML private Label stepLogsLabel;
+    @FXML private Label stepResutLabel;
+    @FXML private AnchorPane stepIODataDisplayAnchorPane;
+    @FXML private Label stepTimeLabel;
+    @FXML private Label CentralFlowName;
+    @FXML private TreeView<String> StepsTreeVIew;
+    @FXML private VBox MainExecutionDataVbox;
 
 
     private BodyController bodyController;
     private FlowDetails flowDetails;
     private FlowExecutionData flowExecutionData;
+    private FlowExecutionDataImpl flowExecutionDataImp;
 
     private String lastFlowRunningUuid;
     private String currFlowExecutionUuid;
@@ -212,20 +142,47 @@ public class FlowExecution {
         Platform.runLater(() ->{
             executionProgressBar.setProgress(1);
             setContinuation();
-            flowExecutionData = new FlowExecutionDataImpl(bodyController.getStepper().getFlowExecutionByUuid(lastFlowRunningUuid));
+            flowExecutionDataImp=new FlowExecutionDataImpl(bodyController.getStepper().getFlowExecutionByUuid(lastFlowRunningUuid));
+            flowExecutionData =flowExecutionDataImp ;
             bodyController.updateStats(flowExecutionData.getFlowName());
+            setExecutionDetails();
         });
     }
 
-    void setExecutionDetails(){
+//    void setExecutionDetails(){
+//        executionProgressBar.setProgress(1);
+//        executionUuidLabel.textProperty().set(flowExecutionData.getUniqueExecutionId());
+//        executionTimestampLabel.textProperty().set(flowExecutionData.getExecutionTime() + " milliseconds");
+//        executionResultLabel.textProperty().set(flowExecutionData.getFlowExecutionFinalResult());
+//        setFormalOutputsAndStepsListView();
+//        bodyController.updateFlowHistory();
+//
+//    }
+    void setExecutionDetails() {
         executionProgressBar.setProgress(1);
-        executionUuidLabel.textProperty().set(flowExecutionData.getUniqueExecutionId());
-        executionTimestampLabel.textProperty().set(flowExecutionData.getExecutionTime() + " milliseconds");
-        executionResultLabel.textProperty().set(flowExecutionData.getFlowExecutionFinalResult());
-        setFormalOutputsAndStepsListView();
+        CentralFlowName.setText( flowExecutionDataImp.getFlowName());
+        MainExecutionDataVbox.getChildren().add(bodyController.getFlowExecutionData(flowExecutionDataImp).getVbox());
+        TreeItem root = new TreeItem(flowExecutionDataImp.getFlowName(), bodyController.getExecutionStatusImage(flowExecutionDataImp.getExecutionResult()));
+        StepsTreeVIew.setRoot(root);
+        for (StepExecuteData step : flowExecutionDataImp.getStepExecuteDataList()) {
+            TreeItem<String> childItem = new TreeItem<>(step.getFinalName(), bodyController.getExecutionStatusImage(step.getStepStatus().toString()));
+            root.getChildren().add(childItem);
+        }
         bodyController.updateFlowHistory();
     }
-
+    @FXML
+    void setStepData(MouseEvent event) {
+        TreeItem<String> selectedItem = StepsTreeVIew.getSelectionModel().getSelectedItem();
+        if(selectedItem!=null){
+            MainExecutionDataVbox.getChildren().clear();
+            boolean isRoot = selectedItem.getParent() == null;
+            if (isRoot)
+                MainExecutionDataVbox.getChildren().add(bodyController.getFlowExecutionData(flowExecutionDataImp).getVbox());
+            else {
+                MainExecutionDataVbox.getChildren().add(bodyController.getStepExecutionData(flowExecutionDataImp, selectedItem.getValue()));
+            }
+        }
+    }
 
     private void setStepDetails(String stepName)  {
         StepExecuteData stepExecuteData = flowExecutionData.getStepData(stepName);
@@ -289,8 +246,10 @@ public class FlowExecution {
         cleanUpScreen();
         flowDetails = flow;
         currFlowExecutionUuid = bodyController.getStepper().createNewExecution(flow.getFlowName());
-        setFlowDetails();
+        //setFlowDetails();
+        CentralFlowName.setText(flow.getFlowName());
         setFreeInputsDisplay();
+
     }
 
     public void setFlowDetails(){
@@ -452,6 +411,11 @@ public class FlowExecution {
         freeInputsTableView.getItems().remove(0, freeInputsTableView.getItems().size());
         freeInputsGridPane.getChildren().clear();
         addFreeInputsFirstRow();
+        MainExecutionDataVbox.getChildren().clear();
+        if(StepsTreeVIew.getRoot()!= null) {
+            StepsTreeVIew.getRoot().getChildren().clear();
+            StepsTreeVIew.setRoot(null);
+        }
     }
 
     public void setStepInputListView(StepExecuteData step){

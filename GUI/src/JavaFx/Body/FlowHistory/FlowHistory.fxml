@@ -94,7 +94,7 @@
                   </VBox>
                </top>
                <left>
-                  <TreeView fx:id="StepsTreeVIew" minWidth="328.0" prefHeight="429.0" prefWidth="376.0" BorderPane.alignment="CENTER">
+                  <TreeView fx:id="StepsTreeVIew" minWidth="328.0" onMouseClicked="#setStepData" prefHeight="429.0" prefWidth="376.0" BorderPane.alignment="CENTER">
                      <padding>
                         <Insets right="5.0" top="5.0" />
                      </padding>

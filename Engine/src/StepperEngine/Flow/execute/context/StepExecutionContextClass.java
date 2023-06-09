@@ -163,8 +163,8 @@ public class StepExecutionContextClass implements StepExecutionContext {
         stepExecuteDataMap.get(stepName).setEndTime();
     }
     @Override
-    public void addDataToStepData(String stepName, String dataName){
-        stepExecuteDataMap.get(stepName).addStepData(dataName, dataValues.get(dataName));
+    public void addDataToStepData(String stepName, String dataName,boolean isOutput){
+        stepExecuteDataMap.get(stepName).addStepData(dataName, dataValues.get(dataName),isOutput);
     }
 
 

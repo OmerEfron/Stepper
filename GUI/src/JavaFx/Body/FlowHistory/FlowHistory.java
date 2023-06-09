@@ -1,10 +1,10 @@
 package JavaFx.Body.FlowHistory;
 
-import DataPresenter.DataPresentation;
-import DataPresenter.DataPresentationImpl;
 import JavaFx.Body.BodyController;
 import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
 
+import StepperEngine.Flow.execute.StepData.StepExecuteData;
+import StepperEngine.Step.api.StepStatus;
 import javafx.animation.RotateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -37,6 +37,7 @@ public class FlowHistory {
     @FXML private ImageView resetTable;
     @FXML private VBox MainExecutionDataVbox;
     @FXML private TreeView<String> StepsTreeVIew;
+    @FXML private Label CentralFlowName;
 
 
     private BooleanProperty booleanProperty=new SimpleBooleanProperty();
@@ -137,8 +138,29 @@ public class FlowHistory {
     void setFlowExecutionDetails(MouseEvent event) {
         if(event.getClickCount()==2){
             FlowExecutionDataImpl selectedItem = flowsExecutionTable.getSelectionModel().getSelectedItem();
+            CentralFlowName.setText("Flow Selected :"+selectedItem.getFlowName());
             MainExecutionDataVbox.getChildren().clear();
-            MainExecutionDataVbox.getChildren().add(bodyController.getFlowExecutionData(selectedItem).getFlowVbox());
+            MainExecutionDataVbox.getChildren().add(bodyController.getFlowExecutionData(selectedItem).getVbox());
+
+            TreeItem root=new TreeItem(selectedItem.getFlowName(),bodyController.getExecutionStatusImage(selectedItem.getExecutionResult()));
+            StepsTreeVIew.setRoot(root);
+            for(StepExecuteData step:selectedItem.getStepExecuteDataList()){
+                TreeItem<String> childItem = new TreeItem<>(step.getFinalName(),bodyController.getExecutionStatusImage(step.getStepStatus().toString()));
+                root.getChildren().add(childItem);
+            }
+        }
+    }
+    @FXML
+    void setStepData(MouseEvent event) {
+        TreeItem<String> selectedItem = StepsTreeVIew.getSelectionModel().getSelectedItem();
+        if(selectedItem!=null){
+            MainExecutionDataVbox.getChildren().clear();
+            boolean isRoot = selectedItem.getParent() == null;
+            if (isRoot)
+                MainExecutionDataVbox.getChildren().add(bodyController.getFlowExecutionData(flowsExecutionTable.getSelectionModel().getSelectedItem()).getVbox());
+            else {
+                MainExecutionDataVbox.getChildren().add(bodyController.getStepExecutionData(flowsExecutionTable.getSelectionModel().getSelectedItem(), selectedItem.getValue()));
+            }
         }
     }
 

@@ -24,6 +24,7 @@ public class FlowExecution {
     private String formattedStartTime;
     private boolean hasExecuted = false;
     private final Map<String, Object> freeInputsValue = new HashMap<>();
+
     private String uuidAsString;
     private final Map<String, Object> formalOutputs = new HashMap<>();
     private List<StepExecuteData> stepsData = new LinkedList<>();
@@ -56,6 +57,9 @@ public class FlowExecution {
 
     public void setAllData(Map<String, Object> allData) {
         this.allData = allData;
+//        for(StepExecuteData step:stepsData){
+//            step.setStepData(allData);
+//        }
     }
 
     public void setStepsData(List<StepExecuteData> stepsData) {

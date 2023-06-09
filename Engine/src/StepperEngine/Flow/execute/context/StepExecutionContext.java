@@ -11,7 +11,6 @@ import java.util.Map;
 
 public interface StepExecutionContext {
     <T> T getDataValue(String dataName, Class<T> exceptedDataType);
-
     boolean storeValue(String dataName, Object value);
 
     void updateCustomMap(StepUsageDecleration currStep);
@@ -39,5 +38,5 @@ public interface StepExecutionContext {
 
     List<StepExecuteData> getStepsData();
 
-    public void addDataToStepData(String stepName, String dataName);
+    public void addDataToStepData(String stepName, String dataName,boolean isOutput);
 }

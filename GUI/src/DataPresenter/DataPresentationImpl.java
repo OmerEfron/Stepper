@@ -33,10 +33,8 @@ public class DataPresentationImpl implements DataPresentation {
             case "RelationOfStringRows":
                 dataPresenter=new RelationStringPresenter(data);
                 break;
-            // Add more cases for different types if needed
             default:
                 dataPresenter=new  SimpleDataPresenter(data);
-                // Handle default case
                 break;
         }
 
