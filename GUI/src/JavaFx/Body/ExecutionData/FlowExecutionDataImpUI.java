@@ -104,6 +104,7 @@ public class FlowExecutionDataImpUI implements ExecutionData{
         List<IOData> items = tableView.getItems();
         freeInputContent.setPrefWidth(getMaxContentLen(freeInputContent, items)*9.5);
         freeInputContent.setMaxWidth(200);
+        freeInputContent.setMinWidth(100);
         return tableView;
     }
 

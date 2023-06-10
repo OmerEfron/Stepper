@@ -42,6 +42,7 @@ import javafx.util.Pair;
 
 import java.io.File;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class FlowExecution {
@@ -104,10 +105,26 @@ public class FlowExecution {
         freeInputValueCol.setCellValueFactory(new PropertyValueFactory<>("value"));
         //freeInputApiNameCol.setCellValueFactory((new PropertyValueFactory<>("apiName")));
         addFreeInputsFirstRow();
+        continuationChoiceBox.setOnAction(this::startContinuation);
+    }
+    public void startContinuation(ActionEvent event){
+        makeContinuationButtonEnabled();
     }
     @FXML
     void continueFlow(MouseEvent event) {
-
+        cleanUpScreen();
+        String flowToContinue=continuationChoiceBox.getValue();
+        currFlowExecutionUuid=bodyController.continuationFlow(flowExecutionData.getUniqueExecutionId(),flowToContinue);
+        flowDetails=bodyController.getStepper().getFlowsDetailsByName(flowToContinue);
+        setFreeInputsDisplay();
+        Map<String, Object> allData = bodyController.getStepper().getFlowExecutionByUuid(currFlowExecutionUuid).getFreeInputsValue();
+        for(Input input:flowDetails.getFreeInputs()){
+            if(allData.containsKey(input.getDataName())) {
+                addNewValue(input, allData.get(input.getDataName()).toString());
+                addInputToTable(input,allData.get(input.getDataName()).toString());
+            }
+        }
+        CentralFlowName.setText(flowDetails.getFlowName());
     }
     @FXML
     void executeFlow(MouseEvent event) {
@@ -131,7 +148,7 @@ public class FlowExecution {
             while (!stepper.getExecutionStatus(lastFlowRunningUuid)) {
                 Platform.runLater(() -> executionProgressBar.setProgress(stepper.getExecutionPartialStatus(lastFlowRunningUuid)));
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(300);
                     //setExecutionDetails();
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
@@ -141,7 +158,6 @@ public class FlowExecution {
 
         Platform.runLater(() ->{
             executionProgressBar.setProgress(1);
-            setContinuation();
             flowExecutionDataImp=new FlowExecutionDataImpl(bodyController.getStepper().getFlowExecutionByUuid(lastFlowRunningUuid));
             flowExecutionData =flowExecutionDataImp ;
             bodyController.updateStats(flowExecutionData.getFlowName());
@@ -169,6 +185,7 @@ public class FlowExecution {
             root.getChildren().add(childItem);
         }
         bodyController.updateFlowHistory();
+        setContinuation();
     }
     @FXML
     void setStepData(MouseEvent event) {
@@ -227,6 +244,10 @@ public class FlowExecution {
         continuationButtonImage.opacityProperty().set(0.2);
         continuationButtonImage.cursorProperty().set(Cursor.DISAPPEAR);
     }
+    private void makeContinuationButtonEnabled() {
+        continuationButtonImage.opacityProperty().set(1);
+        continuationButtonImage.cursorProperty().set(Cursor.HAND);
+    }
 
     private void initExecuteButton() {
         flowExecutionButtonImage.opacityProperty().set(0.2);
@@ -249,7 +270,6 @@ public class FlowExecution {
         //setFlowDetails();
         CentralFlowName.setText(flow.getFlowName());
         setFreeInputsDisplay();
-
     }
 
     public void setFlowDetails(){
@@ -412,6 +432,7 @@ public class FlowExecution {
         freeInputsGridPane.getChildren().clear();
         addFreeInputsFirstRow();
         MainExecutionDataVbox.getChildren().clear();
+        executionProgressBar.setProgress(0.0);
         if(StepsTreeVIew.getRoot()!= null) {
             StepsTreeVIew.getRoot().getChildren().clear();
             StepsTreeVIew.setRoot(null);

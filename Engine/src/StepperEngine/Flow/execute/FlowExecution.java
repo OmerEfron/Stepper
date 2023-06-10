@@ -50,6 +50,10 @@ public class FlowExecution {
         createUUID();
     }
 
+    public Map<String, Object> getAllData() {
+        return allData;
+    }
+
     public StepExecuteData getStepExecuteData(String stepName){
         return stepsDataMap.get(stepName);
     }

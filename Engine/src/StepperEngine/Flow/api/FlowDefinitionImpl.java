@@ -19,7 +19,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
     private final Flow flow;
 
     private Boolean valid;
-    private Boolean hasContinuation;
+    private Boolean hasContinuation=true;
 
     private Boolean isReadOnly = true;
 
@@ -47,7 +47,8 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
         }
         valid = true;
         determinateIfFlowIsReadOnly();
-        hasContinuation= flow.getContinuations()==null ;
+        if(flow.getContinuations()==null)
+            hasContinuation=false ;
    }
 
     public Map<DataDefinitionsDeclaration, List<String>> getDataToRelatedSteps() {
@@ -169,8 +170,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
         if(!problems.isEmpty()){
             return problems;
         }
-
-
+        updateAllDataDefinition();
         valid = true;
         return problems;
     }
@@ -278,9 +278,10 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
     private void setFreeInputs() {
         freeInputs = new HashSet<>(steps.stream()
                 .flatMap(step -> getStepFreeInputs(step).stream())
-                .collect(Collectors.toMap(DataDefinitionsDeclaration::getName,
+                .collect(Collectors.toMap(DataDefinitionsDeclaration::getAliasName,
                         Function.identity(), (a, b) -> a))
                 .values());
+
         for(DataDefinitionsDeclaration dd: freeInputs){
             if(!dd.dataDefinition().isUserFriendly() && dd.necessity() == DataNecessity.MANDATORY && !dd.isInitial()){
                 problems.add("Mandatory input \""+ dd.userString() + "\" is not accessible");
@@ -294,13 +295,6 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
                 .flatMap(step -> step.getStepDefinition().getInputs().stream())
                 .collect(Collectors.toSet());
     }
-
-//    private void setAllFreeInputs(){
-//        dataToRelatedSteps =steps.stream()
-//                .flatMap(step -> getStepFreeInputs(step).stream().map(dd -> new AbstractMap.SimpleEntry<>(dd, step.getStepFinalName())))
-//                .filter(entry -> entry.getKey().dataDefinition().isUserFriendly() && !entry.getKey().isInitial())
-//                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
-//    }
 
     private void setAllFreeInputs(){
         for(DataDefinitionsDeclaration dd : freeInputs){

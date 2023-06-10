@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
  * nor the flow itself.
  */
 public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
-
-
     private final String flowName;
     private final String uuid;
     private final String executionTime;

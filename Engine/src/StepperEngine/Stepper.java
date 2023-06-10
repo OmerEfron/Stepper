@@ -39,7 +39,7 @@ public class Stepper implements Serializable {
     private Map<Integer, String> flowsByNumber = new LinkedHashMap<>();
 
     private Map<String,List<String>> continuationMap=new HashMap<>();
-
+    private Map<String,FlowDetails> flowDetailsMap=new HashMap<>();
     private final Map<String, FlowExecution> executionsMap = new HashMap<>();
     private final Map<String, List<FlowExecution>> executionsPerFlow = new HashMap<>();
 
@@ -77,7 +77,9 @@ public class Stepper implements Serializable {
         flowNames = flows.stream()
                 .map(FlowDefinition::getName)
                 .collect(Collectors.toList());
-
+        for(FlowDefinition flow :flows){
+            flowDetailsMap.put(flow.getName(),new FlowDetailsImpl(flow));
+        }
         try {
             checkContinuation();
         } catch (FlowBuildException e) {
@@ -113,6 +115,7 @@ public class Stepper implements Serializable {
         else
         {
             try {
+
                 for(ContinuationMapping continuationMapping:continuation.getContinuationMappings()){
                     flowsMap.get(flow.getName()).isDDExist(continuationMapping);
                     flowsMap.get(continuation.getTargetFlow()).isInputExist(continuationMapping);
@@ -139,10 +142,13 @@ public class Stepper implements Serializable {
     public List<String> getContinuationList (String flowName){
         return continuationMap.get(flowName);
     }
-    public FlowExecution applyContinuation(FlowExecution pastFlow,String continuationFlow) {
+
+    public String applyContinuation(String pastFlowUUID,String continuationFlow) {
+        FlowExecution pastFlow=executionsMap.get(pastFlowUUID);
         FlowExecution flowExecution=new FlowExecution(flowsMap.get(continuationFlow));
         flowExecution.applyContinuation(pastFlow);
-        return flowExecution;
+        executionsMap.put(flowExecution.getUUID(),flowExecution);
+        return flowExecution.getUUID();
     }
         public List<String> getFlowNames() {
         return flowNames;
@@ -234,7 +240,7 @@ public class Stepper implements Serializable {
 
 
     public List<FlowDetails> getFlowsDetails() {
-        return flows.stream().map(FlowDetailsImpl::new).collect(Collectors.toList());
+        return new ArrayList<>(flowDetailsMap.values());
     }
 
     public FlowDetails buildShowFlow(String flowName) {
@@ -311,5 +317,9 @@ public class Stepper implements Serializable {
 
     public FlowExecutionStatsDefinition getFlowExecutionsStats(String flowName){
         return new FlowExecutionStatsImpl(flowsMap.get(flowName), executionsPerFlow.get(flowName));
+    }
+
+    public FlowDetails getFlowsDetailsByName(String flowToContinue) {
+        return flowDetailsMap.get(flowToContinue);
     }
 }

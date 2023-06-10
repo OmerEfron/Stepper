@@ -77,12 +77,13 @@ public class DataDefinitionDeclarationImpl implements DataDefinitionsDeclaration
             return false;
 
         DataDefinitionDeclarationImpl other = (DataDefinitionDeclarationImpl) obj;
+
         return (this.dataDefinition.getType().isAssignableFrom(other.dataDefinition.getType())
                 || other.dataDefinition.getType().isAssignableFrom(this.dataDefinition.getType())) && this.alias.equals(other.getAliasName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, dataDefinition);
+        return Objects.hash(alias, dataDefinition);
     }
 }

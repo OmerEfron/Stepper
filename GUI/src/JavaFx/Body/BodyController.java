@@ -114,4 +114,8 @@ public class BodyController {
 
     }
 
+    public String continuationFlow(String uuidFlow,String flowToContinue){
+        return mainController.getStepper().applyContinuation(uuidFlow,flowToContinue);
+    }
+
 }
