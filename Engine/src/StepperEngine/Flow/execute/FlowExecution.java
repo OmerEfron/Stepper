@@ -219,13 +219,17 @@ public class FlowExecution {
     }
 
     public void applyContinuation(FlowExecution pastFlow){
-        for(DataDefinitionsDeclaration dd:freeInputs){
-            if (pastFlow.allData.containsKey(dd.getAliasName())){
-                freeInputsValue.put(dd.getAliasName(),pastFlow.allData.get(dd.getAliasName()));
-            }
-        }
+        updateFreeInputsValue(pastFlow);
         for(String source:flowDefinition.getContinuationMapping().keySet()){
             freeInputsValue.put(flowDefinition.getContinuationMapping().get(source),pastFlow.allData.get(source));
+        }
+    }
+
+    public void updateFreeInputsValue(FlowExecution pastFlow) {
+        for(DataDefinitionsDeclaration dd:freeInputs){
+            if (pastFlow.allData.containsKey(dd.getAliasName())){
+                freeInputsValue.put(dd.getAliasName(), pastFlow.allData.get(dd.getAliasName()));
+            }
         }
     }
 }

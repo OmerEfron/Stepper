@@ -117,5 +117,9 @@ public class BodyController {
     public String continuationFlow(String uuidFlow,String flowToContinue){
         return mainController.getStepper().applyContinuation(uuidFlow,flowToContinue);
     }
+    public void rerunFlow(FlowExecutionDataImpl flow){
+        flowExecutionController.reRunFlow(getStepper().getFlowsDetailsByName(flow.getFlowName()),mainController.getStepper().reRunFlow(flow.getUniqueExecutionId()));
+        bodyComponent.getSelectionModel().select(flowExecutionTab);
+    }
 
 }

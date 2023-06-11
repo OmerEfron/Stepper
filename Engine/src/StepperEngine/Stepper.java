@@ -150,6 +150,14 @@ public class Stepper implements Serializable {
         executionsMap.put(flowExecution.getUUID(),flowExecution);
         return flowExecution.getUUID();
     }
+    public String reRunFlow(String pastFlowUUID){
+        FlowExecution pastExecution=executionsMap.get(pastFlowUUID);
+        FlowExecution flowExecution=new FlowExecution(flowsMap.get(pastExecution.getFlowDefinition().getName()));
+        flowExecution.updateFreeInputsValue(pastExecution);
+        executionsMap.put(flowExecution.getUUID(),flowExecution);
+        return flowExecution.getUUID();
+
+    }
         public List<String> getFlowNames() {
         return flowNames;
     }

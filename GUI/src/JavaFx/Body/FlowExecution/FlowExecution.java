@@ -112,20 +112,34 @@ public class FlowExecution {
     }
     @FXML
     void continueFlow(MouseEvent event) {
-        cleanUpScreen();
         String flowToContinue=continuationChoiceBox.getValue();
         currFlowExecutionUuid=bodyController.continuationFlow(flowExecutionData.getUniqueExecutionId(),flowToContinue);
         flowDetails=bodyController.getStepper().getFlowsDetailsByName(flowToContinue);
+        updateFlowExecutionData();
+    }
+
+    public void reRunFlow(FlowDetails flow,String UUID){
+        flowDetails=flow;
+        currFlowExecutionUuid=UUID;
+        updateFlowExecutionData();
+    }
+
+    private void updateFlowExecutionData() {
+        cleanUpScreen();
         setFreeInputsDisplay();
         Map<String, Object> allData = bodyController.getStepper().getFlowExecutionByUuid(currFlowExecutionUuid).getFreeInputsValue();
         for(Input input:flowDetails.getFreeInputs()){
             if(allData.containsKey(input.getDataName())) {
                 addNewValue(input, allData.get(input.getDataName()).toString());
-                addInputToTable(input,allData.get(input.getDataName()).toString());
+                addInputToTable(input, allData.get(input.getDataName()).toString());
             }
         }
         CentralFlowName.setText(flowDetails.getFlowName());
+        continuationChoiceBox.getItems().clear();
+        initContinuationButton();
+        setContinuation();
     }
+
     @FXML
     void executeFlow(MouseEvent event) {
         if(flowExecutionButtonImage.opacityProperty().get() == 1) {
@@ -165,15 +179,6 @@ public class FlowExecution {
         });
     }
 
-//    void setExecutionDetails(){
-//        executionProgressBar.setProgress(1);
-//        executionUuidLabel.textProperty().set(flowExecutionData.getUniqueExecutionId());
-//        executionTimestampLabel.textProperty().set(flowExecutionData.getExecutionTime() + " milliseconds");
-//        executionResultLabel.textProperty().set(flowExecutionData.getFlowExecutionFinalResult());
-//        setFormalOutputsAndStepsListView();
-//        bodyController.updateFlowHistory();
-//
-//    }
     void setExecutionDetails() {
         executionProgressBar.setProgress(1);
         CentralFlowName.setText( flowExecutionDataImp.getFlowName());

@@ -20,7 +20,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-
+import javafx.event.ActionEvent;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,9 +62,12 @@ public class FlowHistory {
                         "Choose Filter :"
                 )
         );
-
         resetTable.cursorProperty().set(Cursor.HAND);
+    }    @FXML
+    void rerunFlow(ActionEvent event) {
+        bodyController.rerunFlow(flowsExecutionTable.getSelectionModel().getSelectedItem());
     }
+
 
     @FXML
     void restTableFilter(MouseEvent event) {
