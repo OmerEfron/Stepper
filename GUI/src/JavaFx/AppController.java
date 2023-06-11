@@ -31,7 +31,7 @@ public class AppController {
 
         headerComponentController.setMainController(this);
         bodyComponentController.setMainController(this);
-        loadFile("ex2.xml");
+        loadFile("test.xml");
     }
     public boolean loadFile(String filePath) {
         try {

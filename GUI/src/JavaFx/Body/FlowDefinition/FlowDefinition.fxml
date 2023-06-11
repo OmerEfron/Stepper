@@ -19,7 +19,7 @@
    <content>
       <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="567.0" prefWidth="1131.0">
          <center>
-            <BorderPane minHeight="450.0" minWidth="400.0" stylesheets="@FlowDefinition.css">
+            <BorderPane minHeight="450.0" minWidth="400.0" >
                <bottom>
                   <VBox alignment="BOTTOM_RIGHT" minHeight="36.0" minWidth="591.0" BorderPane.alignment="CENTER">
                      <children>

@@ -14,6 +14,7 @@ import StepperEngine.Flow.execute.FlowStatus;
 import StepperEngine.Flow.execute.runner.FlowExecutor;
 import StepperEngine.DTO.FlowExecutionData.api.FlowExecutionData;
 import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
+import StepperEngine.Step.api.DataDefinitionsDeclaration;
 import StepperEngine.StepperReader.XMLReadClasses.Continuation;
 import StepperEngine.StepperReader.XMLReadClasses.ContinuationMapping;
 import StepperEngine.StepperReader.XMLReadClasses.Flow;
@@ -112,23 +113,25 @@ public class Stepper implements Serializable {
             throw new FlowBuildException("The flow " + continuation.getTargetFlow() + " doesn't exist", flow.getName());
         else
         {
-            try {
-                for(ContinuationMapping continuationMapping:continuation.getContinuationMappings()){
-                    flowsMap.get(flow.getName()).isDDExist(continuationMapping);
-                    flowsMap.get(continuation.getTargetFlow()).isInputExist(continuationMapping);
-                    if(!flow.getAllDataDefinitions().get(continuationMapping.getSourceData()).dataDefinition().getType()
-                            .equals(flowsMap.get(continuation.getTargetFlow()).getFreeInputByName(continuationMapping.getTargetData()).dataDefinition().getType())){
-                        throw new FlowBuildException(flow.getName(),"Can't create continuation mapping between: "
-                        + continuationMapping.getSourceData()+" and "+continuationMapping.getTargetData()+".\n" +
-                                "Are not the same type!");
-                    }
-                    else {
-                        flowsMap.get(continuation.getTargetFlow()).addContinuationMapping(continuationMapping.getSourceData(),continuationMapping.getTargetData());
+            checkContinuation(continuation, flow);
+        }
+    }
+
+    public void checkContinuation(Continuation continuation, FlowDefinition source) throws FlowBuildException {
+        FlowDefinition target = flowsMap.get(continuation.getTargetFlow());
+        for(ContinuationMapping continuationMapping: continuation.getContinuationMappings()){
+            List<DataDefinitionsDeclaration> targeDataList = target.getDataListByName(continuationMapping.getTargetData());
+            List<DataDefinitionsDeclaration> sourceDataList = source.getDataListByName(continuationMapping.getSourceData());
+            for(DataDefinitionsDeclaration sourceDD: sourceDataList){
+                for(DataDefinitionsDeclaration targetDD: targeDataList){
+                    if(sourceDD.dataDefinition().getType().isAssignableFrom(targetDD.dataDefinition().getType())){
+                        target.addContinuationMapping(sourceDD, targetDD);
                     }
                 }
-            }catch (FlowBuildException e) {
-                throw e;
             }
+            throw new FlowBuildException(target.getName(),"Can't create continuation mapping between: "
+                    + continuationMapping.getSourceData()+" and "+continuationMapping.getTargetData()+".\n" +
+                    "Are not the same type!");
         }
     }
 
@@ -219,10 +222,12 @@ public class Stepper implements Serializable {
 
     private void exectionTask(FlowExecutor flowExecutor, FlowExecution flowExecution) {
         flowExecutor.executeFlow(flowExecution);
-        executionsPerFlow.computeIfAbsent(
-                flowExecution.getFlowDefinition().getName(),
-                k -> new ArrayList<>()
-        ).add(flowExecution);
+        synchronized (this) {
+            executionsPerFlow.computeIfAbsent(
+                    flowExecution.getFlowDefinition().getName(),
+                    k -> new ArrayList<>()
+            ).add(flowExecution);
+        }
     }
 
     public FlowExecutionData ExecuteFlow2(FlowExecution flowExecution) {

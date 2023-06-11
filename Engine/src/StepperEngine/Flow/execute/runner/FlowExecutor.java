@@ -4,7 +4,9 @@ import StepperEngine.Flow.api.StepUsageDecleration;
 import StepperEngine.Flow.execute.FlowExecution;
 import StepperEngine.Flow.execute.FlowStatus;
 import StepperEngine.Flow.execute.context.StepExecutionContext;
+import StepperEngine.Flow.execute.context.StepExecutionContext2;
 import StepperEngine.Flow.execute.context.StepExecutionContextClass;
+import StepperEngine.Flow.execute.context.StepExecutionContextClassNewImpl;
 import StepperEngine.Step.api.DataDefinitionsDeclaration;
 import StepperEngine.Step.api.StepStatus;
 
@@ -23,7 +25,7 @@ public class FlowExecutor {
      * @param currFlow flow execution data wich we want to execute
      */
     public void executeFlow(FlowExecution currFlow) {
-        StepExecutionContext stepExecutionContext = new StepExecutionContextClass(currFlow);
+        StepExecutionContext2 stepExecutionContext = new StepExecutionContextClassNewImpl(currFlow);
         FlowStatus flowStatus = FlowStatus.SUCCESS;
         Instant start = updateTime(currFlow);
         for (StepUsageDecleration step : currFlow.getFlowDefinition().getSteps()) {
@@ -34,22 +36,22 @@ public class FlowExecutor {
         finishExecution(currFlow, stepExecutionContext, flowStatus, start);
     }
 
-    private static FlowStatus executeStep(FlowExecution currFlow, StepExecutionContext stepExecutionContext, FlowStatus flowStatus, StepUsageDecleration step) {
+    private static FlowStatus executeStep(FlowExecution currFlow, StepExecutionContext2 stepExecutionContext, FlowStatus flowStatus, StepUsageDecleration step) {
         startStep(stepExecutionContext, step);
         StepStatus stepStatus = invokeStep(stepExecutionContext, step);
-        stepExecutionContext.setEndStep(step.getStepFinalName());
+        stepExecutionContext.setEndStep(step);
         addDataToStep(stepExecutionContext, step);
         flowStatus = endStep(flowStatus, step, stepStatus);
         if (flowStatus == null) return null;
         return flowStatus;
     }
 
-    private static void addDataToStep(StepExecutionContext stepExecutionContext, StepUsageDecleration step) {
+    private static void addDataToStep(StepExecutionContext2 stepExecutionContext, StepUsageDecleration step) {
         for(DataDefinitionsDeclaration data: step.getStepDefinition().getInputs()){
-            stepExecutionContext.addDataToStepData(step.getStepFinalName(), data.getAliasName(),false);
+            stepExecutionContext.addDataToStepData(step, data,false);
         }
         for(DataDefinitionsDeclaration data: step.getStepDefinition().getOutputs()){
-            stepExecutionContext.addDataToStepData(step.getStepFinalName(), data.getAliasName(),true);
+            stepExecutionContext.addDataToStepData(step, data,true);
         }
 
     }
@@ -70,10 +72,10 @@ public class FlowExecutor {
         return flowStatus;
     }
 
-    private static void startStep(StepExecutionContext stepExecutionContext, StepUsageDecleration step) {
+    private static void startStep(StepExecutionContext2 stepExecutionContext, StepUsageDecleration step) {
         stepExecutionContext.updateCustomMap(step);
         stepExecutionContext.addStepData(step);
-        stepExecutionContext.setStartStep(step.getStepFinalName());
+        stepExecutionContext.setStartStep(step);
     }
 
     /***
@@ -83,7 +85,7 @@ public class FlowExecutor {
      * @param flowStatus
      * @param start
      */
-    private static void finishExecution(FlowExecution currFlow, StepExecutionContext stepExecutionContext, FlowStatus flowStatus, Instant start) {
+    private static void finishExecution(FlowExecution currFlow, StepExecutionContext2 stepExecutionContext, FlowStatus flowStatus, Instant start) {
         currFlow.setTotalTime(Duration.between(start, Instant.now()));
         currFlow.setFlowStatus(flowStatus);
         stepExecutionContext.addFormalOutput(currFlow);
@@ -92,8 +94,8 @@ public class FlowExecutor {
         currFlow.setAllData(stepExecutionContext.getAllData());
     }
 
-    private static StepStatus invokeStep(StepExecutionContext stepExecutionContext, StepUsageDecleration step) {
-        StepStatus stepStatus = step.getStepDefinition().invoke(stepExecutionContext, step.getNameToAlias(), step.getStepFinalName());
+    private static StepStatus invokeStep(StepExecutionContext2 stepExecutionContext, StepUsageDecleration step) {
+        StepStatus stepStatus = step.getStepDefinition().invoke(stepExecutionContext, step.getNameToAlias(), step);
         return stepStatus;
     }
 

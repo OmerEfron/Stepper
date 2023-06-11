@@ -1,5 +1,6 @@
 package StepperEngine.Flow.api;
 
+import StepperEngine.Step.api.DataDefinitionsDeclaration;
 import StepperEngine.Step.api.StepDefinition;
 import javafx.util.Pair;
 
@@ -21,7 +22,10 @@ public class StepUsageDeclerationImpl implements StepUsageDecleration, Serializa
 
     private final Map<String, List<Pair<String, String>>> outputsDataMap = new HashMap<>();
     // Map from name of data in step to the step that the data is in it with the name of the data in that step.
-    private final Map<String, Pair<String, String>> dataMap = new HashMap<>();
+    private final Map<String, Pair<String, String>> stringPairMap = new HashMap<>();
+
+    private final Map<DataDefinitionsDeclaration, Pair<StepUsageDecleration,DataDefinitionsDeclaration>> dataMap = new HashMap<>();
+    private final Map<String, DataDefinitionsDeclaration> nameToData = new HashMap<>();
 
     public StepUsageDeclerationImpl(StepDefinition stepDefinition, Integer index){
         skipIfFail = false;
@@ -37,14 +41,17 @@ public class StepUsageDeclerationImpl implements StepUsageDecleration, Serializa
         this.index = index;
     }
 
-    public Map<String, String> getNameToAlias() {
+    public Map<String, DataDefinitionsDeclaration> getNameToAlias() {
         createNameToAliasMap();
-        return nameToAlias;
+        return nameToData;
     }
 
     public void createNameToAliasMap(){
         stepDefinition.getOutputs().forEach(dataDefinitionsDeclaration -> nameToAlias.put(dataDefinitionsDeclaration.getName(),dataDefinitionsDeclaration.getAliasName()));
         stepDefinition.getInputs().forEach(dataDefinitionsDeclaration -> nameToAlias.put(dataDefinitionsDeclaration.getName(),dataDefinitionsDeclaration.getAliasName()));
+        stepDefinition.getOutputs().forEach(dataDefinitionsDeclaration -> nameToData.put(dataDefinitionsDeclaration.getName(),dataDefinitionsDeclaration));
+        stepDefinition.getInputs().forEach(dataDefinitionsDeclaration -> nameToData.put(dataDefinitionsDeclaration.getName(),dataDefinitionsDeclaration));
+
     }
 
 
@@ -89,19 +96,27 @@ public class StepUsageDeclerationImpl implements StepUsageDecleration, Serializa
     }
 
     @Override
-    public void addInputToMap(String dataName, String stepRefName, String dataNameInStepRef) {
-        dataMap.put(dataName, new Pair(stepRefName, dataNameInStepRef));
+    public void addInputToStringMap(String dataName, String stepRefName, String dataNameInStepRef) {
+        stringPairMap.put(dataName, new Pair(stepRefName, dataNameInStepRef));
+    }
+
+    public void addInputToMap(DataDefinitionsDeclaration dest, StepUsageDecleration stepSource, DataDefinitionsDeclaration source){
+        dataMap.put(dest, new Pair<>(stepSource, source));
+    }
+
+    public Map<DataDefinitionsDeclaration, Pair<StepUsageDecleration, DataDefinitionsDeclaration>> getDataMap(){
+        return dataMap;
     }
 
     @Override
-    public Map<String, Pair<String, String>> getDataMap() {
-        return dataMap;
+    public Map<String, Pair<String, String>> getStringPairMap() {
+        return stringPairMap;
     }
 
     @Override
     public Pair<String, String> getInputRef(String input) {
         Pair<String, String> res;
-        res = dataMap.get(input);
+        res = stringPairMap.get(input);
         return res;
     }
 

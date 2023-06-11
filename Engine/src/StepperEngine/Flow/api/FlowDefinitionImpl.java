@@ -2,6 +2,7 @@ package StepperEngine.Flow.api;
 
 import StepperEngine.DataDefinitions.Enumeration.ZipEnumerator;
 import StepperEngine.Flow.FlowBuildExceptions.FlowBuildException;
+import StepperEngine.Step.api.DataDefinitionDeclarationImpl;
 import StepperEngine.StepperReader.XMLReadClasses.*;
 import StepperEngine.Step.StepBuilder;
 import StepperEngine.Step.StepDefinitionRegistry;
@@ -9,6 +10,7 @@ import StepperEngine.Step.api.DataDefinitionsDeclaration;
 import StepperEngine.Step.api.DataNecessity;
 import javafx.util.Pair;
 
+import javax.xml.crypto.Data;
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Function;
@@ -27,15 +29,17 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
     private Map<String , Pair<DataDefinitionsDeclaration,String>> allOuputs=new HashMap<>();
     private Map<String , Pair<DataDefinitionsDeclaration,String>> formalOuputs =new HashMap<>();
     private Map<String,Pair<DataDefinitionsDeclaration,Object>> initialInputs=new HashMap<>();
+    private Map<DataDefinitionsDeclaration, Object> initialInputsByDD = new HashMap<>();
     private Map<String,DataDefinitionsDeclaration> allDataDefinitions=new HashMap<>();
     private Set<DataDefinitionsDeclaration> freeInputs;
     private Set<DataDefinitionsDeclaration> allInputs;
-    private Map<DataDefinitionsDeclaration, List<String>> dataToRelatedSteps =new HashMap<>();
+    private Map<DataDefinitionsDeclaration, List<String>> dataToRelatedSteps =new HashMap<>(); // map from data to step that related to
 
     private final List<StepUsageDecleration> steps = new ArrayList<>();
 
     private final List<String> problems = new ArrayList<>();
-    private Map<String,String> continuationMapping=new HashMap<>();
+    private Map<DataDefinitionsDeclaration,DataDefinitionsDeclaration> continuationMapping=new HashMap<>();
+    private List<DataDefinitionsDeclaration> allData = new ArrayList<>();
 
     public FlowDefinitionImpl(Flow flow) throws FlowBuildException {
         freeInputs = new HashSet<>();
@@ -74,6 +78,13 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
                     this.getName());
 
     }
+
+    public List<DataDefinitionsDeclaration> getDataListByName(String dataName){
+        return allData.stream()
+                .filter(data -> data.getAliasName().equals(dataName))
+                .collect(Collectors.toList());
+    }
+
 
     @Override
     public void isInputExist(ContinuationMapping continuationMapping) throws FlowBuildException {
@@ -166,6 +177,9 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
         if(!flow.getFlowOutput().isEmpty()) {
             updateAlloutputs();
         }
+
+        updateAllDataDefinition();
+
         if(!problems.isEmpty()){
             return problems;
         }
@@ -215,6 +229,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
                 value = initialInputValue.getInitialValue();
             }
             initialInputs.put(initialInputValue.getInputName(),new Pair<>(dd,value));
+            initialInputsByDD.put(dd, value);
             steps.forEach(step -> step.getStepDefinition().getInputs().stream()
                     .filter(dd::equals)
                     .forEach(dataDefinition -> dataDefinition.setInitial(true)));
@@ -278,7 +293,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
     private void setFreeInputs() {
         freeInputs = new HashSet<>(steps.stream()
                 .flatMap(step -> getStepFreeInputs(step).stream())
-                .collect(Collectors.toMap(DataDefinitionsDeclaration::getName,
+                .collect(Collectors.toMap(DataDefinitionsDeclaration::getAliasName,
                         Function.identity(), (a, b) -> a))
                 .values());
         for(DataDefinitionsDeclaration dd: freeInputs){
@@ -295,21 +310,11 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
                 .collect(Collectors.toSet());
     }
 
-//    private void setAllFreeInputs(){
-//        dataToRelatedSteps =steps.stream()
-//                .flatMap(step -> getStepFreeInputs(step).stream().map(dd -> new AbstractMap.SimpleEntry<>(dd, step.getStepFinalName())))
-//                .filter(entry -> entry.getKey().dataDefinition().isUserFriendly() && !entry.getKey().isInitial())
-//                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
-//    }
-
     private void setAllFreeInputs(){
-        for(DataDefinitionsDeclaration dd : freeInputs){
-            for(StepUsageDecleration step: steps){
-                if(getStepFreeInputs(step).contains(dd)){
-                    dataToRelatedSteps.computeIfAbsent(dd, key -> new ArrayList<>()).add(step.getStepFinalName());
-                }
-            }
-        }
+        dataToRelatedSteps =steps.stream()
+                .flatMap(step -> getStepFreeInputs(step).stream().map(dd -> new AbstractMap.SimpleEntry<>(dd, step.getStepFinalName())))
+                .filter(entry -> entry.getKey().dataDefinition().isUserFriendly() && !entry.getKey().isInitial())
+                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
     }
 
 
@@ -407,8 +412,11 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
         } else if (isInitialInput(customMapping.getTargetData())){
             problems.add("cant create custom map to " + customMapping.getTargetData() + ", it is initial input");
         } else{
-            target.addInputToMap(customMapping.getTargetData(), customMapping.getSourceStep(), customMapping.getSourceData());
+            target.addInputToStringMap(customMapping.getTargetData(), customMapping.getSourceStep(), customMapping.getSourceData());
             source.addOutputToMap(customMapping.getSourceData(),customMapping.getTargetStep(),customMapping.getTargetData());
+            DataDefinitionsDeclaration targetDataDeclaration = target.getStepDefinition().getData(customMapping.getTargetData());
+            DataDefinitionsDeclaration sourceDataDeclaration = source.getStepDefinition().getData(customMapping.getSourceData());
+            target.addInputToMap(targetDataDeclaration, source, sourceDataDeclaration);
         }
     }
 
@@ -473,7 +481,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
             StepUsageDecleration currStep = steps.get(i);
             stepFreeInputs.stream().filter(input-> currStep.getStepDefinition().getOutputs().contains(input))
                     .forEach((input) -> {
-                        step.addInputToMap(input.getName(), currStep.getStepFinalName(), input.getName());
+                        step.addInputToStringMap(input.getName(), currStep.getStepFinalName(), input.getName());
                         currStep.addOutputToMap(input.getAliasName(),step.getStepFinalName(),input.getName());});
 
         }
@@ -611,9 +619,13 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
     public Set<DataDefinitionsDeclaration> getFreeInputs() {
         return freeInputs;
     }
-    @Override
-    public Map<String, Pair<DataDefinitionsDeclaration, Object>> getInitialInputs() {
+    public Map<String, Pair<DataDefinitionsDeclaration, Object>> getInitialInputs2() {
         return initialInputs;
+    }
+
+    @Override
+    public Map<DataDefinitionsDeclaration, Object> getInitialInputs(){
+        return initialInputsByDD;
     }
 
     private void updateAllDataDefinition(){
@@ -621,10 +633,12 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
             for(DataDefinitionsDeclaration dd:step.getStepDefinition().getOutputs())
             {
                 allDataDefinitions.put(dd.getAliasName(),dd);
+                allData.add(dd);
             }
             for(DataDefinitionsDeclaration dd:step.getStepDefinition().getInputs())
             {
                 allDataDefinitions.put(dd.getAliasName(),dd);
+                allData.add(dd);
             }
         }
     }
@@ -649,12 +663,12 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
     }
 
     @Override
-    public void addContinuationMapping(String source, String target) {
+    public void addContinuationMapping(DataDefinitionsDeclaration source, DataDefinitionsDeclaration target) {
         continuationMapping.put(source,target);
     }
 
     @Override
-    public Map<String, String> getContinuationMapping() {
+    public Map<DataDefinitionsDeclaration, DataDefinitionsDeclaration> getContinuationMapping() {
         return continuationMapping;
     }
 }

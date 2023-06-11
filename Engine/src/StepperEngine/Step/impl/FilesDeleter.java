@@ -4,11 +4,9 @@ import StepperEngine.DataDefinitions.List.FilesListDataDef;
 import StepperEngine.DataDefinitions.List.StringListDataDef;
 import StepperEngine.DataDefinitions.Mapping.NumberMapping;
 import StepperEngine.DataDefinitions.impl.DataDefinitionRegistry;
-import StepperEngine.Flow.execute.context.StepExecutionContext;
-import StepperEngine.Step.api.DataDefinitionDeclarationImpl;
-import StepperEngine.Step.api.DataNecessity;
-import StepperEngine.Step.api.StepDefinitionAbstract;
-import StepperEngine.Step.api.StepStatus;
+import StepperEngine.Flow.api.StepUsageDecleration;
+import StepperEngine.Flow.execute.context.StepExecutionContext2;
+import StepperEngine.Step.api.*;
 
 import java.io.File;
 import java.time.Duration;
@@ -27,20 +25,20 @@ public class FilesDeleter extends StepDefinitionAbstract {
 
     /***
      * Given a list, files, goes through all of them and deletes them.
-     * @param context-interface that saves all system data
-     * @param nameToAlias-Map of the name of the information definition to the name of the information in the current flow
-     * @param stepName- The step name in the flow
+     * @param context -interface that saves all system data
+     * @param nameToData -Map of the name of the information definition to the name of the information in the current flow
+     * @param step - The step name in the flow
      */
     @Override
-    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName) {
+    public StepStatus invoke(StepExecutionContext2 context, Map<String, DataDefinitionsDeclaration> nameToData, StepUsageDecleration step) {
         Instant start = Instant.now();
-        FilesListDataDef filesListDataDef = context.getDataValue(nameToAlias.get("FILES_LIST"), FilesListDataDef.class);
+        FilesListDataDef filesListDataDef = context.getDataValue(nameToData.get("FILES_LIST"), FilesListDataDef.class);
         List<File> filesToDelete = filesListDataDef.getFilesList();
         List<String> failToDelete=new ArrayList<>();
         int numOfFiles=filesToDelete.size();
         int countHowMuchNotDeleted=0;
 
-        context.addLog(stepName,"About to start delete "+numOfFiles+" files");
+        context.addLog(step,"About to start delete "+numOfFiles+" files");
         for (File file : filesToDelete) {
             if (!file.delete()) {
                 countHowMuchNotDeleted++;
@@ -48,25 +46,25 @@ public class FilesDeleter extends StepDefinitionAbstract {
             }
         }
         NumberMapping stats=new NumberMapping(filesToDelete.size()-countHowMuchNotDeleted,countHowMuchNotDeleted);
-        context.storeValue(nameToAlias.get("DELETION_STATS"),stats);
-        context.storeValue(nameToAlias.get("DELETED_LIST"),new StringListDataDef(failToDelete));
+        context.storeValue(nameToData.get("DELETION_STATS"),stats);
+        context.storeValue(nameToData.get("DELETED_LIST"),new StringListDataDef(failToDelete));
 
         if(countHowMuchNotDeleted==numOfFiles&& !filesToDelete.isEmpty()){
-            context.setInvokeSummery(stepName,"No file was Deleted.");
-            context.setStepStatus(stepName,StepStatus.FAIL);
+            context.setInvokeSummery(step,"No file was Deleted.");
+            context.setStepStatus(step,StepStatus.FAIL);
         }
         else if(countHowMuchNotDeleted>0 ){
-            failToDelete.stream().forEach(s -> context.addLog(stepName,"Failed to delete file "+s));
-            context.setInvokeSummery(stepName,"There are "+countHowMuchNotDeleted+" files that didn't deleted");
-            context.setStepStatus(stepName,StepStatus.WARNING);
+            failToDelete.stream().forEach(s -> context.addLog(step,"Failed to delete file "+s));
+            context.setInvokeSummery(step,"There are "+countHowMuchNotDeleted+" files that didn't deleted");
+            context.setStepStatus(step,StepStatus.WARNING);
         }else {
             if (filesToDelete.isEmpty())
-                context.setInvokeSummery(stepName,"There are no files to delete.");
+                context.setInvokeSummery(step,"There are no files to delete.");
             else
-                context.setInvokeSummery(stepName,"All files deleted successfully.");
-            context.setStepStatus(stepName, StepStatus.SUCCESS);
+                context.setInvokeSummery(step,"All files deleted successfully.");
+            context.setStepStatus(step, StepStatus.SUCCESS);
         }
-        context.setTotalTime(stepName, Duration.between(start, Instant.now()));
-        return context.getStepStatus(stepName);
+        context.setTotalTime(step, Duration.between(start, Instant.now()));
+        return context.getStepStatus(step);
     }
 }

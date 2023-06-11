@@ -69,20 +69,41 @@ public class DataDefinitionDeclarationImpl implements DataDefinitionsDeclaration
      * Implementation of equals by name or the same class or a successor class
      * @param obj
      */
+//    @Override
+//    public boolean equals(Object obj){
+//        if(obj == this)
+//            return true;
+//        if(obj == null || obj.getClass() != this.getClass())
+//            return false;
+//
+//        DataDefinitionDeclarationImpl other = (DataDefinitionDeclarationImpl) obj;
+//        return (this.dataDefinition.getType().isAssignableFrom(other.dataDefinition.getType())
+//                || other.dataDefinition.getType().isAssignableFrom(this.dataDefinition.getType())) && this.alias.equals(other.getAliasName());
+//    }
     @Override
-    public boolean equals(Object obj){
-        if(obj == this)
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
-        if(obj == null || obj.getClass() != this.getClass())
+        }
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
-
+        }
         DataDefinitionDeclarationImpl other = (DataDefinitionDeclarationImpl) obj;
-        return (this.dataDefinition.getType().isAssignableFrom(other.dataDefinition.getType())
-                || other.dataDefinition.getType().isAssignableFrom(this.dataDefinition.getType())) && this.alias.equals(other.getAliasName());
+
+        // Condition 1: Check if the dataDefinition.getType() is assignable from the other instance or vice versa
+        Class<?> thisType = this.dataDefinition().getType();
+        Class<?> otherType = other.dataDefinition().getType();
+        boolean isAssignable = thisType.isAssignableFrom(otherType) || otherType.isAssignableFrom(thisType);
+
+        // Condition 2: Check if the alias of both instances is equal
+        boolean isAliasEqual = this.alias.equals(other.alias);
+
+        return isAssignable && isAliasEqual;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, dataDefinition);
+        return Objects.hash(alias, dataDefinition.getType().getCanonicalName());
     }
+
 }

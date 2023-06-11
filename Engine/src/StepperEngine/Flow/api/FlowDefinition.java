@@ -33,14 +33,16 @@ public interface FlowDefinition {
     Set<DataDefinitionsDeclaration> getFreeInputs();
     void isDDExist(ContinuationMapping continuationMapping) throws FlowBuildException;
     void isInputExist(ContinuationMapping continuationMapping)throws FlowBuildException;
-   Map<String, Pair<DataDefinitionsDeclaration, Object>> getInitialInputs();
+   Map<DataDefinitionsDeclaration, Object> getInitialInputs();
 
     DataDefinitionsDeclaration getFreeInputByName(String sourceData);
-    void addContinuationMapping(String source,String target);
-    Map<String,String> getContinuationMapping();
+    void addContinuationMapping(DataDefinitionsDeclaration source, DataDefinitionsDeclaration target);
+    Map<DataDefinitionsDeclaration, DataDefinitionsDeclaration> getContinuationMapping();
 
     DataDefinitionsDeclaration getDDByName(String data);
 
     List<String> getFreeInputStepsRelated(String dataName);
+
+    List<DataDefinitionsDeclaration> getDataListByName(String dataName);
 
 }

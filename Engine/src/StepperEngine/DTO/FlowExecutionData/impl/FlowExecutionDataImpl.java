@@ -101,7 +101,7 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
         flowExecution.getFreeInputs().stream()
                 .map(data -> {
                     String content;
-                    Object value = flowExecution.getInputValue(data.getAliasName(), data.dataDefinition().getType());
+                    Object value = flowExecution.getInputValue(data, data.dataDefinition().getType());
                     if (value == null){
                         content = "not provided";
                     }

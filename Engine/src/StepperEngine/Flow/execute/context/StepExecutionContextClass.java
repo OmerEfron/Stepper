@@ -12,8 +12,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /***
- * The purpose of the department is to link system definition to system execution.
- * The department saves all the input and output information and updates each step with the required information when it is invoked.
+ * The purpose of the class is to link system definition to system execution.
+ * The class saves all the input and output information and updates each step with the required information when it is invoked.
  */
 public class StepExecutionContextClass implements StepExecutionContext {
 
@@ -21,6 +21,7 @@ public class StepExecutionContextClass implements StepExecutionContext {
     Map<String, Object> dataValues = new HashMap<>();//map name of data definition to in\output to the value
     Map<String, String> customMapping = new HashMap<>();
     Map<String, StepExecuteData> stepExecuteDataMap=new HashMap<>();//
+
 
 
 
@@ -36,10 +37,10 @@ public class StepExecutionContextClass implements StepExecutionContext {
      * Gets the value of the free input and update it in storeValue map
      * @param freeInputsValue
      */
-    private void storeFreeInputs(Map<String,Object> freeInputsValue){
-        for(String dataName:freeInputsValue.keySet())
+    private void storeFreeInputs(Map<DataDefinitionsDeclaration,Object> freeInputsValue){
+        for(DataDefinitionsDeclaration data:freeInputsValue.keySet())
         {
-            storeValue(dataName,freeInputsValue.get(dataName));
+            storeValue(data.getAliasName(),freeInputsValue.get(data));
         }
     }
 
@@ -67,8 +68,8 @@ public class StepExecutionContextClass implements StepExecutionContext {
      */
     @Override
     public void updateCustomMap(StepUsageDecleration currStep) {
-        if (!currStep.getDataMap().isEmpty()) {
-            currStep.getDataMap().forEach((s, stringStringPair) -> customMapping.put(s, stringStringPair.getValue()));
+        if (!currStep.getStringPairMap().isEmpty()) {
+            currStep.getStringPairMap().forEach((s, stringStringPair) -> customMapping.put(s, stringStringPair.getValue()));
         }
     }
 
@@ -91,6 +92,8 @@ public class StepExecutionContextClass implements StepExecutionContext {
         }
         return null;
     }
+
+
 
 
     @Override

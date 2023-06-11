@@ -114,6 +114,7 @@ public class FlowStats {
     }
 
     public void initStats(List<String> flowNames){
+        clearStats();
         flowStatsTableView.getItems().clear();
         stepStatsTableView.getItems().clear();
         XYChart.Series<String, Number> flowSeries = new XYChart.Series<>();
@@ -154,6 +155,7 @@ public class FlowStats {
         }
         stepBarChart.setTitle(flowName);
         stepBarChart.getXAxis().setLabel("Step");
+        stepBarChart.getYAxis().setLabel("Average Execution time in millis");
         stepBarChart.getData().add(stepSeries);
     }
 
@@ -180,6 +182,19 @@ public class FlowStats {
                     data.setYValue(newFlowStats.getAvgTimeOfExecutions());
                 }
             }
+        }
+    }
+
+    public void clearStats(){
+        ObservableList<XYChart.Series<String, Number>> seriesList = barChart.getData();
+        ObservableList<XYChart.Series<String, Number>> stepSeriesList = stepBarChart.getData();
+        if(!seriesList.isEmpty()) {
+            XYChart.Series<String, Number> series = seriesList.get(0);
+            series.getData().clear();
+        }
+        if(!stepSeriesList.isEmpty()){
+            XYChart.Series<String, Number> series = seriesList.get(0);
+            series.getData().clear();
         }
     }
 

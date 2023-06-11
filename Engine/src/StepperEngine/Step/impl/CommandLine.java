@@ -1,11 +1,9 @@
 package StepperEngine.Step.impl;
 
 import StepperEngine.DataDefinitions.impl.DataDefinitionRegistry;
-import StepperEngine.Flow.execute.context.StepExecutionContext;
-import StepperEngine.Step.api.DataDefinitionDeclarationImpl;
-import StepperEngine.Step.api.DataNecessity;
-import StepperEngine.Step.api.StepDefinitionAbstract;
-import StepperEngine.Step.api.StepStatus;
+import StepperEngine.Flow.api.StepUsageDecleration;
+import StepperEngine.Flow.execute.context.StepExecutionContext2;
+import StepperEngine.Step.api.*;
 
 import java.io.*;
 import java.time.Duration;
@@ -22,11 +20,11 @@ public class CommandLine extends StepDefinitionAbstract {
     }
 
     @Override
-    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName) {
+    public StepStatus invoke(StepExecutionContext2 context, Map<String, DataDefinitionsDeclaration> nameToData, StepUsageDecleration step) {
         Instant start = Instant.now();
-        String command=context.getDataValue(nameToAlias.get("COMMAND"),String.class);
-        Optional<String> arg=Optional.ofNullable(context.getDataValue("ARGUMENTS",String.class));
-        context.addLog(stepName,"About to invoke "+command+" "+arg.orElse(""));
+        String command=context.getDataValue(nameToData.get("COMMAND"),String.class);
+        Optional<String> arg=Optional.ofNullable(context.getDataValue(nameToData.get("ARGUMENTS"),String.class));
+        context.addLog(step,"About to invoke "+command+" "+arg.orElse(""));
         try {
             StringBuilder output = new StringBuilder();
             ProcessBuilder processBuilder=new ProcessBuilder("cmd.exe", "/c",command);
@@ -41,14 +39,14 @@ public class CommandLine extends StepDefinitionAbstract {
             while ((line = reader.readLine()) != null) {
                 output.append(line).append("\n");
             }
-            context.storeValue(nameToAlias.get("RESULT"),output.toString() );
-            context.setInvokeSummery(stepName,"The command was executed successfully");
+            context.storeValue(nameToData.get("RESULT"),output.toString() );
+            context.setInvokeSummery(step,"The command was executed successfully");
         } catch (IOException e) {
-            context.setInvokeSummery(stepName,"The command failed");
+            context.setInvokeSummery(step,"The command failed");
         }
-        context.setStepStatus(stepName,StepStatus.SUCCESS);
+        context.setStepStatus(step,StepStatus.SUCCESS);
 
-        context.setTotalTime(stepName, Duration.between(start, Instant.now()));
-        return context.getStepStatus(stepName);
+        context.setTotalTime(step, Duration.between(start, Instant.now()));
+        return context.getStepStatus(step);
     }
 }

@@ -1,5 +1,6 @@
 package StepperEngine.Flow.api;
 
+import StepperEngine.Step.api.DataDefinitionsDeclaration;
 import StepperEngine.Step.api.StepDefinition;
 import javafx.util.Pair;
 
@@ -15,14 +16,16 @@ public interface StepUsageDecleration {
 
     Integer getIndex();
 
-    void addInputToMap(String dataName, String stepRefName, String dataNameInStepRef);
+    void addInputToStringMap(String dataName, String stepRefName, String dataNameInStepRef);
     void addOutputToMap(String dataName, String stepRefName, String dataNameInStepRef);
     Map<String, List<Pair<String, String>>> getOutputDataMap();
 
-    Map<String, Pair<String, String>> getDataMap();
+    Map<String, Pair<String, String>> getStringPairMap();
 
     Pair<String, String> getInputRef(String input);
-    Map<String, String> getNameToAlias();
+    Map<String, DataDefinitionsDeclaration> getNameToAlias();
     boolean isReadOnlyStep();
+    void addInputToMap(DataDefinitionsDeclaration dest, StepUsageDecleration stepSource, DataDefinitionsDeclaration source);
+    Map<DataDefinitionsDeclaration, Pair<StepUsageDecleration, DataDefinitionsDeclaration>> getDataMap();
 
 }

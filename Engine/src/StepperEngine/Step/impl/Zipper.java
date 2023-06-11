@@ -3,12 +3,9 @@ package StepperEngine.Step.impl;
 import StepperEngine.DataDefinitions.Enumeration.ZipEnumerator;
 
 import StepperEngine.DataDefinitions.impl.DataDefinitionRegistry;
-import StepperEngine.DataDefinitions.impl.StepperZipperEnumeration;
-import StepperEngine.Flow.execute.context.StepExecutionContext;
-import StepperEngine.Step.api.DataDefinitionDeclarationImpl;
-import StepperEngine.Step.api.DataNecessity;
-import StepperEngine.Step.api.StepDefinitionAbstract;
-import StepperEngine.Step.api.StepStatus;
+import StepperEngine.Flow.api.StepUsageDecleration;
+import StepperEngine.Flow.execute.context.StepExecutionContext2;
+import StepperEngine.Step.api.*;
 
 import java.io.*;
 import java.time.Duration;
@@ -28,25 +25,25 @@ public class Zipper extends StepDefinitionAbstract {
     }
 
     @Override
-    public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName) {
+    public StepStatus invoke(StepExecutionContext2 context, Map<String, DataDefinitionsDeclaration> nameToData, StepUsageDecleration step) {
         Instant start = Instant.now();
         String invokeSummery;
-        String source = context.getDataValue(nameToAlias.get("SOURCE"), String.class);
-        ZipEnumerator operation = context.getDataValue(nameToAlias.get("OPERATION"), ZipEnumerator.class);
-        context.addLog(stepName,"About to perform operation "+ operation+ "on source "+source);
+        String source = context.getDataValue(nameToData.get("SOURCE"), String.class);
+        ZipEnumerator operation = context.getDataValue(nameToData.get("OPERATION"), ZipEnumerator.class);
+        context.addLog(step,"About to perform operation "+ operation+ "on source "+source);
         if (operation.equals(ZipEnumerator.ZIP)) {
-            invokeSummery=invokeZip(context, source, nameToAlias, stepName);
+            invokeSummery=invokeZip(context, source, step);
         } else {
-            invokeSummery=invokeUnzip(context, source, nameToAlias, stepName);
+            invokeSummery=invokeUnzip(context, source, step);
         }
-        context.setInvokeSummery(stepName, invokeSummery);
-        context.addLog(stepName,"There problem to perform operation "+ operation+ "on source "+source+
+        context.setInvokeSummery(step, invokeSummery);
+        context.addLog(step,"There problem to perform operation "+ operation+ "on source "+source+
                 "\n"+invokeSummery);
 
-        context.setTotalTime(stepName, Duration.between(start, Instant.now()));
-        return context.getStepStatus(stepName);
+        context.setTotalTime(step, Duration.between(start, Instant.now()));
+        return context.getStepStatus(step);
     }
-    private String invokeZip(StepExecutionContext context, String source, Map<String, String> nameToAlias, String stepName)  {
+    private String invokeZip(StepExecutionContext2 context, String source, StepUsageDecleration step)  {
         try {
             File file = new File(source);
             String zipPath;
@@ -71,12 +68,12 @@ public class Zipper extends StepDefinitionAbstract {
             zos.close();
             fos.close();
 
-            context.setStepStatus(stepName,StepStatus.SUCCESS);
+            context.setStepStatus(step,StepStatus.SUCCESS);
         } catch (FileNotFoundException e) {
-            context.setStepStatus(stepName,StepStatus.FAIL);
+            context.setStepStatus(step,StepStatus.FAIL);
             return "There are no file/directory in: "+source;
         } catch (IOException e) {
-            context.setStepStatus(stepName,StepStatus.FAIL);
+            context.setStepStatus(step,StepStatus.FAIL);
             return "Some file in: "+source +" failed to zip";
         }
         return "The file/directory zipped successfully!";
@@ -108,7 +105,7 @@ public class Zipper extends StepDefinitionAbstract {
         }
     }
 
-    private String  invokeUnzip(StepExecutionContext context, String source, Map<String, String> nameToAlias, String stepName) {
+    private String  invokeUnzip(StepExecutionContext2 context, String source, StepUsageDecleration step) {
         String destinationFolderPath = source.replace(".zip", "");
         try {
             File destDir = new File(destinationFolderPath);
@@ -137,12 +134,12 @@ public class Zipper extends StepDefinitionAbstract {
 
             zis.close();
             fis.close();
-            context.setStepStatus(stepName,StepStatus.SUCCESS);
+            context.setStepStatus(step,StepStatus.SUCCESS);
         } catch (FileNotFoundException e) {
-            context.setStepStatus(stepName,StepStatus.FAIL);
+            context.setStepStatus(step,StepStatus.FAIL);
             return "There are no zip in: "+source;
         } catch (IOException e) {
-            context.setStepStatus(stepName,StepStatus.FAIL);
+            context.setStepStatus(step,StepStatus.FAIL);
             return "Some file in: "+source +" failed to unzip";
         }
         return "The directory unzipped successfully!";
