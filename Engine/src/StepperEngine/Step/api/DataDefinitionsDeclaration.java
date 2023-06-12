@@ -7,7 +7,7 @@ public interface DataDefinitionsDeclaration {
     boolean isInitial();
     String getName();
     String getAliasName();
-
+    String getFullQualifiedName();
     String userString();
 
     DataNecessity necessity();

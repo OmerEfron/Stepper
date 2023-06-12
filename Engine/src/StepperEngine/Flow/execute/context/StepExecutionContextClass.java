@@ -31,8 +31,15 @@ public class StepExecutionContextClass implements StepExecutionContext {
     private void getDataTypes(FlowExecution flowExecution) {
         updateDataTypes(flowExecution);
         storeFreeInputs(flowExecution.getFreeInputsValue());
-
+        storeInitialInputs(flowExecution.getInitialInputsValue());
     }
+
+    private void storeInitialInputs(Map<String, Object> initialInputsValue) {
+        for(String dataName:initialInputsValue.keySet()){
+            dataValues.put(dataName, initialInputsValue.get(dataName));
+        }
+    }
+
     /***
      * Gets the value of the free input and update it in storeValue map
      * @param freeInputsValue
@@ -48,10 +55,10 @@ public class StepExecutionContextClass implements StepExecutionContext {
         FlowDefinition flow= flowExecution.getFlowDefinition();
         for (StepUsageDecleration currStep : flow.getSteps()) {
             for (DataDefinitionsDeclaration dd : currStep.getStepDefinition().getInputs()) {
-                dataTypes.put(dd.getAliasName(), dd);
+                dataTypes.put(dd.getFullQualifiedName(), dd);
             }
             for (DataDefinitionsDeclaration dd : currStep.getStepDefinition().getOutputs()) {
-                dataTypes.put(dd.getAliasName(), dd);
+                dataTypes.put(dd.getFullQualifiedName(), dd);
             }
         }
     }
@@ -87,6 +94,8 @@ public class StepExecutionContextClass implements StepExecutionContext {
             if(aValue==null) {
                 String name=customMapping.get(dataName);
                 aValue= dataValues.get(name);
+                if(aValue!=null)
+                    storeValue(dataName,aValue);
             }
             return exceptedDataType.cast(aValue);
         }
@@ -106,7 +115,6 @@ public class StepExecutionContextClass implements StepExecutionContext {
             return true;
         }
         return false;
-
     }
 
     /***
@@ -164,8 +172,8 @@ public class StepExecutionContextClass implements StepExecutionContext {
         stepExecuteDataMap.get(stepName).setEndTime();
     }
     @Override
-    public void addDataToStepData(String stepName, String dataName,boolean isOutput){
-        stepExecuteDataMap.get(stepName).addStepData(dataName, dataValues.get(dataName),isOutput);
+    public void addDataToStepData(String stepName, String dataName,String fullQName,boolean isOutput){
+        stepExecuteDataMap.get(stepName).addStepData(dataName, dataValues.get(fullQName),isOutput);
     }
 
 

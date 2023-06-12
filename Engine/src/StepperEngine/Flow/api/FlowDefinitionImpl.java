@@ -47,8 +47,8 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
         }
         valid = true;
         determinateIfFlowIsReadOnly();
-        if(flow.getContinuations().size()==0)
-            hasContinuation=false ;
+        if (flow.getContinuations().size()==0)
+            hasContinuation= false;
    }
 
     public Map<DataDefinitionsDeclaration, List<String>> getDataToRelatedSteps() {
@@ -75,6 +75,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
                     this.getName());
 
     }
+
 
     @Override
     public void isInputExist(ContinuationMapping continuationMapping) throws FlowBuildException {
@@ -401,10 +402,12 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
         } else if (isInitialInput(customMapping.getTargetData())){
             problems.add("cant create custom map to " + customMapping.getTargetData() + ", it is initial input");
         } else{
-            target.addInputToMap(customMapping.getTargetData(), customMapping.getSourceStep(), customMapping.getSourceData());
-            source.addOutputToMap(customMapping.getSourceData(),customMapping.getTargetStep(),customMapping.getTargetData());
+            //target.addInputToMap(customMapping.getTargetData(), customMapping.getSourceStep(), customMapping.getSourceData());
+            target.addInputToMap(customMapping.getTargetData(), source, customMapping.getSourceData());
+            source.addOutputToMap(customMapping.getSourceData(),target.getStepFinalName(),customMapping.getTargetData());
         }
     }
+
 
     private boolean isInitialInput(String input) {
        return flow.getInitialInputValues().stream()
@@ -467,7 +470,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
             StepUsageDecleration currStep = steps.get(i);
             stepFreeInputs.stream().filter(input-> currStep.getStepDefinition().getOutputs().contains(input))
                     .forEach((input) -> {
-                        step.addInputToMap(input.getName(), currStep.getStepFinalName(), input.getName());
+                        step.addInputToMap(input.getName(), currStep, input.getName());
                         currStep.addOutputToMap(input.getAliasName(),step.getStepFinalName(),input.getName());});
 
         }
@@ -482,7 +485,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
      */
     private static Set<DataDefinitionsDeclaration> getStepFreeInputs(StepUsageDecleration step) {
         return step.getStepDefinition().getInputs().stream()
-                .filter(input -> step.getInputRef(input.getAliasName()) == null && !input.isInitial())
+                .filter(input -> step.getInputRef(input.getFullQualifiedName()) == null && !input.isInitial())
                 .collect(Collectors.toSet());
     }
 
@@ -644,7 +647,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
 
     @Override
     public void addContinuationMapping(String source, String target) {
-        continuationMapping.put(source,target);
+        continuationMapping.put(source,getDDByName(target).getFullQualifiedName());
     }
 
     @Override

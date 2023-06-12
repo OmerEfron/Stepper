@@ -40,6 +40,7 @@ public class Zipper extends StepDefinitionAbstract {
             invokeSummery=invokeUnzip(context, source, nameToAlias, stepName);
         }
         context.setInvokeSummery(stepName, invokeSummery);
+        context.storeValue(nameToAlias.get("RESULT"),invokeSummery);
         context.addLog(stepName,"There problem to perform operation "+ operation+ "on source "+source+
                 "\n"+invokeSummery);
 

@@ -15,6 +15,7 @@ public class DataDefinitionDeclarationImpl implements DataDefinitionsDeclaration
     DataNecessity dataNecessity;
     String alias;
     DataDefinition dataDefinition;
+    String fullQualifiedName;
     boolean isInitial=false;
 
     public DataDefinitionDeclarationImpl(String name, String userString, DataNecessity dataNecessity, DataDefinition dataDefinition){
@@ -23,6 +24,7 @@ public class DataDefinitionDeclarationImpl implements DataDefinitionsDeclaration
         this.dataNecessity=dataNecessity;
         this.dataDefinition=dataDefinition;
         this.alias=name;
+        this.fullQualifiedName=alias+"."+dataDefinition.getName();
     }
 
     @Override
@@ -35,8 +37,14 @@ public class DataDefinitionDeclarationImpl implements DataDefinitionsDeclaration
     }
 
     @Override
+    public String getFullQualifiedName() {
+        return fullQualifiedName;
+    }
+
+    @Override
     public void setAliasName(String name) {
         this.alias = name;
+        this.fullQualifiedName=alias+"."+dataDefinition.getName();
     }
 
     @Override

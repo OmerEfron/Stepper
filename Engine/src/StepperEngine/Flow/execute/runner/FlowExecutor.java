@@ -46,10 +46,10 @@ public class FlowExecutor {
 
     private static void addDataToStep(StepExecutionContext stepExecutionContext, StepUsageDecleration step) {
         for(DataDefinitionsDeclaration data: step.getStepDefinition().getInputs()){
-            stepExecutionContext.addDataToStepData(step.getStepFinalName(), data.getAliasName(),false);
+            stepExecutionContext.addDataToStepData(step.getStepFinalName(), data.getAliasName(), data.getFullQualifiedName(),false);
         }
         for(DataDefinitionsDeclaration data: step.getStepDefinition().getOutputs()){
-            stepExecutionContext.addDataToStepData(step.getStepFinalName(), data.getAliasName(),true);
+            stepExecutionContext.addDataToStepData(step.getStepFinalName(),data.getAliasName(), data.getFullQualifiedName(),true);
         }
 
     }

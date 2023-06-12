@@ -126,7 +126,7 @@ public class Stepper implements Serializable {
                                 "Are not the same type!");
                     }
                     else {
-                        flowsMap.get(continuation.getTargetFlow()).addContinuationMapping(continuationMapping.getSourceData(),continuationMapping.getTargetData());
+                        flowsMap.get(continuation.getTargetFlow()).addContinuationMapping(flow.getDDByName(continuationMapping.getSourceData()).getFullQualifiedName(),continuationMapping.getTargetData());
                     }
                 }
             }catch (FlowBuildException e) {

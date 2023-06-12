@@ -5,7 +5,7 @@ import StepperEngine.DataDefinitions.api.DataDefinitionAbstract;
 
 public class StepperRelationString extends DataDefinitionAbstract {
     public StepperRelationString(){
-        super("Relation Of String Rows", false, RelationOfStringRows.class);
+        super("Relation", false, RelationOfStringRows.class);
     }
 
 

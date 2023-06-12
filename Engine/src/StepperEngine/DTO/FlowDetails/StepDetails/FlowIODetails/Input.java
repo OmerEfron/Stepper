@@ -16,8 +16,8 @@ public class Input extends FlowIODetailsImpl{
     private final String userString;
 
 
-    public Input(String dataName, String typeName, String necessity, List<String> relatedSteps, String userString) {
-        super(dataName, typeName);
+    public Input(String dataName, String typeName, String necessity, List<String> relatedSteps, String userString, String fullQualifideName) {
+        super(dataName, typeName,fullQualifideName);
         this.necessity = necessity;
         this.relatedSteps = relatedSteps;
         this.userString = userString;
@@ -25,15 +25,28 @@ public class Input extends FlowIODetailsImpl{
         connectedToStep="";
         formOutput="";
     }
-    public Input(String dataName, String typeName, String necessity, Pair<String,String> fromStepsData, String userString) {
-        super(dataName, typeName);
+    public Input(String dataName, String typeName, String necessity, Pair<String,String> fromStepsData, String userString, String fullQualifideName) {
+        super(dataName, typeName,fullQualifideName);
         this.necessity = necessity;
         this.userString = userString;
         this.relatedSteps = new ArrayList<>();
         relatedStepsString=relatedSteps.stream().collect(Collectors.joining(" , "));
         connectedToStep=fromStepsData.getKey();
-        formOutput=fromStepsData.getValue();
+        formOutput=getBeforeDot(fromStepsData);
     }
+
+    private static String getBeforeDot(Pair<String, String> fromStepsData) {
+        int dotIndex = fromStepsData.getValue().indexOf('.');
+        String beforeDot;
+        if (dotIndex != -1) {
+            beforeDot = fromStepsData.getValue().substring(0, dotIndex);
+        } else {
+            beforeDot = fromStepsData.getValue();
+        }
+        return beforeDot;
+    }
+
+
 
     public String getUserString() {
         return userString;

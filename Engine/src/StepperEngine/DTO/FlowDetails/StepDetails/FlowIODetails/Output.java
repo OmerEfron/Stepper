@@ -6,14 +6,14 @@ public class Output extends FlowIODetailsImpl{
     private final String connectedToStep;
     private final String toInput;
 
-    public Output(String dataName, String typeName, String stepRelated) {
-        super(dataName, typeName);
+    public Output(String dataName, String typeName, String stepRelated,String fullQualifideName) {
+        super(dataName, typeName,fullQualifideName);
         this.stepRelated = stepRelated;
         this.connectedToStep="";
         this.toInput="";
     }
-    public Output(String dataName, String typeName,String connectedToStep,String toInput ) {
-        super(dataName, typeName);
+    public Output(String dataName, String typeName,String connectedToStep,String toInput ,String fullQualifideName) {
+        super(dataName, typeName,fullQualifideName);
         this.stepRelated = "";
         this.connectedToStep=connectedToStep;
         this.toInput=toInput;

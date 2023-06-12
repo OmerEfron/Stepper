@@ -39,8 +39,8 @@ public class FilesRenamer extends StepDefinitionAbstract {
         FilesListDataDef filesListDataDef = context.getDataValue(nameToAlias.get("FILES_TO_RENAME"), FilesListDataDef.class);
         List<File> filesToRename = filesListDataDef.getFilesList();
         List<String> filesFailed=new ArrayList<>();
-        Optional<String> prefix=Optional.ofNullable(context.getDataValue("PREFIX", String.class));
-        Optional<String> suffix=Optional.ofNullable(context.getDataValue("SUFFIX", String.class));
+        Optional<String> prefix=Optional.ofNullable(context.getDataValue(nameToAlias.get("PREFIX"), String.class));
+        Optional<String> suffix=Optional.ofNullable(context.getDataValue(nameToAlias.get("SUFFIX"), String.class));
         RelationOfStringRows result = createRelationOfStringRows();
         Integer num=0;
 

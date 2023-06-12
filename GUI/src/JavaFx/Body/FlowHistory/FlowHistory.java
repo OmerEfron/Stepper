@@ -187,7 +187,7 @@ public class FlowHistory {
         else{
             initContinuationButton();
             if(continuationChoiceBox.getItems()!= null)
-                continuationChoiceBox.setItems(null);
+                continuationChoiceBox.getItems().clear();
         }
     }
 
@@ -227,16 +227,16 @@ public class FlowHistory {
 
     @FXML
     void setContinuationText(MouseEvent event) {
-        Tooltip tooltip = new Tooltip("Choose flow to continue");
-        tooltip.setAutoHide(true);
-        tooltip.show(continuationChoiceBox, event.getScreenX(), event.getScreenY());
-        continuationChoiceBox.setTooltip(tooltip);
-        PauseTransition pause = new PauseTransition(Duration.seconds(1));
-        pause.setOnFinished(eventa -> {
-            tooltip.hide();
-            continuationChoiceBox.setTooltip(null);
-        });
-        pause.play();
+//        Tooltip tooltip = new Tooltip("Choose flow to continue");
+//        tooltip.setAutoHide(true);
+//        tooltip.show(continuationChoiceBox, event.getScreenX(), event.getScreenY());
+//        continuationChoiceBox.setTooltip(tooltip);
+//        PauseTransition pause = new PauseTransition(Duration.seconds(1));
+//        pause.setOnFinished(eventa -> {
+//            tooltip.hide();
+//            continuationChoiceBox.setTooltip(null);
+//        });
+//        pause.play();
     }
 
 

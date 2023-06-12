@@ -132,9 +132,9 @@ public class FlowExecution {
         setFreeInputsDisplay();
         Map<String, Object> allData = bodyController.getStepper().getFlowExecutionByUuid(currFlowExecutionUuid).getFreeInputsValue();
         for(Input input:flowDetails.getFreeInputs()){
-            if(allData.containsKey(input.getDataName())) {
-                addNewValue(input, allData.get(input.getDataName()).toString());
-                addInputToTable(input, allData.get(input.getDataName()).toString());
+            if(allData.containsKey(input.getFullQualifideName())) {
+                addNewValue(input, allData.get(input.getFullQualifideName()).toString());
+                addInputToTable(input, allData.get(input.getFullQualifideName()).toString());
             }
         }
         CentralFlowName.setText(flowDetails.getFlowName());

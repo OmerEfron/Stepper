@@ -38,5 +38,5 @@ public interface StepExecutionContext {
 
     List<StepExecuteData> getStepsData();
 
-    public void addDataToStepData(String stepName, String dataName,boolean isOutput);
+    public void addDataToStepData(String stepName, String dataName,String fullQName,boolean isOutput);
 }

@@ -23,14 +23,13 @@ public class FlowExecution {
     private FlowStatus flowStatus;
     private String formattedStartTime;
     private boolean hasExecuted = false;
+    private String uuidAsString;
     private final Map<String, Object> freeInputsValue = new HashMap<>();
     private final Map<String, Object> initialInputsValue = new HashMap<>();
-
-    private String uuidAsString;
     private final Map<String, Object> formalOutputs = new HashMap<>();
+    private Map<String,Object> allData=new HashMap<>();
     private List<StepExecuteData> stepsData = new LinkedList<>();
     private final Map<String, StepExecuteData> stepsDataMap = new HashMap<>();
-    private Map<String,Object> allData=new HashMap<>();
     private final Set<DataDefinitionsDeclaration> freeInputs;
     private final Set<DataDefinitionsDeclaration> outputs;
 
@@ -55,9 +54,12 @@ public class FlowExecution {
     private void addInitialInputs(FlowDefinition flowDefinition) {
         Map<String, Pair<DataDefinitionsDeclaration, Object>> initialInputs = flowDefinition.getInitialInputs();
         for(String initialInput:initialInputs.keySet()){
-            initialInputsValue.put(initialInput,initialInputs.get(initialInput).getValue());
+            initialInputsValue.put(initialInputs.get(initialInput).getKey().getFullQualifiedName(),initialInputs.get(initialInput).getValue());
         }
+    }
 
+    public Map<String, Object> getInitialInputsValue() {
+        return initialInputsValue;
     }
 
     public Map<String, Object> getAllData() {
@@ -71,9 +73,6 @@ public class FlowExecution {
 
     public void setAllData(Map<String, Object> allData) {
         this.allData = allData;
-//        for(StepExecuteData step:stepsData){
-//            step.setStepData(allData);
-//        }
     }
 
     public void setStepsData(List<StepExecuteData> stepsData) {
@@ -148,13 +147,13 @@ public class FlowExecution {
         Optional<DataDefinitionsDeclaration> optionalData = flowDefinition.getFreeInputs().stream().filter(input -> input.getAliasName().equals(dataName)).findFirst();
         if(optionalData.isPresent()){
             if(optionalData.get().dataDefinition().getType().isAssignableFrom(value.getClass())){
-                return addValueToFreeInputs(dataName, value);
+                return addValueToFreeInputs(optionalData.get().getFullQualifiedName(), value);
             }
             else if(optionalData.get().dataDefinition().getName().equals("Enumerator")){
                 if(EnumSet.allOf(ZipEnumerator.class).stream()
                         .map(ZipEnumerator::getStringValue)
                         .anyMatch(zipType-> zipType.equals(value))){
-                    return addValueToFreeInputs(dataName, ZipEnumerator.fromString(value.toString()));
+                    return addValueToFreeInputs(optionalData.get().getFullQualifiedName(), ZipEnumerator.fromString(value.toString()));
                 }
             }
         }
@@ -165,7 +164,7 @@ public class FlowExecution {
         freeInputsValue.put(dataName, value);
         canBeExecuted = freeInputs.stream()
                 .filter(data -> data.necessity().equals(DataNecessity.MANDATORY))
-                .allMatch(data -> freeInputsValue.containsKey(data.getAliasName()));
+                .allMatch(data -> freeInputsValue.containsKey(data.getFullQualifiedName()));
         return true;
     }
 
@@ -186,10 +185,6 @@ public class FlowExecution {
         return outputs;
     }
 
-//
-//    public <T> T getOneOutput(String dataName, Class<T> exceptedDataType) {
-//        return formalOutputs.containsKey(dataName) ? exceptedDataType.cast(formalOutputs.get(dataName)) : null;
-//    }
     //Changed form up to down because we need all outputs
     public <T> T getOneOutput(String dataName, Class<T> exceptedDataType) {
         return allData.containsKey(dataName) ? exceptedDataType.cast(allData.get(dataName)) : null;
@@ -237,8 +232,8 @@ public class FlowExecution {
 
     public void updateFreeInputsValue(FlowExecution pastFlow) {
         for(DataDefinitionsDeclaration dd:freeInputs){
-            if (pastFlow.allData.containsKey(dd.getAliasName())){
-                freeInputsValue.put(dd.getAliasName(), pastFlow.allData.get(dd.getAliasName()));
+            if (pastFlow.allData.containsKey(dd.getFullQualifiedName())){
+                freeInputsValue.put(dd.getFullQualifiedName(), pastFlow.allData.get(dd.getFullQualifiedName()));
             }
         }
     }

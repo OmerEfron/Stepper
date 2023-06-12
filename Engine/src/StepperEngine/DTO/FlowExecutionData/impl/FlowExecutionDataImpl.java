@@ -104,7 +104,7 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
         flowExecution.getFreeInputs().stream()
                 .map(data -> {
                     String content;
-                    Object value = flowExecution.getInputValue(data.getAliasName(), data.dataDefinition().getType());
+                    Object value = flowExecution.getInputValue(data.getFullQualifiedName(), data.dataDefinition().getType());
                     if (value == null){
                         content = "not provided";
                     }
@@ -117,7 +117,7 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
                             data.userString(),
                             data.dataDefinition().getType().getSimpleName(),
                             content,
-                            String.valueOf(data.necessity()),value);
+                            String.valueOf(data.necessity()),value, data.getFullQualifiedName());
                 })
                 .forEach(input -> {
                     freeInputs.add(input);
@@ -134,7 +134,7 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
         flowExecution.getOutputs().stream()
                 .map(data -> {
                     String content;
-                    Object value = flowExecution.getOneOutput(data.getAliasName(), data.dataDefinition().getType());
+                    Object value = flowExecution.getOneOutput(data.getFullQualifiedName(), data.dataDefinition().getType());
                     if (value == null){
                         content = "not provided";
                     }
@@ -147,7 +147,7 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
                             data.userString(),
                             data.dataDefinition().getType().getSimpleName(),
                             content, String.valueOf(data.necessity()),
-                            value);
+                            value, data.getFullQualifiedName());
                 })
                 .forEach(output -> {
                     outputs.add(output);

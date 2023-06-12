@@ -33,10 +33,10 @@ public class StepDetailsImpl implements StepDetails{
         Pair<String,String> stepRelatedData;
         for(DataDefinitionsDeclaration output : step.getStepDefinition().getOutputs()){
             if (step.getOutputDataMap().get(output.getAliasName())==null){
-                outputs.add(new Output(output.getAliasName(), output.dataDefinition().getName(), "not connected", "not connected"));
+                outputs.add(new Output(output.getAliasName(), output.dataDefinition().getName(), "not connected", "not connected",output.getFullQualifiedName()));
             }else {
                 for (Pair<String, String> pair : step.getOutputDataMap().get(output.getAliasName())) {
-                    outputs.add(new Output(output.getAliasName(), output.dataDefinition().getName(), pair.getKey(), pair.getValue()));
+                    outputs.add(new Output(output.getAliasName(), output.dataDefinition().getName(), pair.getKey(), pair.getValue(),output.getFullQualifiedName()));
                 }
             }
 
@@ -45,12 +45,12 @@ public class StepDetailsImpl implements StepDetails{
     private void createInputsList(StepUsageDecleration step) {
         Pair<String,String> stepRelatedData;
         for(DataDefinitionsDeclaration input : step.getStepDefinition().getInputs()){
-            stepRelatedData= step.getDataMap().containsKey(input.getName()) ?
-                    step.getDataMap().get(input.getName()) : new Pair<>("Free Input","Free Input");
+            stepRelatedData= step.getDataMap().containsKey(input.getFullQualifiedName()) ?
+                    step.getDataMap().get(input.getFullQualifiedName()) : new Pair<>("Free Input","Free Input");
             if(input.isInitial())
                 stepRelatedData=new Pair<>("Initial input","Initial input");
             inputs.add(new Input(input.getAliasName(),input.dataDefinition().getName(), String.valueOf(input.necessity()),
-                    stepRelatedData, input.userString()));
+                    stepRelatedData, input.userString(), input.getFullQualifiedName()));
         }
     }
 

@@ -15,7 +15,8 @@ public interface StepUsageDecleration {
 
     Integer getIndex();
 
-    void addInputToMap(String dataName, String stepRefName, String dataNameInStepRef);
+    //void addInputToMap(String dataName, String stepRefName, String dataNameInStepRef);
+    void addInputToMap(String dataName, StepUsageDecleration stepRefName, String dataNameInStepRef);
     void addOutputToMap(String dataName, String stepRefName, String dataNameInStepRef);
     Map<String, List<Pair<String, String>>> getOutputDataMap();
 
@@ -24,5 +25,6 @@ public interface StepUsageDecleration {
     Pair<String, String> getInputRef(String input);
     Map<String, String> getNameToAlias();
     boolean isReadOnlyStep();
+    String getQName(String dataName);
 
 }

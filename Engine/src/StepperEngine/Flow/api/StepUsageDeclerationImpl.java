@@ -1,5 +1,6 @@
 package StepperEngine.Flow.api;
 
+import StepperEngine.Step.api.DataDefinitionsDeclaration;
 import StepperEngine.Step.api.StepDefinition;
 import javafx.util.Pair;
 
@@ -43,8 +44,8 @@ public class StepUsageDeclerationImpl implements StepUsageDecleration, Serializa
     }
 
     public void createNameToAliasMap(){
-        stepDefinition.getOutputs().forEach(dataDefinitionsDeclaration -> nameToAlias.put(dataDefinitionsDeclaration.getName(),dataDefinitionsDeclaration.getAliasName()));
-        stepDefinition.getInputs().forEach(dataDefinitionsDeclaration -> nameToAlias.put(dataDefinitionsDeclaration.getName(),dataDefinitionsDeclaration.getAliasName()));
+        stepDefinition.getOutputs().forEach(dataDefinitionsDeclaration -> nameToAlias.put(dataDefinitionsDeclaration.getName(),dataDefinitionsDeclaration.getFullQualifiedName()));
+        stepDefinition.getInputs().forEach(dataDefinitionsDeclaration -> nameToAlias.put(dataDefinitionsDeclaration.getName(),dataDefinitionsDeclaration.getFullQualifiedName()));
     }
 
 
@@ -89,10 +90,21 @@ public class StepUsageDeclerationImpl implements StepUsageDecleration, Serializa
     }
 
     @Override
-    public void addInputToMap(String dataName, String stepRefName, String dataNameInStepRef) {
-        dataMap.put(dataName, new Pair(stepRefName, dataNameInStepRef));
+    public void addInputToMap(String dataName, StepUsageDecleration stepRefName, String dataNameInStepRef) {
+        dataMap.put(getQName(dataName), new Pair(stepRefName.getStepFinalName(), stepRefName.getQName(dataNameInStepRef)));
     }
-
+    @Override
+    public String getQName(String dataName){
+        for(DataDefinitionsDeclaration ddd:stepDefinition.getInputs()){
+            if(ddd.getAliasName().equals(dataName))
+                return ddd.getFullQualifiedName();
+        }
+        for(DataDefinitionsDeclaration ddd:stepDefinition.getOutputs()){
+            if(ddd.getAliasName().equals(dataName))
+                return ddd.getFullQualifiedName();
+        }
+        return dataName;
+    }
     @Override
     public Map<String, Pair<String, String>> getDataMap() {
         return dataMap;

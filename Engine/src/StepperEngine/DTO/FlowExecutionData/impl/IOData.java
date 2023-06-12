@@ -14,10 +14,11 @@ public class IOData implements Serializable {
     private final String necessity;
     private final String userString;
     private final Object value;
+    private final String FullQualifiedName;
 
 
 
-    public IOData(boolean isOutput, String name, String userString, String type, String content, String necessity, Object value) {
+    public IOData(boolean isOutput, String name, String userString, String type, String content, String necessity, Object value, String fullQualifiedName) {
         this.isOutput = isOutput;
         this.name = name;
         this.userString = userString;
@@ -25,6 +26,11 @@ public class IOData implements Serializable {
         this.content = content;
         this.necessity = necessity;
         this.value=value;
+        FullQualifiedName = fullQualifiedName;
+    }
+
+    public String getFullQualifiedName() {
+        return FullQualifiedName;
     }
 
     public <T> T getDataValue (Class<T> exceptedDataType) {

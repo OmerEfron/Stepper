@@ -147,7 +147,7 @@ public class StepExecuteData implements Serializable {
         for(DataDefinitionsDeclaration data:dataDefinitionsDeclarationList){
             if(data.getAliasName().equals(dataName)){
                 ioDataSet.add(new IOData(isOutput, dataName,data.userString(),
-                        data.dataDefinition().getType().getSimpleName(), content,data.necessity().toString(), value));
+                        data.dataDefinition().getType().getSimpleName(), content,data.necessity().toString(), value, data.getFullQualifiedName()));
                 return true;
             }
         }
