@@ -31,6 +31,7 @@ public class StepExecutionContextClass implements StepExecutionContext {
     private void getDataTypes(FlowExecution flowExecution) {
         updateDataTypes(flowExecution);
         storeFreeInputs(flowExecution.getFreeInputsValue());
+
     }
     /***
      * Gets the value of the free input and update it in storeValue map

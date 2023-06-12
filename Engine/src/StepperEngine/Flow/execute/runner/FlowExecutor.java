@@ -61,7 +61,6 @@ public class FlowExecutor {
             }
             else {
                 flowStatus = FlowStatus.FAIL;
-                return null;
             }
         }
         else if (stepStatus == StepStatus.WARNING) {

@@ -47,7 +47,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
         }
         valid = true;
         determinateIfFlowIsReadOnly();
-        if(flow.getContinuations()==null)
+        if(flow.getContinuations().size()==0)
             hasContinuation=false ;
    }
 
@@ -482,7 +482,7 @@ public class FlowDefinitionImpl implements FlowDefinition, Serializable {
      */
     private static Set<DataDefinitionsDeclaration> getStepFreeInputs(StepUsageDecleration step) {
         return step.getStepDefinition().getInputs().stream()
-                .filter(input -> step.getInputRef(input.getAliasName()) == null)
+                .filter(input -> step.getInputRef(input.getAliasName()) == null && !input.isInitial())
                 .collect(Collectors.toSet());
     }
 

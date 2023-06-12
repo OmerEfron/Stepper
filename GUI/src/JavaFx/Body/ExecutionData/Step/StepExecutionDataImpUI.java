@@ -67,6 +67,7 @@ public class StepExecutionDataImpUI {
         tableView.getColumns().addAll(logsTime,logsContext);
         tableView.setItems(FXCollections.observableList(logsPresenters));
         logsContext.setPrefWidth(logsPresenters.stream().mapToInt(log -> log.getContext().length()).max().orElse(0)*7.5);
+        logsContext.setMinWidth(70);
         hBox.getChildren().addAll(new Label("Logs :"),tableView);
         tableView.setMinHeight(100);
         tableView.setMaxHeight(150);

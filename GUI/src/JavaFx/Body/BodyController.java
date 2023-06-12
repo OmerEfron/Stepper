@@ -118,8 +118,12 @@ public class BodyController {
         return mainController.getStepper().applyContinuation(uuidFlow,flowToContinue);
     }
     public void rerunFlow(FlowExecutionDataImpl flow){
-        flowExecutionController.reRunFlow(getStepper().getFlowsDetailsByName(flow.getFlowName()),mainController.getStepper().reRunFlow(flow.getUniqueExecutionId()));
         bodyComponent.getSelectionModel().select(flowExecutionTab);
+        flowExecutionController.reRunFlow(getStepper().getFlowsDetailsByName(flow.getFlowName()),mainController.getStepper().reRunFlow(flow.getUniqueExecutionId()));
+    }
+    public void applyContinuationFromHistoryTab(String pastFlowUUID,String flowToContinue){
+        bodyComponent.getSelectionModel().select(flowExecutionTab);
+        flowExecutionController.applyContinuation(pastFlowUUID,flowToContinue);
     }
 
 }

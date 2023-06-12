@@ -29,6 +29,7 @@ public class SpendSomeTimeStep extends StepDefinitionAbstract {
         if(timeToSleep == null || timeToSleep <= 0){
             context.setInvokeSummery(stepName,"Cannot sleep if the time is less then 1 !!!");
             context.setStepStatus(stepName,StepStatus.FAIL);
+            context.setTotalTime(stepName,Duration.between(start, Instant.now()));
             return StepStatus.FAIL;
         }
         context.addLog(stepName,"About to sleep for "+timeToSleep.toString()+" seconds…");
@@ -38,6 +39,7 @@ public class SpendSomeTimeStep extends StepDefinitionAbstract {
         } catch (InterruptedException e) {
             context.setInvokeSummery(stepName,e.getMessage());
             context.setStepStatus(stepName,StepStatus.FAIL);
+            context.setTotalTime(stepName,Duration.between(start, Instant.now()));
             return StepStatus.FAIL;
         }
         context.setInvokeSummery(stepName,"The step "+stepName+", performed a sleep for "+timeToSleep*1000+

@@ -103,7 +103,6 @@ public class FlowExecution {
         initButtons();
         freeInputNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         freeInputValueCol.setCellValueFactory(new PropertyValueFactory<>("value"));
-        //freeInputApiNameCol.setCellValueFactory((new PropertyValueFactory<>("apiName")));
         addFreeInputsFirstRow();
         continuationChoiceBox.setOnAction(this::startContinuation);
     }
@@ -113,7 +112,11 @@ public class FlowExecution {
     @FXML
     void continueFlow(MouseEvent event) {
         String flowToContinue=continuationChoiceBox.getValue();
-        currFlowExecutionUuid=bodyController.continuationFlow(flowExecutionData.getUniqueExecutionId(),flowToContinue);
+        applyContinuation(flowExecutionData.getUniqueExecutionId(),flowToContinue);
+    }
+
+    public void applyContinuation(String UUID,String flowToContinue) {
+        currFlowExecutionUuid=bodyController.continuationFlow(UUID, flowToContinue);
         flowDetails=bodyController.getStepper().getFlowsDetailsByName(flowToContinue);
         updateFlowExecutionData();
     }

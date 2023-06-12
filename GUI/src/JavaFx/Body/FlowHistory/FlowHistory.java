@@ -5,6 +5,7 @@ import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
 
 import StepperEngine.Flow.execute.StepData.StepExecuteData;
 import StepperEngine.Step.api.StepStatus;
+import javafx.animation.PauseTransition;
 import javafx.animation.RotateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -16,8 +17,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.event.ActionEvent;
@@ -38,8 +41,9 @@ public class FlowHistory {
     @FXML private VBox MainExecutionDataVbox;
     @FXML private TreeView<String> StepsTreeVIew;
     @FXML private Label CentralFlowName;
-
-
+    @FXML private VBox filterVbox;
+    @FXML private ChoiceBox<String> continuationChoiceBox;
+    @FXML private ImageView continuationButtonImage;
     private BooleanProperty booleanProperty=new SimpleBooleanProperty();
     private BodyController bodyController;
 
@@ -54,6 +58,8 @@ public class FlowHistory {
             setItemsInFlowsExecutionTable(FXCollections.observableList(bodyController.getStepper().getFlowExecutionDataList()
                     .stream().filter(flowExecutionData -> flowExecutionData.getExecutionResult().equals(selectedOption)).collect(Collectors.toList())));
             booleanProperty.set(true);
+            resetTable.opacityProperty().set(1);
+            resetTable.cursorProperty().set(Cursor.HAND);
         });
         filterSelectionLabel.textProperty().bind(Bindings
                 .when(booleanProperty)
@@ -62,8 +68,22 @@ public class FlowHistory {
                         "Choose Filter :"
                 )
         );
-        resetTable.cursorProperty().set(Cursor.HAND);
-    }    @FXML
+        continuationChoiceBox.setOnAction(this::startContinuation);
+        rerunButton.opacityProperty().set(0.2);
+        rerunButton.cursorProperty().set(Cursor.DISAPPEAR);
+        disaperRestFilterButton();
+        initContinuationButton();
+    }
+
+
+
+
+    private void disaperRestFilterButton() {
+        resetTable.opacityProperty().set(0.2);
+        resetTable.cursorProperty().set(Cursor.DISAPPEAR);
+    }
+
+    @FXML
     void rerunFlow(ActionEvent event) {
         bodyController.rerunFlow(flowsExecutionTable.getSelectionModel().getSelectedItem());
     }
@@ -71,10 +91,13 @@ public class FlowHistory {
 
     @FXML
     void restTableFilter(MouseEvent event) {
-        restTable();
-        filterChoose.getSelectionModel().clearSelection();
-        setItemsInFlowsExecutionTable(FXCollections.observableList(bodyController.getStepper().getFlowExecutionDataList()));
-        booleanProperty.set(false);
+        if(resetTable.cursorProperty().get().equals(Cursor.HAND)) {
+            restTable();
+            filterChoose.getSelectionModel().clearSelection();
+            setItemsInFlowsExecutionTable(FXCollections.observableList(bodyController.getStepper().getFlowExecutionDataList()));
+            booleanProperty.set(false);
+            disaperRestFilterButton();
+        }
     }
 
     private void restTable(){
@@ -151,8 +174,36 @@ public class FlowHistory {
                 TreeItem<String> childItem = new TreeItem<>(step.getFinalName(),bodyController.getExecutionStatusImage(step.getStepStatus().toString()));
                 root.getChildren().add(childItem);
             }
+            rerunButton.opacityProperty().set(1);
+            rerunButton.cursorProperty().set(Cursor.HAND);
+            addContinuation(selectedItem);
         }
     }
+
+    private void addContinuation(FlowExecutionDataImpl selectedItem) {
+        if(selectedItem.isHasContinuation()){
+            continuationChoiceBox.setItems(FXCollections.observableArrayList(bodyController.getStepper().getFlowsDetailsByName(selectedItem.getFlowName()).getContinuationNames()));
+        }
+        else{
+            initContinuationButton();
+            if(continuationChoiceBox.getItems()!= null)
+                continuationChoiceBox.setItems(null);
+        }
+    }
+
+    private void startContinuation(ActionEvent actionEvent) {
+        makeContinuationButtonEnabled();
+    }
+    private void initContinuationButton() {
+        continuationButtonImage.opacityProperty().set(0.2);
+        continuationButtonImage.cursorProperty().set(Cursor.DISAPPEAR);
+    }
+    private void makeContinuationButtonEnabled() {
+        continuationButtonImage.opacityProperty().set(1);
+        continuationButtonImage.cursorProperty().set(Cursor.HAND);
+    }
+
+
     @FXML
     void setStepData(MouseEvent event) {
         TreeItem<String> selectedItem = StepsTreeVIew.getSelectionModel().getSelectedItem();
@@ -168,6 +219,25 @@ public class FlowHistory {
     }
 
 
+    @FXML
+    void continueToFlow(MouseEvent event) {
+        bodyController.applyContinuationFromHistoryTab(flowsExecutionTable.getSelectionModel().getSelectedItem().getUniqueExecutionId(),
+                continuationChoiceBox.getValue());
+    }
+
+    @FXML
+    void setContinuationText(MouseEvent event) {
+        Tooltip tooltip = new Tooltip("Choose flow to continue");
+        tooltip.setAutoHide(true);
+        tooltip.show(continuationChoiceBox, event.getScreenX(), event.getScreenY());
+        continuationChoiceBox.setTooltip(tooltip);
+        PauseTransition pause = new PauseTransition(Duration.seconds(1));
+        pause.setOnFinished(eventa -> {
+            tooltip.hide();
+            continuationChoiceBox.setTooltip(null);
+        });
+        pause.play();
+    }
 
 
 }

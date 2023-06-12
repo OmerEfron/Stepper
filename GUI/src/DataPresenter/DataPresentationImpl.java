@@ -7,7 +7,9 @@ import DataPresenter.impl.RelationStringPresenter;
 import DataPresenter.impl.SimpleDataPresenter;
 import StepperEngine.DTO.FlowExecutionData.impl.IOData;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
 
 import java.util.List;
 import java.util.Set;
@@ -16,8 +18,12 @@ public class DataPresentationImpl implements DataPresentation {
     @Override
     public Node getDataPresent(Set<IOData> data) {
         FlowPane flowPane=new FlowPane();
-        for(IOData ioData:data){
-            flowPane.getChildren().add(getSingleDataPresenter(ioData));
+        if(data.isEmpty())
+            flowPane.getChildren().add(new VBox(new Label("No outputs were generated")));
+        else {
+            for (IOData ioData : data) {
+                flowPane.getChildren().add(getSingleDataPresenter(ioData));
+            }
         }
         return flowPane;
     }

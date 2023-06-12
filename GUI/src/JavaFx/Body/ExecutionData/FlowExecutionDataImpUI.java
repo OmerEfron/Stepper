@@ -10,11 +10,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -33,6 +32,8 @@ public class FlowExecutionDataImpUI implements ExecutionData{
     private HBox flowExecutionStatus;
     private HBox timeStamp;
     private HBox freeInputs;
+
+
     private Map<String,ExecutionData> stepsData=new HashMap<>();
     private DataPresentation dataPresentation=new DataPresentationImpl();
     private Map<String, StepExecutionDataImpUI> stepsMap=new HashMap<>();
@@ -48,7 +49,9 @@ public class FlowExecutionDataImpUI implements ExecutionData{
                 name,UUID,flowExecutionStatus,timeStamp,freeInputs,new Separator(),
                 new Label("All Outputs :"),dataPresentation.getDataPresent(flow.getOutputs()));
         createStepsMap();
+
     }
+
 
     private void createStepsMap() {
         flow.getStepExecuteDataList().forEach(

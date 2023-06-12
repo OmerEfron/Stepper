@@ -27,7 +27,7 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
     private final Set<IOData> outputs = new HashSet<>();
     private final Map<String, IOData> freeInputsMap =new HashMap<>();
     private final Map<String, IOData> outputsMap = new HashMap<>();
-
+    private final boolean hasContinuation;
     private final Set<IOData> formalOutputs;
 
     public FlowExecutionDataImpl(FlowExecution flowExecution){
@@ -43,6 +43,11 @@ public class FlowExecutionDataImpl implements FlowExecutionData, Serializable {
         setOutputs(flowExecution);
         formalOutputs = getFormalOutputs(flowExecution);
         formattedStartTime=flowExecution.getFormattedStartTime();
+        hasContinuation=flowExecution.getFlowDefinition().hasContinuation();
+    }
+
+    public boolean isHasContinuation() {
+        return hasContinuation;
     }
 
     public String getFormattedStartTime() {

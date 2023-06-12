@@ -24,6 +24,7 @@ public class FlowExecution {
     private String formattedStartTime;
     private boolean hasExecuted = false;
     private final Map<String, Object> freeInputsValue = new HashMap<>();
+    private final Map<String, Object> initialInputsValue = new HashMap<>();
 
     private String uuidAsString;
     private final Map<String, Object> formalOutputs = new HashMap<>();
@@ -48,6 +49,15 @@ public class FlowExecution {
         numOfSteps = flowDefinition.getSteps().size();
         canBeExecuted = freeInputs.size() == 0;
         createUUID();
+        addInitialInputs(flowDefinition);
+    }
+
+    private void addInitialInputs(FlowDefinition flowDefinition) {
+        Map<String, Pair<DataDefinitionsDeclaration, Object>> initialInputs = flowDefinition.getInitialInputs();
+        for(String initialInput:initialInputs.keySet()){
+            initialInputsValue.put(initialInput,initialInputs.get(initialInput).getValue());
+        }
+
     }
 
     public Map<String, Object> getAllData() {
