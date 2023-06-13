@@ -47,7 +47,7 @@ public class BodyController {
         flowStatsController.setMainController(this);
 
         bodyComponent.getSelectionModel().selectedItemProperty().addListener((observable, oldTab, newTab) -> {
-            if (newTab != null && newTab == flowHistoryTab) {
+            if (newTab != null && newTab == flowHistoryTab && getStepper() != null) {
                 // Update the TableView with information
                 flowHistoryController.setFlowsExecutionTable();
             }

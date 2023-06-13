@@ -150,7 +150,13 @@ public class FlowExecution {
                 executionProgressBar.setProgress(0);
                 bodyController.getStepper().executeFlow(currFlowExecutionUuid);
                 initExecuteButton();
-                new Thread(this::executeFlowTask).start();
+                new Thread(new Runnable() {
+                    String uuid = currFlowExecutionUuid;
+                    @Override
+                    public void run() {
+                        executeFlowTask(uuid);
+                    }
+                }).start();
                 lastFlowRunningUuid = currFlowExecutionUuid;
             } catch (ExecutionNotReadyException e) {
                 throw new RuntimeException(e.getMessage());
@@ -159,11 +165,11 @@ public class FlowExecution {
     }
 
 
-    void executeFlowTask() {
+    void executeFlowTask(String uuid) {
         synchronized (this) {
             Stepper stepper = bodyController.getStepper();
-            while (!stepper.getExecutionStatus(lastFlowRunningUuid)) {
-                Platform.runLater(() -> executionProgressBar.setProgress(stepper.getExecutionPartialStatus(lastFlowRunningUuid)));
+            while (!stepper.getExecutionStatus(uuid)) {
+                Platform.runLater(() -> executionProgressBar.setProgress(stepper.getExecutionPartialStatus(uuid)));
                 try {
                     Thread.sleep(300);
                 } catch (InterruptedException e) {
@@ -174,9 +180,10 @@ public class FlowExecution {
 
         Platform.runLater(() ->{
             executionProgressBar.setProgress(1);
-            flowExecutionDataImp=new FlowExecutionDataImpl(bodyController.getStepper().getFlowExecutionByUuid(lastFlowRunningUuid));
+            flowExecutionDataImp=new FlowExecutionDataImpl(bodyController.getStepper().getFlowExecutionByUuid(uuid));
             flowExecutionData =flowExecutionDataImp ;
             bodyController.updateStats(flowExecutionData.getFlowName());
+            cleanUpExecutionDetails();
             setExecutionDetails();
         });
     }
@@ -435,15 +442,23 @@ public class FlowExecution {
     }
 
     public void cleanUpScreen(){
-        freeInputsTableView.getItems().remove(0, freeInputsTableView.getItems().size());
-        freeInputsGridPane.getChildren().clear();
-        addFreeInputsFirstRow();
+        cleanUpFreeInputs();
+        cleanUpExecutionDetails();
+    }
+
+    private void cleanUpExecutionDetails() {
         MainExecutionDataVbox.getChildren().clear();
         executionProgressBar.setProgress(0.0);
         if(StepsTreeVIew.getRoot()!= null) {
             StepsTreeVIew.getRoot().getChildren().clear();
             StepsTreeVIew.setRoot(null);
         }
+    }
+
+    private void cleanUpFreeInputs() {
+        freeInputsTableView.getItems().remove(0, freeInputsTableView.getItems().size());
+        freeInputsGridPane.getChildren().clear();
+        addFreeInputsFirstRow();
     }
 
     public void setStepInputListView(StepExecuteData step){

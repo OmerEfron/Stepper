@@ -323,8 +323,10 @@ public class Stepper implements Serializable {
         return null;
     }
 
-    public FlowExecutionStatsDefinition getFlowExecutionsStats(String flowName){
-        return new FlowExecutionStatsImpl(flowsMap.get(flowName), executionsPerFlow.get(flowName));
+    public FlowExecutionStatsDefinition getFlowExecutionsStats(String flowName) {
+        synchronized (this) {
+            return new FlowExecutionStatsImpl(flowsMap.get(flowName), executionsPerFlow.get(flowName));
+        }
     }
 
     public FlowDetails getFlowsDetailsByName(String flowToContinue) {
