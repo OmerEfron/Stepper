@@ -44,7 +44,7 @@
                               <ComboBox fx:id="filterChoose" prefHeight="31.0" prefWidth="131.0" />
                               <ImageView fx:id="resetTable" fitHeight="26.0" fitWidth="22.0" onMouseClicked="#restTableFilter" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@61225.png" />
+                                    <Image url="@refreshTableIcon.png" />
                                  </image>
                               </ImageView>
                            </children>

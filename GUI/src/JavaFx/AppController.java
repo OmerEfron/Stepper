@@ -24,11 +24,14 @@ public class AppController {
     private final StepperDTO stepperDTO=new StepperDTO();
 
     private Stepper stepper;
+    boolean isStepperIn=false;
 
     @FXML
     public void initialize() {
+
         headerComponentController.setMainController(this);
         bodyComponentController.setMainController(this);
+        loadFile("xml's/ex2Aviad.xml");
     }
     public boolean loadFile(String filePath) {
         try {
@@ -37,7 +40,6 @@ public class AppController {
             bodyComponentController.setFlowDetailsList(stepperDTO.getFlowsDetailsList());
             stepper = stepperDTO.getStepper();
             bodyComponentController.initStats(stepper.getFlowNames());
-
             return true;
         }catch (ReaderException | FlowBuildException | RuntimeException e ) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
