@@ -25,7 +25,7 @@ public class CommandLine extends StepDefinitionAbstract {
     public StepStatus invoke(StepExecutionContext context, Map<String, String> nameToAlias, String stepName) {
         Instant start = Instant.now();
         String command=context.getDataValue(nameToAlias.get("COMMAND"),String.class);
-        Optional<String> arg=Optional.ofNullable(context.getDataValue("ARGUMENTS",String.class));
+        Optional<String> arg=Optional.ofNullable(context.getDataValue(nameToAlias.get("ARGUMENTS"),String.class));
         context.addLog(stepName,"About to invoke "+command+" "+arg.orElse(""));
         try {
             StringBuilder output = new StringBuilder();
