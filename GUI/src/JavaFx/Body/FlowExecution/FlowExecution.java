@@ -101,7 +101,7 @@ public class FlowExecution {
     @FXML
     void initialize(){
         initButtons();
-        freeInputNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        freeInputNameCol.setCellValueFactory(new PropertyValueFactory<>("apiName"));
         freeInputValueCol.setCellValueFactory(new PropertyValueFactory<>("value"));
         addFreeInputsFirstRow();
         continuationChoiceBox.setOnAction(this::startContinuation);
@@ -166,7 +166,6 @@ public class FlowExecution {
                 Platform.runLater(() -> executionProgressBar.setProgress(stepper.getExecutionPartialStatus(lastFlowRunningUuid)));
                 try {
                     Thread.sleep(300);
-                    //setExecutionDetails();
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -207,32 +206,6 @@ public class FlowExecution {
                 MainExecutionDataVbox.getChildren().add(bodyController.getStepExecutionData(flowExecutionDataImp, selectedItem.getValue()));
             }
         }
-    }
-
-    private void setStepDetails(String stepName)  {
-        StepExecuteData stepExecuteData = flowExecutionData.getStepData(stepName);
-        stepResutLabel.textProperty().setValue(stepExecuteData.getStepStatus().toString());
-        try {
-            stepTimeLabel.textProperty().setValue(String.format("started at %s\nended at %s\ntotal time %s",
-                    stepExecuteData.getStartTime(), stepExecuteData.getEndTime(), stepExecuteData.getTotalTime()));
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-        String logsLabel = "";
-        for(Pair<String, String> log: stepExecuteData.getLogs()){
-            logsLabel = logsLabel.concat(log.getKey() + " - " + log.getValue());
-        }
-        stepLogsLabel.textProperty().setValue(logsLabel);
-        setStepInputListView(stepExecuteData);
-    }
-
-    private void setFormalOutputsAndStepsListView() {
-        stepsInfoListView.setItems(FXCollections.observableArrayList(flowExecutionData.getStepExecuteDataList().stream()
-                .map(StepExecuteData::getFinalName)
-                .collect(Collectors.toList())));
-        formalOutputsListView.setItems(FXCollections.observableArrayList(flowExecutionData.getFormalOutputs().stream()
-                .map(IOData::getName)
-                .collect(Collectors.toList())));
     }
 
 
@@ -280,15 +253,6 @@ public class FlowExecution {
         setFreeInputsDisplay();
     }
 
-    public void setFlowDetails(){
-        flowNameLabel.textProperty().set(flowDetails.getFlowName());
-        floeDescriptionLabel.textProperty().set(flowDetails.getFlowDescription());
-        String steps = "";
-        for(String step:flowDetails.getStepsNames()){
-            steps = steps.concat(step + "\n");
-        }
-        floeStepsLabel.textProperty().set(steps);
-    }
 
     public void setFreeInputsDisplay(){
         for(int i = 0; i < flowDetails.getFreeInputs().size(); i++){
@@ -299,7 +263,7 @@ public class FlowExecution {
     }
 
     public void setInputRowData(Input input, int row){
-        freeInputsGridPane.add(new Label(input.getUserString()), INPUT_NAME_COLUMN, row);
+        freeInputsGridPane.add(new Label(input.getDataName()), INPUT_NAME_COLUMN, row);
         freeInputsGridPane.add(new Label(
                 DataNecessity.valueOf(input.getNecessity()).equals(DataNecessity.MANDATORY)? "Yes":"NO"),
                 INPUT_MANDATORY_COLUMN,
@@ -343,11 +307,26 @@ public class FlowExecution {
 
     public HBox getFileChooserButton(Input input){
         HBox hBox = new HBox();
+        Tooltip existinFile = new Tooltip("choose existing file");
+        Tooltip existingFolder = new Tooltip("choose existing folder");
+        Tooltip newFile = new Tooltip("choose new file");
         ImageView fileChooserButton = new ImageView();
-        hBox.getChildren().add(fileChooserButton);
+        ImageView folderChooserButton = new ImageView();
+        TextField textField = new TextField();
+        Tooltip.install(fileChooserButton, existinFile);
+        Tooltip.install(folderChooserButton, existingFolder);
+        Tooltip.install(textField, newFile);
+        if(input.getTypeName().equals("Folder path")){
+            hBox.getChildren().add(folderChooserButton);
+        }
+        else {
+            hBox.getChildren().add(textField);
+            hBox.getChildren().add(fileChooserButton);
+            hBox.getChildren().add(folderChooserButton);
+        }
         EventHandler<MouseEvent> directoryHandler = event -> {
             DirectoryChooser directoryChooser = new DirectoryChooser();
-            File folderChoose = directoryChooser.showDialog(fileChooserButton.getScene().getWindow());
+            File folderChoose = directoryChooser.showDialog(folderChooserButton.getScene().getWindow());
             if(folderChoose != null)
                 if(addNewValue(input, folderChoose.getAbsolutePath())){
                     addInputToTable(input, folderChoose.getName());
@@ -362,10 +341,30 @@ public class FlowExecution {
                 }
             }
         };
-        fileChooserButton.setImage(new Image(getClass().getResourceAsStream("folder-management.png")));
+        EventHandler<ActionEvent> newFileNameHandler = event -> {
+            String newFileName = textField.getText();
+            if(!newFileName.isEmpty()){
+                DirectoryChooser directoryChooser = new DirectoryChooser();
+                File folderChoose = directoryChooser.showDialog(fileChooserButton.getScene().getWindow());
+                if(folderChoose != null){
+                    String folderChoosePath = folderChoose.getAbsolutePath();
+                    String newFilePath = String.format("%s\\%s", folderChoosePath, newFileName);
+                    if(addNewValue(input, newFilePath)){
+                        addInputToTable(input, newFileName);
+                    }
+                }
+            }
+            textField.clear();
+        };
+        fileChooserButton.setImage(new Image(getClass().getResourceAsStream("fileIcon.png")));
         fileChooserButton.setFitHeight(30);
         fileChooserButton.setFitWidth(30);
-        fileChooserButton.setOnMouseClicked(input.getTypeName().equals("File path") ? fileHandler:directoryHandler);
+        fileChooserButton.setOnMouseClicked(fileHandler);
+        folderChooserButton.setImage(new Image(getClass().getResourceAsStream("folderIcon.png")));
+        folderChooserButton.setFitWidth(30);
+        folderChooserButton.setFitHeight(30);
+        folderChooserButton.setOnMouseClicked(directoryHandler);
+        textField.setOnAction(newFileNameHandler);
         return hBox;
     }
     public HBox getTextFieldChooser(Input input){
