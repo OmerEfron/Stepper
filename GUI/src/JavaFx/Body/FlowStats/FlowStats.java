@@ -17,6 +17,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 
+import java.util.Collections;
 import java.util.List;
 
 public class FlowStats {
@@ -63,11 +64,10 @@ public class FlowStats {
 
     private void switchToStepsChart(FlowStatsTableRow newValue) {
         setStepChart(newValue.getFlowName());
-        flowStatsBorderPane.setCenter(stepBarChart);
+        //flowStatsBorderPane.setCenter(stepBarChart);
         Platform.runLater(() -> {
-            stepBarChart.opacityProperty().set(0);
-            flowStatsBorderPane.setCenter(stepBarChart);
-            stepBarChart.opacityProperty().set(1);
+            flowStatsBorderPane.centerProperty().setValue(stepBarChart);
+            //flowStatsBorderPane.setCenter(stepBarChart);
         }); // to make sure that the chart will present
                                                                             //   only after it has been build.
     }
@@ -78,16 +78,14 @@ public class FlowStats {
         initTables();
         flowStatsTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->{
             setStepStatsTableView(newValue.getFlowName());
-            if(showStepsChart.isSelected()) {
-                switchToStepsChart(newValue);
-            }
+            showStepsChart.selectedProperty().setValue(false);
         });
         showStepsChart.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue && !flowStatsTableView.getSelectionModel().isEmpty()){
                 switchToStepsChart(flowStatsTableView.getSelectionModel().getSelectedItem());
             }
             else if(!newValue){
-                flowStatsBorderPane.setCenter(barChart);
+                flowStatsBorderPane.centerProperty().setValue(barChart);
             }
         });
         setFlowChart();
@@ -147,6 +145,7 @@ public class FlowStats {
 
     public void setStepChart(String flowName){
         stepBarChart.getData().clear();
+        stepBarChart.layout();
         FlowExecutionStatsDefinition flowExecutionStats = bodyController.getStepper().getFlowExecutionsStats(flowName);
         XYChart.Series<String, Number> stepSeries = new XYChart.Series<>();
         for(StepExecutionStats step: flowExecutionStats.getStepExecutionsStats()){
@@ -154,7 +153,8 @@ public class FlowStats {
         }
         stepBarChart.setTitle(flowName);
         stepBarChart.getXAxis().setLabel("Step");
-        stepBarChart.getData().add(stepSeries);
+        stepBarChart.getYAxis().setLabel("Average execution time");
+        stepBarChart.getData().add(0, stepSeries);
     }
 
 
