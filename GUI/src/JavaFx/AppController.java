@@ -31,10 +31,11 @@ public class AppController {
 
         headerComponentController.setMainController(this);
         bodyComponentController.setMainController(this);
-        loadFile("ex2 (1).xml");
+        loadFile("xml's/ex2Aviad.xml");
     }
     public boolean loadFile(String filePath) {
         try {
+
             stepperDTO.load(filePath);
             bodyComponentController.setFlowDetailsList(stepperDTO.getFlowsDetailsList());
             stepper = stepperDTO.getStepper();

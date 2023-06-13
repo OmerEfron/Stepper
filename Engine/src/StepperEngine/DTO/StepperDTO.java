@@ -27,14 +27,18 @@ public class StepperDTO {
 
     public void load(String filePath) throws FlowBuildException, ReaderException {
         try {
+            if(isLoaded)
+                stepper = new Stepper();
             TheStepper stStepper = new StepperReaderFromXml().read(filePath);
             Stepper tempStepper= new Stepper();
             tempStepper.newFlows(stStepper);
             stepper.newFlows(stStepper);
             setupConsole();
+            isLoaded=true;
         } catch (ReaderException | FlowBuildException | RuntimeException e ) {
+            if(!isLoaded)
+                isLoaded=false;
             throw e;
-
         }
 
     }
