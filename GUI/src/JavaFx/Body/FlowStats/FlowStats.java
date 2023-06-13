@@ -64,12 +64,8 @@ public class FlowStats {
 
     private void switchToStepsChart(FlowStatsTableRow newValue) {
         setStepChart(newValue.getFlowName());
-        //flowStatsBorderPane.setCenter(stepBarChart);
-        Platform.runLater(() -> {
-            flowStatsBorderPane.centerProperty().setValue(stepBarChart);
-            //flowStatsBorderPane.setCenter(stepBarChart);
-        }); // to make sure that the chart will present
-                                                                            //   only after it has been build.
+        flowStatsBorderPane.centerProperty().setValue(stepBarChart);
+
     }
 
 
