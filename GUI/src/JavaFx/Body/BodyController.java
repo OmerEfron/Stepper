@@ -119,7 +119,7 @@ public class BodyController {
     }
     public void rerunFlow(FlowExecutionDataImpl flow){
         bodyComponent.getSelectionModel().select(flowExecutionTab);
-        flowExecutionController.reRunFlow(getStepper().getFlowsDetailsByName(flow.getFlowName()),mainController.getStepper().reRunFlow(flow.getUniqueExecutionId()));
+        flowExecutionController.runFlowAgain(getStepper().getFlowsDetailsByName(flow.getFlowName()),mainController.getStepper().reRunFlow(flow.getUniqueExecutionId()));
     }
     public void applyContinuationFromHistoryTab(String pastFlowUUID,String flowToContinue){
         bodyComponent.getSelectionModel().select(flowExecutionTab);

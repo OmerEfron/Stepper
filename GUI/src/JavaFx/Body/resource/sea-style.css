@@ -47,8 +47,8 @@
     /* Hover style */
     -fx-background-color:
             #91d9c8,
-            linear-gradient(#6b98a6 0%, #f5f8fa 20%, #2560ad 100%),
-            linear-gradient(#4345bd, #1ab2a5),
+            linear-gradient( #4d7cb9 100%, #f5f8fa 20%,#6b98a6 0%),
+            linear-gradient( #87b2af, #9696bd),
             radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.9), rgba(255,255,255,0));
     -fx-text-fill: white;
 }
@@ -71,8 +71,8 @@
 .tab-pane .tab-header-area .tab-header-background {
     -fx-background-color:
             #91d9c8,
-            linear-gradient(#6b98a6 0%, #f5f8fa 20%, #2560ad 100%),
-            linear-gradient(#4345bd, #1ab2a5),
+            linear-gradient(#6b98a6 0%, #f5f8fa 20%, #9dabc0 100%),
+            linear-gradient(#888ab4, #1ab2a5),
             radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.9), rgba(255,255,255,0));
 }
 
@@ -228,8 +228,8 @@
 .tab-content-background{
     -fx-background-color:
             #91d9c8,
-            linear-gradient(#6b98a6 0%, #f5f8fa 20%, #2560ad 100%),
-            linear-gradient(#4345bd, #1ab2a5),
+            linear-gradient(#97d2e5 0%, #f5f8fa 20%, #9ebeef 100%),
+            linear-gradient(#9292f3, #a8e7e0),
             radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.9), rgba(255,255,255,0));
 }
 .tree-view {

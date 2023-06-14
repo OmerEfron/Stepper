@@ -7,10 +7,12 @@ import StepperEngine.Flow.FlowBuildExceptions.FlowBuildException;
 import StepperEngine.Flow.execute.FlowExecution;
 import StepperEngine.Stepper;
 import StepperEngine.StepperReader.Exception.ReaderException;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
 import java.awt.event.ActionEvent;
@@ -31,7 +33,7 @@ public class AppController {
 
         headerComponentController.setMainController(this);
         bodyComponentController.setMainController(this);
-        loadFile("C:\\Users\\Gil\\Desktop\\StepperClone\\ex2 (1).xml");
+   //     loadFile("C:\\Users\\Gil\\Desktop\\StepperClone\\ex2 (1).xml");
     }
     public boolean loadFile(String filePath) {
         try {
@@ -57,5 +59,8 @@ public class AppController {
 
     public Stepper getStepper() {
         return stepper;
+    }
+    public void changeCSS(){
+
     }
 }

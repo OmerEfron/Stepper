@@ -7,7 +7,6 @@ import StepperEngine.DTO.FlowDetails.StepDetails.FlowIODetails.Input;
 
 import StepperEngine.DTO.FlowExecutionData.api.FlowExecutionData;
 import StepperEngine.DTO.FlowExecutionData.impl.FlowExecutionDataImpl;
-import StepperEngine.DTO.FlowExecutionData.impl.IOData;
 import StepperEngine.DataDefinitions.Enumeration.ZipEnumerator;
 import StepperEngine.Flow.execute.ExecutionNotReadyException;
 import StepperEngine.Flow.execute.StepData.StepExecuteData;
@@ -38,7 +37,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 import javafx.util.Duration;
-import javafx.util.Pair;
 
 import java.io.File;
 import java.util.EnumSet;
@@ -88,6 +86,8 @@ public class FlowExecution {
     @FXML private Label CentralFlowName;
     @FXML private TreeView<String> StepsTreeVIew;
     @FXML private VBox MainExecutionDataVbox;
+    @FXML private Button rerunButton;
+
 
 
     private BodyController bodyController;
@@ -114,6 +114,11 @@ public class FlowExecution {
         String flowToContinue=continuationChoiceBox.getValue();
         applyContinuation(flowExecutionData.getUniqueExecutionId(),flowToContinue);
     }
+    @FXML
+    void rerunFlow(ActionEvent event) {
+        bodyController.rerunFlow(flowExecutionDataImp);
+    }
+
 
     public void applyContinuation(String UUID,String flowToContinue) {
         currFlowExecutionUuid=bodyController.continuationFlow(UUID, flowToContinue);
@@ -121,7 +126,7 @@ public class FlowExecution {
         updateFlowExecutionData();
     }
 
-    public void reRunFlow(FlowDetails flow,String UUID){
+    public void runFlowAgain(FlowDetails flow, String UUID){
         flowDetails=flow;
         currFlowExecutionUuid=UUID;
         updateFlowExecutionData();
@@ -141,6 +146,7 @@ public class FlowExecution {
         continuationChoiceBox.getItems().clear();
         initContinuationButton();
         setContinuation();
+        initRerunButton();
     }
 
     @FXML
@@ -185,6 +191,7 @@ public class FlowExecution {
             bodyController.updateStats(flowExecutionData.getFlowName());
             cleanUpExecutionDetails();
             setExecutionDetails();
+            makeRerunButtonEnabled();
         });
     }
 
@@ -226,6 +233,16 @@ public class FlowExecution {
     private void initButtons() {
         initExecuteButton();
         initContinuationButton();
+        initRerunButton();
+    }
+    private void initRerunButton()
+    {
+        rerunButton.opacityProperty().set(0.2);
+        rerunButton.cursorProperty().set(Cursor.DISAPPEAR);
+    }
+    private void makeRerunButtonEnabled(){
+        rerunButton.opacityProperty().set(1);
+        rerunButton.cursorProperty().set(Cursor.HAND);
     }
 
     private void initContinuationButton() {

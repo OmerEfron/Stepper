@@ -29,7 +29,7 @@
     -fx-background-color:
             #b4abab,
             linear-gradient(#c4b8b8 0%, #f5f8fa 20%, #9ba49b 100%),
-            linear-gradient(#acafac, #a1a49f),
+            linear-gradient(#acafac, #535651),
             radial-gradient(center 50% 0%, radius 100%, rgba(240, 240, 245, 0.9), rgba(255,255,255,0));
     -fx-background-radius: 5,4,3,5;
     -fx-background-insets: 0,1,2,0;
@@ -46,8 +46,8 @@
 .button:hover {
     /* Hover style */
     -fx-background-color:
-            #b4abab,
-            linear-gradient(#c4b8b8 0%, #f5f8fa 20%, #9ba49b 100%),
+            #151515,
+            linear-gradient(#9ba49b 100%, #f5f8fa 20%,#c4b8b8 0% ),
             linear-gradient(#acafac, #a1a49f),
             radial-gradient(center 50% 0%, radius 100%, rgba(240, 240, 245, 0.9), rgba(255,255,255,0));
     -fx-text-fill: white;
