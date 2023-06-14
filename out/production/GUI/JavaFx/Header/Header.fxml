@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="headerComponent" alignment="TOP_CENTER" stylesheets="@Header.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFx.Header.HeaderController">
+<VBox styleClass="tab-content-background" fx:id="headerComponent" alignment="TOP_CENTER" stylesheets="@Header.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFx.Header.HeaderController">
    <children>
       <Label alignment="CENTER" contentDisplay="TOP" text="Stepper" textAlignment="CENTER" VBox.vgrow="ALWAYS">
          <font>

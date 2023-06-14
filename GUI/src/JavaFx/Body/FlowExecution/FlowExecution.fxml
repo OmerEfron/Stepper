@@ -20,11 +20,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="839.0" prefViewportHeight="839.0" prefViewportWidth="1209.0" prefWidth="1209.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFx.Body.FlowExecution.FlowExecution">
+<ScrollPane styleClass="tab-content-background" fitToHeight="true" fitToWidth="true" prefHeight="839.0" prefViewportHeight="839.0" prefViewportWidth="1209.0" prefWidth="1209.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFx.Body.FlowExecution.FlowExecution">
     <content>
-        <BorderPane prefHeight="500.0" prefWidth="1000.0">
+        <BorderPane styleClass="tab-content-background" prefHeight="500.0" prefWidth="1000.0">
             <top>
-                <AnchorPane prefHeight="244.0" prefWidth="1207.0" BorderPane.alignment="CENTER">
+                <AnchorPane styleClass="tab-content-background" prefHeight="244.0" prefWidth="1207.0" BorderPane.alignment="CENTER">
                     <children>
                         <ImageView fx:id="flowExecutionButtonImage" fitHeight="50.0" fitWidth="50.0" layoutX="1064.0" layoutY="50.0" onMouseClicked="#executeFlow" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="93.0" AnchorPane.topAnchor="50.0">
                             <image>
@@ -35,13 +35,13 @@
                             </cursor>
                         </ImageView>
                         <ProgressBar fx:id="executionProgressBar" layoutX="983.0" layoutY="128.0" prefHeight="23.0" prefWidth="212.0" progress="0.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="128.0" />
-                <AnchorPane layoutX="2.0" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="846.0">
+                <AnchorPane styleClass="tab-content-background"  layoutX="2.0" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="846.0">
                      <children>
-                        <ScrollPane fx:id="freeInputsScrollPane" layoutX="367.0" layoutY="16.0" prefHeight="182.0">
+                        <ScrollPane styleClass="tab-content-background"  fx:id="freeInputsScrollPane" layoutX="367.0" layoutY="16.0" prefHeight="182.0">
                            <content>
-                              <GridPane fx:id="freeInputsGridPane" hgap="20.0" vgap="10.0">
+                              <GridPane styleClass="tab-content-background" fx:id="freeInputsGridPane" hgap="20.0" vgap="10.0">
                                 <columnConstraints>
-                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
                                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
                                 </columnConstraints>
@@ -80,12 +80,12 @@
                 </AnchorPane>
             </top>
          <center>
-            <BorderPane prefHeight="429.0" prefWidth="1207.0" BorderPane.alignment="CENTER">
+            <BorderPane styleClass="tab-content-background" prefHeight="429.0" prefWidth="1207.0" BorderPane.alignment="CENTER">
                <top>
                   <VBox alignment="TOP_CENTER" BorderPane.alignment="CENTER">
                      <children>
                         <Separator prefWidth="200.0" />
-                        <Label fx:id="CentralFlowName" text="Flow Name">
+                        <Label styleClass="label-flowName" fx:id="CentralFlowName" text="Flow Name">
                            <font>
                               <Font size="18.0" />
                            </font>
@@ -100,7 +100,7 @@
                <center>
                   <ScrollPane fitToHeight="true" fitToWidth="true" BorderPane.alignment="CENTER">
                      <content>
-                        <VBox fx:id="MainExecutionDataVbox" prefHeight="200.0" prefWidth="100.0" />
+                        <VBox styleClass="tab-content-background" fx:id="MainExecutionDataVbox" prefHeight="200.0" prefWidth="100.0" />
                      </content>
                   </ScrollPane>
                </center>

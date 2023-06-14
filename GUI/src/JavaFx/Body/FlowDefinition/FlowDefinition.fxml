@@ -15,11 +15,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="597.0" prefWidth="1150.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFx.Body.FlowDefinition.FlowDefinition">
+<ScrollPane id="screen" fitToHeight="true" fitToWidth="true" prefHeight="597.0" prefWidth="1150.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFx.Body.FlowDefinition.FlowDefinition">
    <content>
-      <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="567.0" prefWidth="1131.0">
+      <BorderPane styleClass="tab-content-background" minHeight="-Infinity" minWidth="-Infinity" prefHeight="567.0" prefWidth="1131.0">
          <center>
-            <BorderPane minHeight="450.0" minWidth="400.0" stylesheets="@FlowDefinition.css">
+            <BorderPane minHeight="450.0" minWidth="400.0">
                <bottom>
                   <VBox alignment="BOTTOM_RIGHT" minHeight="36.0" minWidth="591.0" BorderPane.alignment="CENTER">
                      <children>
@@ -36,7 +36,7 @@
                         <Separator orientation="VERTICAL" prefHeight="200.0" />
                         <VBox alignment="TOP_CENTER" spacing="5.0">
                            <children>
-                              <TextField editable="false" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="31.0" prefWidth="133.0" styleClass="text-field" text="Formal Outputs :" />
+                              <TextField editable="false" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="31.0" prefWidth="133.0" text="Formal Outputs :" />
                               <ListView fx:id="formalOutputs" maxHeight="140.0" maxWidth="150.0" minHeight="50.0" minWidth="100.0" prefWidth="153.0" />
                               <TextField editable="false" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="31.0" prefWidth="104.0" text="All Outputs" />
                               <TableView fx:id="AllOutputsTable" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0">
